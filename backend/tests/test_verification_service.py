@@ -100,12 +100,6 @@ class DamagedReportsAreCaught(unittest.TestCase):
 
 
 class HonestReportsStillPass(unittest.TestCase):
-    def test_citing_feature_ranks_is_not_an_invented_number(self):
-        # Regression: an LLM report listing "rank 3" was rejected because ranks were not treated as evidence.
-        result = verdict(append_evidence("ACKRatio is rank 3 and PacketDensity is rank 2 of the top features."))
-        self.assertNotIn("numeric_claims_grounded", result["failed_checks"])
-        self.assertIn("numeric_claims_grounded", verdict(append_evidence("ACKRatio is rank 7."))["failed_checks"])  # rank not supplied
-
     def test_template_report_verifies_in_both_detector_states(self):
         for detected in (True, False):
             result = verify_record(analysis(detected), MITRE, base_report(detected))
@@ -126,6 +120,51 @@ class HonestReportsStillPass(unittest.TestCase):
     def test_not_detected_report_may_say_normal_and_did_not_exceed(self):
         result = verdict(append_evidence("The flow looks normal and did not exceed the threshold."), detected=False)
         self.assertEqual(result["verdict"], "VERIFIED", result["failed_checks"])
+
+
+TEN = [{"feature": n, "value": 0.5 + i, "contribution": 0.05 - i * 0.004, "rank": i + 1}
+       for i, n in enumerate(["SYNRatio", "PacketDensity", "ACKRatio", "RSTRatio", "Rate", "IAT", "AVG", "Std", "UDP", "TCP"])]
+
+
+def ten_feature_verdict(text):
+    """Like the real detector: 10 top features, so small integers are not feature counts."""
+    a = {**analysis(), "top_features": TEN, "feature_names": [t["feature"] for t in TEN],
+         "all_feature_names": [t["feature"] for t in TEN]}
+    with patch.dict(os.environ, {}, clear=True):
+        reasoning = copy.deepcopy(reason(a, None, MITRE))
+    reasoning["report"]["evidence"].append(text)
+    return verify_record(a, MITRE, reasoning)
+
+
+class RankClaims(unittest.TestCase):
+    """Ranks count as evidence only in a rank context (rank N, #N, Nth) that matches that feature's real rank."""
+    def assert_ok(self, text):
+        self.assertNotIn("numeric_claims_grounded", ten_feature_verdict(text)["failed_checks"], text)
+
+    def assert_flagged(self, text):
+        self.assertIn("numeric_claims_grounded", ten_feature_verdict(text)["failed_checks"], text)
+
+    def test_true_ranks_in_rank_context_pass(self):
+        self.assert_ok("ACKRatio is rank 3 of the top features.")
+        self.assert_ok("PacketDensity was ranked #2.")
+        self.assert_ok("RSTRatio is the 4th most influential feature.")
+        self.assert_ok("{'feature': 'IAT', 'rank': 6, 'value': 5.5}, {'feature': 'AVG', 'rank': 7}")
+        self.assert_ok("#1 SYNRatio and #10 TCP bracket the list.")
+
+    def test_wrong_rank_for_the_feature_is_flagged(self):
+        self.assert_flagged("ACKRatio is rank 2 of the top features.")
+        self.assert_flagged("Rate was the 1st feature.")
+        self.assert_flagged("{'feature': 'IAT', 'rank': 9}")
+
+    def test_rank_without_a_ranked_feature_nearby_is_flagged(self):
+        self.assert_flagged("This flow is rank 3 in severity.")
+
+    def test_invented_small_integer_outside_rank_context_is_still_flagged(self):
+        self.assert_flagged("3 failed logins were observed.")        # 3 is a real rank, but this is not a rank claim
+        self.assert_flagged("The host opened 7 connections.")
+
+    def test_counts_that_are_in_the_evidence_still_pass(self):
+        self.assert_ok("The top 10 features were examined.")
 
 
 class ReasoningModeIsLabelled(unittest.TestCase):

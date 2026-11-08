@@ -43,6 +43,10 @@ SAMPLE_SEED = 20261108
 ATTACK_FAMILIES = ("DDoS", "DoS", "Recon", "Brute Force", "Spoofing", "Mirai", "Web-Based")
 PLAN = {"pilot": {"Benign": 3, **{f: 1 for f in ATTACK_FAMILIES}},
         "main": {"Benign": 30, **{f: 10 for f in ATTACK_FAMILIES}}}
+PHASE_SAMPLE = {"pilot": "pilot", "smoke": "pilot", "main": "main"}     # the smoke test reuses the 10 pilot alerts
+# Alerts already sent to a model before the main run (pilot 0, 2026-11-08, before the post-pilot fixes).
+# The main set must never contain them (plan amendment 2). Pilot alerts are excluded from main anyway.
+SEEN_BEFORE_MAIN = frozenset({"7b4cbfff-746d-54af-ab94-f43232d90c78"})
 
 
 def feature_names():
@@ -58,6 +62,7 @@ def select(stream, seed=SAMPLE_SEED):
     chosen = {}
     for phase in ("pilot", "main"):
         used = {a["alert_id"] for alerts in chosen.values() for a in alerts}
+        if phase == "main": used |= SEEN_BEFORE_MAIN
         picked = []
         for family, n in PLAN[phase].items():
             pool = [a for a in by_family[family] if a["alert_id"] not in used]
@@ -90,7 +95,7 @@ def ollama_info(host, model):
         return {"model": model, "error": str(exc)}
 
 
-def run_alert(alert, all_names, host, model, seed, timeout):
+def run_alert(alert, all_names, host, model, seed, timeout, num_predict=None):
     analysis, mitre = analysis_of(alert, all_names), mitre_of(alert)
     messages = [{"role": "system", "content": llm_service.SYSTEM_PROMPT},
                 {"role": "user", "content": json.dumps(llm_service.evidence_payload(analysis, None, mitre))}]
@@ -99,13 +104,19 @@ def run_alert(alert, all_names, host, model, seed, timeout):
               "template_verification": alert["verification_result"], "prompt_messages": messages}
     started = time.perf_counter()
     try:
-        reasoning = llm_service.ollama_reason(analysis, None, mitre, host=host, model=model, seed=seed, timeout=timeout)
+        reasoning = llm_service.ollama_reason(analysis, None, mitre, host=host, model=model, seed=seed, timeout=timeout,
+                                              num_predict=num_predict)
         verification = verify_record(analysis, mitre, reasoning)
         record.update(status="ok", reasoning=reasoning, raw_outputs=reasoning["raw_outputs"], verification=verification,
                       verdict=verification["verdict"], failed_checks=verification["failed_checks"])
+    except llm_service.LLMTimeout as exc:
+        record.update(status="timeout", verdict="TIMEOUT", error=str(exc.args[0]),
+                      raw_outputs=exc.args[1] if len(exc.args) > 1 else [], parse_errors=exc.args[2] if len(exc.args) > 2 else [],
+                      failed_checks=[])
     except llm_service.ReportError as exc:
         record.update(status="llm_failed", verdict="LLM_FAILED", error=str(exc.args[0]),
-                      raw_outputs=exc.args[1] if len(exc.args) > 1 else [], failed_checks=[])
+                      raw_outputs=exc.args[1] if len(exc.args) > 1 else [], parse_errors=exc.args[2] if len(exc.args) > 2 else [],
+                      failed_checks=[])
     except Exception as exc:                       # connection error, timeout: not a model output, may be retried
         record.update(status="error", verdict="ERROR", error=f"{type(exc).__name__}: {exc}", raw_outputs=[], failed_checks=[])
     record["elapsed_seconds"] = time.perf_counter() - started
@@ -120,7 +131,7 @@ def wilson(k, n, z=1.96):
 
 
 def summarise(records, meta):
-    done = [r for r in records if r["status"] in ("ok", "llm_failed")]
+    done = [r for r in records if r["status"] in ("ok", "llm_failed", "timeout")]
     verdicts = Counter(r["verdict"] for r in done)
     by_family = defaultdict(Counter)
     for r in done: by_family[r["family"]][r["verdict"]] += 1
@@ -137,9 +148,13 @@ def summarise(records, meta):
             "failed_check_counts": dict(failed.most_common()),
             "failed_check_share_of_completed": {k: v / max(len(done), 1) for k, v in failed.most_common()},
             "parsing": {"first_attempt_valid": sum(r["reasoning"]["attempts"] == 1 for r in ok),
-                        "needed_retry": sum(r["reasoning"]["attempts"] == 2 for r in ok),
+                        "first_attempt_invalid": sum(r["reasoning"]["attempts"] == 2 for r in ok)
+                                                 + sum(r["status"] != "ok" and len(r.get("raw_outputs", [])) >= 1 for r in done),
+                        "retry_succeeded": sum(r["reasoning"]["attempts"] == 2 for r in ok),
+                        "failed_after_retry": verdicts.get("LLM_FAILED", 0),
                         "repaired": sum(r["reasoning"]["repaired"] for r in ok),
-                        "failed_after_retry": verdicts.get("LLM_FAILED", 0)},
+                        "length_capped_replies": sum(t.get("done_reason") == "length" for r in ok for t in r["reasoning"]["timings"]),
+                        "timeouts": verdicts.get("TIMEOUT", 0)},
             "template_verdicts_same_alerts": dict(Counter(r["template_verification"] for r in done)),
             "gate": {"benign_alerts": len(benign), "attack_alerts": len(attacks),
                      "false_positives_reaching_automation_without_gate": len(benign),
@@ -149,8 +164,11 @@ def summarise(records, meta):
                      "attacks_reaching_automation_with_gate": attack_pass,
                      "attack_verified_rate": attack_pass / max(len(attacks), 1), "attack_verified_rate_ci95": wilson(attack_pass, len(attacks)),
                      "note": "Without the gate every flagged alert reaches the automated policy. With it, only VERIFIED alerts do; "
-                             "the others go to HUMAN_REVIEW. LLM failures count as not VERIFIED."},
-            "mean_seconds_per_alert": sum(r["elapsed_seconds"] for r in done) / max(len(done), 1)}
+                             "the others go to HUMAN_REVIEW. LLM failures and timeouts count as not VERIFIED."},
+            "mean_seconds_per_alert": sum(r["elapsed_seconds"] for r in done) / max(len(done), 1),
+            "max_seconds_per_alert": max((r["elapsed_seconds"] for r in done), default=0.0),
+            "mean_output_tokens_per_attempt": (sum(t.get("eval_count") or 0 for r in ok for t in r["reasoning"]["timings"])
+                                               / max(sum(len(r["reasoning"]["timings"]) for r in ok), 1))}
 
 
 def render(summary) -> str:
@@ -160,16 +178,19 @@ def render(summary) -> str:
              f"temperature 0, seed {summary['llm_seed']}. Stream `{summary['stream']}` (SHA-256 {summary['stream_sha256']}). "
              f"{summary['alerts_completed']} of {summary['alerts_attempted']} alerts completed; mean {summary['mean_seconds_per_alert']:.0f} s per alert.\n",
              "| verdict | count | share |", "|---|---|---|"]
-    for k in ("VERIFIED", "UNCERTAIN", "REJECTED", "LLM_FAILED"):
+    for k in ("VERIFIED", "UNCERTAIN", "REJECTED", "LLM_FAILED", "TIMEOUT"):
         lines.append(f"| {k} | {summary['verdicts'].get(k, 0)} | {summary['verdict_shares'].get(k, 0):.1%} |")
-    lines += ["", "| family | " + " | ".join(("VERIFIED", "UNCERTAIN", "REJECTED", "LLM_FAILED")) + " |", "|---|---|---|---|---|"]
+    lines += ["", "| family | " + " | ".join(("VERIFIED", "UNCERTAIN", "REJECTED", "LLM_FAILED", "TIMEOUT")) + " |", "|---|---|---|---|---|---|"]
     for f, c in summary["verdicts_by_family"].items():
-        lines.append(f"| {f} | " + " | ".join(str(c.get(k, 0)) for k in ("VERIFIED", "UNCERTAIN", "REJECTED", "LLM_FAILED")) + " |")
+        lines.append(f"| {f} | " + " | ".join(str(c.get(k, 0)) for k in ("VERIFIED", "UNCERTAIN", "REJECTED", "LLM_FAILED", "TIMEOUT")) + " |")
     lines += ["", "Failed checks (alerts failing each check):", ""] + \
              [f"- {k}: {v} ({summary['failed_check_share_of_completed'][k]:.1%})" for k, v in summary["failed_check_counts"].items()]
     p = summary["parsing"]
-    lines += ["", f"Parsing: {p['first_attempt_valid']} valid on the first attempt, {p['needed_retry']} needed the retry, "
-                  f"{p['repaired']} repaired, {p['failed_after_retry']} failed after the retry.",
+    lines += ["", f"Parsing: {p['first_attempt_valid']} valid on the first attempt; {p['first_attempt_invalid']} invalid on the first attempt "
+                  f"({p['retry_succeeded']} fixed by the retry, {p['failed_after_retry']} still invalid after it); {p['repaired']} repaired without a retry; "
+                  f"{p['length_capped_replies']} replies hit the output cap; {p['timeouts']} timed out.",
+              f"Time: mean {summary['mean_seconds_per_alert']:.0f} s per alert, max {summary['max_seconds_per_alert']:.0f} s; "
+              f"mean {summary['mean_output_tokens_per_attempt']:.0f} output tokens per attempt.",
               f"Template reasoning on the same alerts: {summary['template_verdicts_same_alerts']}.", "",
               "False positives and the verification gate:", "",
               f"- Without the gate: {g['false_positives_reaching_automation_without_gate']} of {g['benign_alerts']} flagged benign alerts reach the automated policy.",
@@ -183,23 +204,25 @@ def render(summary) -> str:
 
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--phase", choices=("pilot", "main"), required=True)
+    p.add_argument("--phase", choices=tuple(PHASE_SAMPLE), required=True)
     p.add_argument("--stream", type=Path, default=DEFAULT_STREAM)
     p.add_argument("--out", type=Path, default=DEFAULT_OUT)
     p.add_argument("--host", default="http://127.0.0.1:11434")
     p.add_argument("--model", default=llm_service.DEFAULT_OLLAMA_MODEL)
     p.add_argument("--llm-seed", type=int, default=llm_service.DEFAULT_SEED)
-    p.add_argument("--timeout", type=float, default=900)
+    p.add_argument("--timeout", type=float, default=llm_service.DEFAULT_TIMEOUT_SECONDS, help="seconds per alert, retry included")
+    p.add_argument("--num-predict", type=int, default=llm_service.DEFAULT_NUM_PREDICT, help="output token cap per attempt")
     p.add_argument("--limit", type=int, help="process at most this many alerts of the phase (smoke test)")
     args = p.parse_args(argv)
 
     from build_replay_stream import sha256_file
     stream = replay.load_stream(args.stream)
-    sample = select(stream)[args.phase][:args.limit]
+    sample = select(stream)[PHASE_SAMPLE[args.phase]][:args.limit]
     out = args.out / f"{args.phase}_{args.model.replace(':', '_').replace('/', '_')}"
     (out / "raw").mkdir(parents=True, exist_ok=True)
     meta = {"phase": args.phase, "stream": str(args.stream), "stream_sha256": sha256_file(args.stream), "sample_seed": SAMPLE_SEED,
-            "sample_plan": PLAN[args.phase], "llm_seed": args.llm_seed, "temperature": 0,
+            "sample_plan": PLAN[PHASE_SAMPLE[args.phase]], "llm_seed": args.llm_seed, "temperature": 0,
+            "timeout_seconds_per_alert": args.timeout, "num_predict": args.num_predict,
             "model_info": ollama_info(args.host, args.model), "started_at": datetime.now(timezone.utc).isoformat(),
             "sample_alert_ids": [a["alert_id"] for a in sample]}
     all_names = feature_names()
@@ -208,10 +231,10 @@ def main(argv=None):
         path = out / "raw" / f"{alert['alert_id']}.json"
         if path.exists():
             saved = json.loads(path.read_text(encoding="utf-8"))
-            if saved.get("status") in ("ok", "llm_failed"):
+            if saved.get("status") in ("ok", "llm_failed", "timeout"):
                 records.append(saved); print(f"[{i}/{len(sample)}] {alert['alert_id'][:8]} {saved['family']}: saved earlier ({saved['verdict']})", flush=True)
                 continue
-        record = run_alert(alert, all_names, args.host, args.model, args.llm_seed, args.timeout)
+        record = run_alert(alert, all_names, args.host, args.model, args.llm_seed, args.timeout, args.num_predict)
         path.write_text(json.dumps(record, indent=2), encoding="utf-8")
         records.append(record)
         print(f"[{i}/{len(sample)}] {alert['alert_id'][:8]} {record['family']}: {record['verdict']} "

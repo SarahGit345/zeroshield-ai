@@ -54,8 +54,8 @@ Meaning of the evidence fields:
 
 Return one JSON object with exactly these fields:
 - incident_summary (string): one or two sentences on what the detector decided for this flow.
-- evidence (array of 3 to 6 short strings): the exact anomaly_score and threshold, and the top 3 features by rank
-  with their contributions, one observation per string. Do not copy the whole input.
+- evidence (array of three to six short strings): the exact anomaly_score and threshold, and the three
+  highest-ranked features with their contributions, one observation per string. Do not copy the whole input.
 - attack_context (string): what the retrieved ATT&CK candidates might suggest, hedged; say if there are none.
 - interpretation (string): what the evidence may and may not mean; flow statistics alone cannot confirm an attack.
 - recommended_action (string): a proposed next step for an analyst, phrased as a recommendation.
@@ -95,6 +95,10 @@ def template_report(result, mitre) -> dict:
 # ---------------------------------------------------------------- parsing
 class ReportError(ValueError):
     """args: (message, raw_outputs, parse_errors) when raised after both attempts."""
+
+
+class LLMTimeout(TimeoutError):
+    """The per-alert time budget ran out. args: (message, raw_outputs, parse_errors)."""
 
 
 def _validate(obj) -> dict:
@@ -141,27 +145,48 @@ def _ollama_chat(host, payload, timeout):
         return json.loads(response.read())
 
 
-def ollama_reason(result, family, mitre, *, host=None, model=None, seed=None, timeout=None) -> dict:
+DEFAULT_TIMEOUT_SECONDS = 600       # per alert, both attempts together
+DEFAULT_NUM_PREDICT = 768           # output length cap per attempt (tokens)
+
+
+def ollama_reason(result, family, mitre, *, host=None, model=None, seed=None, timeout=None, num_predict=None) -> dict:
+    """`timeout` is the budget for the whole alert (first attempt plus any retry), in seconds."""
+    import socket
+    import time
+    import urllib.error
     host = host or os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434")
     if not host.startswith("http"): host = "http://" + host
     model = model or os.getenv("OLLAMA_MODEL", DEFAULT_OLLAMA_MODEL)
     seed = int(seed if seed is not None else os.getenv("ZEROSHIELD_LLM_SEED", DEFAULT_SEED))
-    timeout = float(timeout or os.getenv("ZEROSHIELD_LLM_TIMEOUT", 900))
+    timeout = float(timeout or os.getenv("ZEROSHIELD_LLM_TIMEOUT", DEFAULT_TIMEOUT_SECONDS))
+    num_predict = int(num_predict or os.getenv("OLLAMA_NUM_PREDICT", DEFAULT_NUM_PREDICT))
     messages = [{"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": json.dumps(evidence_payload(result, family, mitre))}]
-    options = {"temperature": 0, "seed": seed, "num_ctx": int(os.getenv("OLLAMA_NUM_CTX", 8192))}
+    options = {"temperature": 0, "seed": seed, "num_ctx": int(os.getenv("OLLAMA_NUM_CTX", 8192)), "num_predict": num_predict}
     raw_outputs, errors, timings = [], [], []
+    deadline = time.monotonic() + timeout
     for attempt in (1, 2):
+        remaining = deadline - time.monotonic()
+        if remaining <= 1:
+            raise LLMTimeout(f"per-alert budget of {timeout:.0f} s used up before attempt {attempt}", raw_outputs, errors)
         payload = {"model": model, "messages": messages, "stream": False, "format": REPORT_SCHEMA,
                    "options": options, "think": False}
-        reply = _ollama_chat(host, payload, timeout)
+        try:
+            reply = _ollama_chat(host, payload, remaining)
+        except (socket.timeout, TimeoutError) as exc:
+            raise LLMTimeout(f"attempt {attempt} exceeded the per-alert budget of {timeout:.0f} s", raw_outputs, errors) from exc
+        except urllib.error.URLError as exc:
+            if isinstance(exc.reason, (socket.timeout, TimeoutError)):
+                raise LLMTimeout(f"attempt {attempt} exceeded the per-alert budget of {timeout:.0f} s", raw_outputs, errors) from exc
+            raise
         content = reply.get("message", {}).get("content", "")
         raw_outputs.append(content)
-        timings.append({k: reply.get(k) for k in ("total_duration", "prompt_eval_count", "eval_count", "eval_duration")})
+        timings.append({k: reply.get(k) for k in ("total_duration", "prompt_eval_count", "eval_count", "eval_duration", "done_reason")})
         try:
             report, repaired = parse_report(content)
             return {"mode": f"Ollama LLM ({model})", "report": report, "provider": "ollama", "model": model,
-                    "seed": seed, "temperature": 0, "attempts": attempt, "repaired": repaired,
+                    "seed": seed, "temperature": 0, "num_predict": num_predict, "timeout_seconds": timeout,
+                    "attempts": attempt, "repaired": repaired,
                     "raw_outputs": raw_outputs, "parse_errors": errors, "timings": timings}
         except ReportError as exc:
             errors.append(str(exc))

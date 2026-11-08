@@ -45,6 +45,37 @@ def _sentences(text: str) -> list[str]:
     return [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", text) if s.strip()]
 
 
+# A rank mention: "rank 3", "ranked 3", "rank #3", "rank: 3", "'rank': 3", "#3", "3rd".
+RANK_MENTION = re.compile(r"\brank(?:ed)?['\"]?\s*(?:[:=]\s*|no\.?\s*|number\s+|#\s*)?(\d+)\b|#\s?(\d+)\b|\b(\d+)(?:st|nd|rd|th)\b", re.I)
+SEGMENT_END = re.compile(r"[.!?](?=\s|$)|\n|[{}]")
+
+
+def _check_rank_mentions(text: str, top_features: list) -> tuple[str, list[str]]:
+    """Ranks are evidence only in a rank context that matches that feature's real rank.
+
+    For each rank mention, the nearest top-feature name in the same sentence (or JSON object) is found.
+    A mention whose number equals that feature's rank is blanked out of the text, so the numeric check
+    ignores it. Any other rank mention (wrong rank, or no feature nearby) is returned as unsupported.
+    Numbers outside a rank context are left for the ordinary numeric check."""
+    ranks = {f["feature"]: int(f["rank"]) for f in top_features if "rank" in f}
+    patterns = {name: re.compile(r"(?<![A-Za-z0-9_])" + re.escape(name) + r"(?![A-Za-z0-9_])", re.I) for name in ranks}
+    bounds = [0] + [m.end() for m in SEGMENT_END.finditer(text)] + [len(text)]
+    chars, wrong = list(text), []
+    for m in RANK_MENTION.finditer(text):
+        number = int(next(g for g in m.groups() if g is not None))
+        start = max(b for b in bounds if b <= m.start())
+        end = min(b for b in bounds if b >= m.end())
+        nearest, distance = None, None
+        for name, pattern in patterns.items():
+            for f in pattern.finditer(text, start, end):
+                d = min(abs(f.start() - m.end()), abs(m.start() - f.end()))
+                if distance is None or d < distance: nearest, distance = name, d
+        if nearest is None or ranks[nearest] != number:
+            wrong.append(f"{m.group(0).strip()} ({'not the rank of ' + nearest if nearest else 'no ranked feature nearby'})")
+        chars[m.start():m.end()] = " " * (m.end() - m.start())    # judged here, not again by the plain numeric check
+    return "".join(chars), wrong
+
+
 def _matches_supported_number(token: str, supported: list[float]) -> bool:
     value = float(token)
     if "e" in token.lower() or "." not in token:
@@ -103,14 +134,14 @@ def verify_record(analysis: dict, mitre: dict, reasoning: dict) -> dict:
           "Explanation agrees with the frozen threshold decision." if not contradictions
           else "Statements contradict the detector decision: " + "; ".join(contradictions), True)
 
-    numeric_text = TECHNIQUE.sub("", all_text)
+    rank_free_text, wrong_ranks = _check_rank_mentions(all_text, analysis.get("top_features", []))
+    numeric_text = TECHNIQUE.sub("", rank_free_text)
     supported_numbers = [float(analysis["anomaly_score"]), float(analysis["threshold"]), 0.0, 1.0,
                          float(len(analysis.get("feature_names", []))), float(len(technique_ids))]
     for feature in analysis.get("top_features", []):
         supported_numbers.extend([float(feature["value"]), float(feature["contribution"])])
-        if "rank" in feature: supported_numbers.append(float(feature["rank"]))   # ranks are part of the supplied XAI evidence
-    unsupported_numbers = [m.group(0) for m in NUMERIC.finditer(numeric_text)
-                           if not _matches_supported_number(m.group(0), supported_numbers)]
+    unsupported_numbers = wrong_ranks + [m.group(0) for m in NUMERIC.finditer(numeric_text)
+                                         if not _matches_supported_number(m.group(0), supported_numbers)]
     check("numeric_claims_grounded", not unsupported_numbers,
           "Unsupported numeric claims: " + (", ".join(unsupported_numbers) if unsupported_numbers else "none"), True)
 

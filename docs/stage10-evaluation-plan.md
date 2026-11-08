@@ -103,3 +103,22 @@ Unflagged quotas stay at 40 per attack family and 150 benign (never routed). S10
 - B5: a held-out alert whose tier had no training alerts uses the training-wide action ranking.
 - Bootstrap: one set of resample indices per stream and reward table, shared by all six comparisons.
 - The run writes `evaluation_decisions.csv` per run instead of the full action ledger (1.7 GB on S58); decisions and rewards are identical.
+
+## Amendment 2 (2026-11-08): Stage 10 step 3, verification on a real LLM
+
+Written after a 1-alert pilot and before any main-set alert is generated. Section 1 said a stream with real LLM reasoning would need an addendum before it is run; this addendum was not written before the 1-alert pilot, which is a lapse. The method itself was committed in code (`85b6a0e`) before the pilot ran.
+
+**What was run before this amendment.** Pilot 0: one alert (`7b4cbfff-746d-54af-ab94-f43232d90c78`, benign, S30) sent to `qwen3:8b` with the prompt as committed in `85b6a0e`. Output kept in `backend/experiments/llm_verification/pilot0_before_fixes_qwen3_8b/`. It was REJECTED by `numeric_claims_grounded` because the report listed feature ranks, and it took 461 s (1,962 prompt and 1,008 output tokens). A rerun of the pilot with a first version of the rank fix was stopped during its first alert; it saved no output.
+
+**Changes made after pilot 0 (both before any main-set alert):**
+1. *Verifier, rank numbers.* A number counts as a rank only in a rank context ("rank N", "ranked N", "rank: N", "#N", "Nth") and only if it equals the rank of the nearest top feature named in the same sentence or JSON object; such a mention is then not an unsupported number. A rank mention with the wrong rank, or with no ranked feature nearby, is unsupported. Numbers outside a rank context are checked as before, so an invented small integer such as "3 failed logins" is still flagged. (A first version that accepted any rank value anywhere was committed in `0979014` and replaced by this rule before any further model output was used.) Tests: `RankClaims` in `test_verification_service.py`; the damage suite (`DamagedReportsAreCaught`, 17 tests) was rerun and passes.
+2. *Prompt and cost.* The `evidence` field now asks for "three to six short strings" (the exact score and threshold and the three highest-ranked features, in words, so the prompt does not invite a bare "3"), and "Do not copy the whole input". MITRE descriptions sent to the LLM are cut to 300 characters (IDs, names, tactics, sources and similarities unchanged).
+3. *Limits.* Per-alert time budget 600 s covering the first attempt and the retry; output cap 768 tokens per attempt (`num_predict`). A budget overrun is recorded as TIMEOUT (not VERIFIED, not a parse failure).
+
+**Measurement (fixed now).**
+- Model `qwen3:8b` (Ollama digest `500a1f067a9f…`, Q4_K_M, 8.2B), thinking off, temperature 0, seed 20261108, JSON schema format, parse-and-repair with one retry, CPU only.
+- Data: flagged alerts of S30 (`replay_stream_share30_seed3.jsonl`, SHA-256 `1fb74980…5e13`); no dataset label in the prompt.
+- Smoke test: the 10 pilot alerts (3 benign + 1 per attack family, including the pilot-0 alert), run once with the settings above. Its numbers are shown to the user before the main run starts. If it reveals a defect, any fix is recorded here before the main run.
+- Main set: 30 benign + 10 per attack family (100), seeded (20261108), disjoint from the pilot alerts and explicitly excluding the pilot-0 alert (`SEEN_BEFORE_MAIN` in `measure_llm_verification.py`).
+- Reported: verified / uncertain / rejected / LLM-failed / timeout shares overall and per family; counts of each failed check; invalid JSON on the first attempt, fixed by the retry, still invalid; repairs; replies that hit the output cap; timeouts; mean and max time per alert. False positives reaching the automated policy without the gate (all flagged benign alerts) and with the live API's gate (only VERIFIED), with the attacks the gate diverts to human review, and Wilson 95% intervals. Verification checks faithfulness to the evidence, not truth, so a small false-positive reduction is the expected honest outcome.
+- Every raw model output, the exact prompt and every check are saved per alert.

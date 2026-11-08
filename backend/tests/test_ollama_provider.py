@@ -35,8 +35,8 @@ def good_report(analysis=ANALYSIS):
 
 class FakeOllama:
     """Serves queued /api/chat replies (strings) and records every request payload."""
-    def __init__(self, replies):
-        self.replies, self.requests = list(replies), []
+    def __init__(self, replies, delay=0.0):
+        self.replies, self.requests, self.delay = list(replies), [], delay
         outer = self
 
         class Handler(BaseHTTPRequestHandler):
@@ -54,6 +54,8 @@ class FakeOllama:
             def do_POST(self):
                 payload = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
                 outer.requests.append(payload)
+                if outer.delay:
+                    import time; time.sleep(outer.delay)
                 content = outer.replies.pop(0) if outer.replies else json.dumps(good_report())
                 self._send({"message": {"role": "assistant", "content": content}, "total_duration": 1, "eval_count": 5,
                             "prompt_eval_count": 7, "eval_duration": 1})
@@ -95,8 +97,26 @@ class OllamaProviderTests(unittest.TestCase):
         self.assertEqual(len(payload["mitre_candidates"][0]["description"]), llm_service.MITRE_DESCRIPTION_CHARS)
         self.assertEqual(payload["mitre_candidates"][0]["technique_id"], "T1498")
         self.assertEqual(len(long["techniques"][0]["description"]), 1200)           # caller's data untouched
-        self.assertIn("3 to 6 short strings", llm_service.SYSTEM_PROMPT)
+        self.assertIn("three to six short strings", llm_service.SYSTEM_PROMPT)
         self.assertIn("Do not copy the whole input", llm_service.SYSTEM_PROMPT)
+
+    def test_output_cap_is_sent(self):
+        _, fake = self.run_with([json.dumps(good_report())], num_predict=123)
+        self.assertEqual(fake.requests[0]["options"]["num_predict"], 123)
+        _, fake = self.run_with([json.dumps(good_report())])
+        self.assertEqual(fake.requests[0]["options"]["num_predict"], llm_service.DEFAULT_NUM_PREDICT)
+
+    def test_slow_model_raises_a_timeout_not_a_parse_failure(self):
+        fake = FakeOllama([json.dumps(good_report())], delay=3); self.addCleanup(fake.close)
+        with self.assertRaises(llm_service.LLMTimeout):
+            llm_service.ollama_reason(ANALYSIS, None, MITRE, host=fake.host, model="fake:1b", seed=7, timeout=1.5)
+
+    def test_budget_covers_the_retry_too(self):
+        # First reply is invalid and arrives after 1 s; the 1.5 s budget leaves too little for the retry.
+        fake = FakeOllama(["{bad", json.dumps(good_report())], delay=1.0); self.addCleanup(fake.close)
+        with self.assertRaises(llm_service.LLMTimeout) as ctx:
+            llm_service.ollama_reason(ANALYSIS, None, MITRE, host=fake.host, model="fake:1b", seed=7, timeout=1.5)
+        self.assertEqual(ctx.exception.args[1], ["{bad"])            # the raw output so far is kept
 
     def test_invalid_reply_gets_exactly_one_retry_with_the_error(self):
         result, fake = self.run_with(["{not json", json.dumps(good_report())])
@@ -207,7 +227,9 @@ class MeasurementScriptTests(unittest.TestCase):
         self.assertIn("prompt_messages", first)
         summary = json.loads((out / "summary.json").read_text())
         self.assertEqual(summary["alerts_completed"], 3)
-        self.assertEqual(summary["parsing"]["needed_retry"], 1)
+        self.assertEqual(summary["parsing"]["retry_succeeded"], 1)
+        self.assertEqual(summary["parsing"]["first_attempt_invalid"], 1)
+        self.assertEqual(summary["parsing"]["timeouts"], 0)
         self.assertEqual(sum(summary["verdicts"].values()), 3)
         self.assertEqual(summary["model_info"]["digest"], "abc123")
         self.assertIn("detector_score", summary["failed_check_counts"])
@@ -218,6 +240,28 @@ class MeasurementScriptTests(unittest.TestCase):
             measure.main(["--phase", "pilot", "--stream", str(stream_path), "--out", tmp.name, "--host", fake.host,
                           "--model", "fake:1b", "--limit", "3"])
         self.assertEqual(len(fake.requests), n_before)                 # resumed: no alert re-sent
+
+    def test_pilot0_alert_is_never_in_the_main_set(self):
+        stream = synthetic_stream()
+        benign_ids = sorted(a["alert_id"] for a in stream if a["_family"] == "Benign" and a["detected"])
+        with patch.object(measure, "SEEN_BEFORE_MAIN", frozenset(benign_ids[:5])):
+            chosen = measure.select(stream)
+        self.assertFalse(set(benign_ids[:5]) & {a["alert_id"] for a in chosen["main"]})
+        self.assertIn("7b4cbfff-746d-54af-ab94-f43232d90c78", measure.SEEN_BEFORE_MAIN)
+        self.assertEqual(measure.PHASE_SAMPLE["smoke"], "pilot")
+
+    def test_timeouts_are_recorded_separately(self):
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        stream_path = Path(tmp.name) / "s.jsonl"
+        stream_path.write_text("".join(json.dumps(x) + "\n" for x in synthetic_stream()), encoding="utf-8")
+        fake = FakeOllama([], delay=2.5); self.addCleanup(fake.close)
+        with patch.object(measure, "feature_names", return_value=ANALYSIS["all_feature_names"]):
+            measure.main(["--phase", "smoke", "--stream", str(stream_path), "--out", tmp.name, "--host", fake.host,
+                          "--model", "fake:1b", "--limit", "1", "--timeout", "1"])
+        summary = json.loads((Path(tmp.name) / "smoke_fake_1b" / "summary.json").read_text())
+        self.assertEqual(summary["verdicts"], {"TIMEOUT": 1})
+        self.assertEqual(summary["parsing"]["timeouts"], 1)
+        self.assertEqual(summary["gate"]["false_positives_reaching_automation_with_gate"], 0)
 
     def test_wilson_interval(self):
         lo, hi = measure.wilson(0, 30)
