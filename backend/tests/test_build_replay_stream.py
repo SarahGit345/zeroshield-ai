@@ -148,6 +148,60 @@ class BuildReplayStreamTests(unittest.TestCase):
         self.assertEqual(sum(meta["population"].values()), 1798)
 
 
+class AttackShareAndExclusionTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory(); d = Path(self.tmp.name)
+        rng = np.random.default_rng(1)
+        self.validation, self.zero_day = d / "validation.csv", d / "zero_day.csv"
+        write_csv(self.validation, VALIDATION_LABELS, 2600, rng)
+        write_csv(self.zero_day, ZERO_DAY_LABELS, 1000, rng)
+        self.sources = [("validation", self.validation), ("zero_day", self.zero_day)]
+
+    def tearDown(self): self.tmp.cleanup()
+
+    def build(self, **kw):
+        return brs.build_stream(self.sources, FakeDetector(), FakeMitre(), seed=kw.pop("seed", 3), chunk_rows=211,
+                                timestamp="2026-11-08T00:00:00+00:00", log=lambda *_: None, **kw)
+
+    def test_attack_share_quotas_arithmetic(self):
+        q = brs.attack_share_quotas(0.1, 300)
+        self.assertEqual(q["attack_flagged"], 43)                    # ceil(300 / 7)
+        self.assertEqual(q["benign_flagged"], 2709)                  # 301 * 0.9 / 0.1
+        self.assertAlmostEqual(301 / (301 + q["benign_flagged"]), 0.1, places=3)
+        self.assertLessEqual(1 / 7, 0.25)                            # even split: no family above 25%
+        q = brs.attack_share_quotas(0.3, 300)
+        self.assertEqual(q["benign_flagged"], 702)
+        with self.assertRaises(ValueError): brs.attack_share_quotas(1.0, 300)
+
+    def test_stream_hits_the_requested_share_with_even_families(self):
+        alerts, meta = self.build(attack_share=0.3, min_attacks=14, quotas={"benign_unflagged": 3, "attack_unflagged": 1})
+        flagged = [a for a in alerts if a["detected"]]
+        attacks = [a for a in flagged if a["_simulator_attack"]]
+        self.assertEqual(len(attacks), 14)                           # 2 per family x 7
+        self.assertAlmostEqual(meta["flagged_attack_share"], len(attacks) / len(flagged))
+        self.assertAlmostEqual(meta["flagged_attack_share"], 0.3, delta=0.01)
+        from collections import Counter
+        self.assertLessEqual(max(Counter(a["_family"] for a in attacks).values()) / len(attacks), 0.25)
+
+    def test_excluded_rows_are_never_resampled_and_population_is_unchanged(self):
+        first, meta1 = self.build(seed=3)
+        path = Path(self.tmp.name) / "first.jsonl"
+        brs.write_stream(first, meta1, path)
+        second, meta2 = self.build(seed=3, exclude_streams=[path])   # same seed: would pick the same rows
+        self.assertFalse({a["sample_id"] for a in first} & {a["sample_id"] for a in second})
+        self.assertEqual(meta1["population"], meta2["population"])
+        self.assertGreater(meta2["excluded_rows_skipped"], 0)
+        self.assertEqual(meta2["excluded_streams"][0]["sha256"], brs.sha256_file(path))
+
+    def test_written_stream_records_its_sha256(self):
+        alerts, meta = self.build()
+        path = Path(self.tmp.name) / "s.jsonl"
+        digest = brs.write_stream(alerts, meta, path)
+        self.assertEqual(digest, brs.sha256_file(path))
+        self.assertNotIn(b"\r\n", path.read_bytes())                 # LF only: hash is platform-independent
+        self.assertEqual(json.loads(path.with_suffix(".meta.json").read_text())["stream_sha256"], digest)
+
+
 class RealDetectorBatchTests(unittest.TestCase):
     def test_batch_score_matches_single_row_score(self):
         try:

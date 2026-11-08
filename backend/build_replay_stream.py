@@ -68,6 +68,39 @@ def quota_for(family: str, flagged: bool, quotas: dict) -> int:
     return int(quotas[f"{kind}_{'flagged' if flagged else 'unflagged'}"])
 
 
+ATTACK_FAMILIES = tuple(f for f in FAMILIES if f != "Benign")
+
+
+def attack_share_quotas(share: float, min_attacks: int, quotas: dict | None = None) -> dict:
+    """Flagged quotas giving about `share` attacks among flagged rows, with at least `min_attacks`
+    flagged attacks split evenly over the 7 attack families (each family 1/7 of attacks, so none
+    above 25%). Unflagged quotas are left as they are; unflagged rows are never routed."""
+    if not 0 < share < 1: raise ValueError("attack share must be strictly between 0 and 1")
+    per_family = -(-int(min_attacks) // len(ATTACK_FAMILIES))            # ceiling division
+    attacks = per_family * len(ATTACK_FAMILIES)
+    return {**DEFAULT_QUOTAS, **(quotas or {}), "attack_flagged": per_family,
+            "benign_flagged": int(round(attacks * (1 - share) / share))}
+
+
+def sha256_file(path: Path) -> str:
+    import hashlib
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as f:
+        for block in iter(lambda: f.read(1 << 20), b""): digest.update(block)
+    return digest.hexdigest()
+
+
+def load_exclusions(paths) -> dict:
+    """(source, row) pairs already used by earlier streams, so a new stream shares no row with them."""
+    excluded: dict[str, set] = {}
+    for path in paths or []:
+        for line in Path(path).read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                row = json.loads(line)
+                excluded.setdefault(row["_source"], set()).add(int(row["_source_row"]))
+    return excluded
+
+
 def default_data_paths():
     """CLAUDE.md says the CSVs live in the repo root; on this machine they are in ../Dataset/Dataset/csv."""
     env = os.getenv("ZEROSHIELD_DATA_DIR")
@@ -88,14 +121,16 @@ def offline_reason(result, family, mitre):
             os.environ["OPENAI_API_KEY"] = saved
 
 
-def screen(sources, detector, quotas, seed, chunk_rows=CHUNK_ROWS, max_rows=None, log=print):
+def screen(sources, detector, quotas, seed, chunk_rows=CHUNK_ROWS, max_rows=None, log=print, exclude=None):
     """Score every row, keep a seeded uniform sample per (family, flagged) stratum.
+    Rows in `exclude` ({source: set(row)}) are counted in the population but never sampled.
     Returns (sample DataFrame, population Counter by stratum, label Counter, stats)."""
     features = list(detector.features)
+    exclude = exclude or {}
     rng = np.random.default_rng(seed)
     kept: dict[tuple, pd.DataFrame] = {}
     population, labels = Counter(), Counter()
-    stats = {"rows_read": 0, "non_finite_rows_skipped": 0}
+    stats = {"rows_read": 0, "non_finite_rows_skipped": 0, "excluded_rows_skipped": 0}
     for source_name, path in sources:
         offset, started = 0, time.time()
         reader = pd.read_csv(path, usecols=features + ["label"], chunksize=chunk_rows, nrows=max_rows,
@@ -117,6 +152,10 @@ def screen(sources, detector, quotas, seed, chunk_rows=CHUNK_ROWS, max_rows=None
             for (family, flagged), group in frame.groupby(["_family", "_flagged"], sort=False):
                 stratum = (family, bool(flagged))
                 population[stratum] += len(group)
+                if source_name in exclude:
+                    used = group["_source_row"].isin(exclude[source_name])
+                    stats["excluded_rows_skipped"] += int(used.sum())
+                    group = group[~used]
                 quota = quota_for(family, stratum[1], quotas)
                 if quota <= 0: continue
                 pool = group if stratum not in kept else pd.concat([kept[stratum], group])
@@ -132,11 +171,16 @@ def screen(sources, detector, quotas, seed, chunk_rows=CHUNK_ROWS, max_rows=None
 
 
 def build_stream(sources, detector, mitre, quotas=None, seed=1, chunk_rows=CHUNK_ROWS, max_rows=None,
-                 reason_fn=offline_reason, verify_fn=None, timestamp=None, log=print):
-    """Return (alerts, meta). `sources` is a list of (name, path)."""
+                 reason_fn=offline_reason, verify_fn=None, timestamp=None, log=print,
+                 attack_share=None, min_attacks=None, exclude_streams=None):
+    """Return (alerts, meta). `sources` is a list of (name, path).
+    With `attack_share` (and `min_attacks`), flagged quotas are set by attack_share_quotas()."""
     quotas = {**DEFAULT_QUOTAS, **(quotas or {})}
+    if attack_share is not None:
+        quotas = attack_share_quotas(attack_share, min_attacks or 300, quotas)
+    exclude = load_exclusions(exclude_streams)
     timestamp = timestamp or datetime.now(timezone.utc).isoformat()
-    sample, population, labels, stats = screen(sources, detector, quotas, seed, chunk_rows, max_rows, log)
+    sample, population, labels, stats = screen(sources, detector, quotas, seed, chunk_rows, max_rows, log, exclude)
     features = list(detector.features)
     alerts, mismatches = [], 0
     for _, row in sample.iterrows():
@@ -148,8 +192,13 @@ def build_stream(sources, detector, mitre, quotas=None, seed=1, chunk_rows=CHUNK
         alerts.append({**alert, "_simulator_attack": row["_family"] != "Benign", "_attack_label": row["_attack_label"],
                        "_family": row["_family"], "_source": row["_source"], "_source_row": int(row["_source_row"])})
     sampled = Counter((a["_family"], bool(a["detected"])) for a in alerts)
+    flagged_attacks = sum(n for (fam, flg), n in sampled.items() if flg and fam != "Benign")
+    flagged_total = sum(n for (fam, flg), n in sampled.items() if flg)
     meta = {"stream_version": STREAM_VERSION, "seed": seed, "chunk_rows": chunk_rows, "max_rows_per_source": max_rows,
             "quotas": quotas, "threshold": detector.threshold, "built_at": timestamp,
+            "target_attack_share": attack_share, "min_attacks": min_attacks,
+            "flagged_attack_share": flagged_attacks / max(flagged_total, 1),
+            "excluded_streams": [{"path": str(p), "sha256": sha256_file(p)} for p in (exclude_streams or [])],
             "reasoning_mode": sorted({a["llm_explanation"].get("mode", "?") for a in alerts}),
             "sources": [{"name": name, "path": str(path), "bytes": Path(path).stat().st_size} for name, path in sources],
             **stats, "screen_vs_pipeline_detection_mismatches": mismatches,
@@ -177,9 +226,13 @@ def counts_table(meta) -> str:
 
 
 def write_stream(alerts, meta, out: Path):
+    """Write the JSONL (LF line endings, so the SHA-256 is platform-independent) and its meta file."""
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text("".join(json.dumps(a, sort_keys=True) + "\n" for a in alerts), encoding="utf-8")
+    with out.open("w", encoding="utf-8", newline="\n") as f:
+        f.write("".join(json.dumps(a, sort_keys=True) + "\n" for a in alerts))
+    meta["stream_sha256"] = sha256_file(out)
     out.with_suffix(".meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    return meta["stream_sha256"]
 
 
 def main(argv=None):
@@ -191,6 +244,9 @@ def main(argv=None):
     p.add_argument("--out", type=Path)
     p.add_argument("--chunk-rows", type=int, default=CHUNK_ROWS)
     p.add_argument("--max-rows", type=int, help="read at most this many rows per file (smoke tests only)")
+    p.add_argument("--attack-share", type=float, help="target share of attacks among flagged rows (sets the flagged quotas)")
+    p.add_argument("--min-attacks", type=int, default=300, help="with --attack-share: at least this many flagged attacks, split evenly over 7 families")
+    p.add_argument("--exclude-stream", type=Path, action="append", default=[], help="earlier stream whose rows must not be reused (repeatable)")
     for name, value in DEFAULT_QUOTAS.items():
         p.add_argument(f"--{name.replace('_', '-')}", type=int, default=value, help=f"rows per stratum (default {value})")
     args = p.parse_args(argv)
@@ -205,11 +261,15 @@ def main(argv=None):
     print(f"Detector threshold {detector.threshold}; seed {args.seed}; writing {out}")
     alerts, meta = build_stream([("validation", args.validation), ("zero_day", args.zero_day)], detector, MitreService(ROOT),
                                 quotas={k: getattr(args, k) for k in DEFAULT_QUOTAS}, seed=args.seed,
-                                chunk_rows=args.chunk_rows, max_rows=args.max_rows)
-    write_stream(alerts, meta, out)
+                                chunk_rows=args.chunk_rows, max_rows=args.max_rows, attack_share=args.attack_share,
+                                min_attacks=args.min_attacks if args.attack_share is not None else None,
+                                exclude_streams=args.exclude_stream)
+    digest = write_stream(alerts, meta, out)
     print(counts_table(meta))
     print(f"rows read {meta['rows_read']:,}; non-finite skipped {meta['non_finite_rows_skipped']}; "
+          f"excluded rows skipped {meta['excluded_rows_skipped']}; "
           f"screen/pipeline detection mismatches {meta['screen_vs_pipeline_detection_mismatches']}; reasoning {meta['reasoning_mode']}")
+    print(f"flagged attack share {meta['flagged_attack_share']:.4f}; SHA-256 {digest}")
     return meta
 
 

@@ -17,6 +17,7 @@ What the replay does, and what it deliberately does not do:
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import os
 import random
@@ -35,13 +36,22 @@ from services.bandit_service import (  # noqa: E402
     ACTIONS, CONTEXT_FEATURES, REJECTED_APPROVAL_REWARDS, REWARD_VERSION, REWARDS, BanditService,
     always_human_action, build_context, decision_regions, fixed_rule_action, reward_table, simulate_outcome,
 )
+from services.replay_baselines import FOLD_BASELINES  # noqa: E402
 
 SEED = 20261020
 OUT_ROOT = ROOT / "backend" / "experiments" / "contextual_bandit_replay_v1"
-POLICIES = ("Contextual bandit (greedy held-out)", "Fixed rules", "Always HUMAN_REVIEW", "Random (seeded)")
-BASELINE_TEXT = {"fixed": "VERIFIED + detected + confidence>=0.9 -> AUTO_REMEDIATE; else detected -> HUMAN_REVIEW; else MONITOR_ONLY",
+BANDIT_POLICY = "Contextual bandit (greedy held-out)"
+GATE_POLICY = "Verification-gate rule (strawman on this stream)"
+POLICIES = (BANDIT_POLICY, "Always HUMAN_REVIEW", "Random (seeded)", *(b.name for b in FOLD_BASELINES), GATE_POLICY)
+BASELINE_TEXT = {"verification_gate": "VERIFIED + detected + confidence>=0.9 -> AUTO_REMEDIATE; else detected -> HUMAN_REVIEW; else MONITOR_ONLY. "
+                                      "With template reasoning every alert is VERIFIED at 1.0, so this auto-remediates everything (strawman).",
                  "always_human": "HUMAN_REVIEW for every alert",
-                 "random": "Python random.Random(seed), one draw per held-out alert"}
+                 "random": "Python random.Random(seed), one draw per held-out alert",
+                 "best_constant": "Action with the best mean reward on the fold's training alerts (AUTO safety mask per alert)",
+                 "supervised": "Logistic regression P(attack) on the 6 non-constant context features (training folds), "
+                               "action with the best expected reward under the table, AUTO safety mask",
+                 "score_tier": "Up to 3 normalized-score tiers, cut points from training quantiles 0.05..0.95, "
+                               "each tier's best training action; pair with the best training mean (AUTO safety mask)"}
 
 
 def pipeline_alert(detector, mitre, features, alert_id, sample_id, timestamp=None, reason_fn=None, verify_fn=None):
@@ -162,9 +172,11 @@ def svg_bars(path: Path, title: str, labels, values):
 
 
 def run_replay(stream, out_dir: Path, seed: int = SEED, folds: int = 5, stream_source: str = "demo cache",
-               reward_version: str = REWARD_VERSION):
+               reward_version: str = REWARD_VERSION, write_ledger: bool = True):
     """Run the k-fold replay on `stream` and write all artifacts to `out_dir`. Returns the metrics dict.
-    `reward_version` sets the table used both to train the bandit and to score every policy."""
+    `reward_version` sets the table used both to train the bandit and to score every policy.
+    Fold baselines are fitted on the training folds only (cleaned alerts plus a separate label list).
+    `write_ledger=False` skips the large full action ledger; evaluation_decisions.csv is always written."""
     table = reward_table(reward_version)
     started = time.perf_counter()
     routed, not_routed = route(stream)
@@ -192,12 +204,17 @@ def run_replay(stream, out_dir: Path, seed: int = SEED, folds: int = 5, stream_s
             train_seconds += time.perf_counter() - t0
             if fold_index == 0: learning_curve = curve
             final_versions.append(f"linucb-v1+{bandit.updates}")
+            train_clean, train_labels = [clean(a) for a in train], [bool(a["_simulator_attack"]) for a in train]
+            fitted = [cls().fit(train_clean, train_labels, table) for cls in FOLD_BASELINES]
 
             fold_actions = {name: [] for name in POLICIES}
             for alert in test:
                 c = clean(alert)    # the label is not in this dict; it is read only after the choice, below
-                choice = {POLICIES[0]: bandit.select(c, explore=False), POLICIES[1]: {"selected_action": fixed_rule_action(c)},
-                          POLICIES[2]: {"selected_action": always_human_action(c)}, POLICIES[3]: {"selected_action": randomizer.choice(ACTIONS)}}
+                choice = {BANDIT_POLICY: bandit.select(c, explore=False),
+                          "Always HUMAN_REVIEW": {"selected_action": always_human_action(c)},
+                          "Random (seeded)": {"selected_action": randomizer.choice(ACTIONS)},
+                          **{policy.name: policy.act(c) for policy in fitted},
+                          GATE_POLICY: {"selected_action": fixed_rule_action(c)}}
                 evaluation.append(alert)
                 for name, decision in choice.items():
                     action = decision["selected_action"]
@@ -229,8 +246,13 @@ def run_replay(stream, out_dir: Path, seed: int = SEED, folds: int = 5, stream_s
               "final_policy_version_per_fold": final_versions, "stream_source": stream_source,
               "total_elapsed_seconds": time.perf_counter() - started}
 
-    with (out_dir / "action_ledger.jsonl").open("w", encoding="utf-8") as f:
-        for item in ledger + traces: f.write(json.dumps(item) + "\n")
+    if write_ledger:
+        with (out_dir / "action_ledger.jsonl").open("w", encoding="utf-8") as f:
+            for item in ledger + traces: f.write(json.dumps(item) + "\n")
+    with (out_dir / "evaluation_decisions.csv").open("w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["alert_id", "fold", "policy", "selected_action", "reward"])
+        for t in traces: writer.writerow([t["alert"]["alert_id"], t["fold"], t["policy"], t["selected_action"], t["reward"]])
     (out_dir / "policy_comparison_metrics.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
     (out_dir / "reward_table.json").write_text(json.dumps({
         "version": reward_version, "table": table, "rejected_approval_outcome": REJECTED_APPROVAL_REWARDS,
@@ -248,14 +270,14 @@ def run_replay(stream, out_dir: Path, seed: int = SEED, folds: int = 5, stream_s
         "labels_in_context": False}, indent=2), encoding="utf-8")
     svg_chart(out_dir / "learning_curve.svg", "Training replay cumulative reward (fold 0)", [str(i + 1) for i in range(len(learning_curve))], learning_curve)
     svg_bars(out_dir / "action_distribution.svg", "Held-out action distribution: bandit", list(ACTIONS), [metrics[0]["action_distribution"][a] for a in ACTIONS])
-    bandit_row, fixed_row = metrics[0], metrics[1]
+    bandit_row, fixed_row = metrics[0], next(m for m in metrics if m["policy"] == GATE_POLICY)
     (out_dir / "summary.md").write_text(
         f"# Stage 7 replay summary\n\n"
         f"Stream: {stream_source}. {len(stream)} flows, of which {len(routed)} were flagged by the detector and routed to the response policy; "
         f"{not_routed['unflagged_attack_flows']} unflagged attack flow(s) and {not_routed['unflagged_benign_flows']} unflagged benign flow(s) never became alerts and are not scored.\n\n"
         f"Evaluation: {len(fold_sets)}-fold, every routed alert evaluated once by a policy that did not train on it. Reward table: {reward_version}. Seed: {seed}.\n\n"
         f"Bandit mean reward {bandit_row['mean_reward_per_alert']:.2f} per alert (fold std {bandit_row['fold_std_of_means'] if bandit_row['fold_std_of_means'] is None else round(bandit_row['fold_std_of_means'], 2)}); "
-        f"fixed rules {fixed_row['mean_reward_per_alert']:.2f}. See policy_comparison_metrics.json.\n\n"
+        f"verification-gate rule (strawman on this stream) {fixed_row['mean_reward_per_alert']:.2f}. See policy_comparison_metrics.json.\n\n"
         "The reward values are designed simulation trade-offs, not real-world costs. This response policy does not change or improve detector accuracy. "
         "No statistical significance is claimed, and a stream this small supports no general performance claim. "
         "Asset criticality and analyst history are unavailable and were not fabricated. "

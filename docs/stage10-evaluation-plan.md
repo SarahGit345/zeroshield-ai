@@ -77,3 +77,29 @@ If a bug is found after results are seen, it is fixed with a test, everything is
 3. Build the seed-2 stream once. Report its counts per family, flagged and unflagged, and the number of excluded rows.
 4. Run the primary comparison and the sensitivity checks once. Record how many times the confirmatory results were looked at (target: once).
 5. Write the results into `docs/` with the method, data, seeds and limitations.
+
+## Amendment 1 (2026-11-08, before any new stream is built or any new baseline is run on real data)
+
+Requested change of data. Nothing below was chosen after seeing a result: no confirmatory stream exists yet, and B3-B5 have only been run on synthetic test data.
+
+**Data (replaces section 1's single seed-2 stream).** Two confirmatory streams, each with at least 300 flagged attacks split evenly over the 7 attack families (43 per family, 301 attacks, so each family is 14.3% of attacks):
+
+| stream | command (from `backend/`) | flagged attacks | flagged benign | attack share |
+|---|---|---|---|---|
+| S10 | `python build_replay_stream.py --seed 2 --attack-share 0.1 --min-attacks 300 --exclude-stream experiments/replay_streams/replay_stream_seed1.jsonl --out experiments/replay_streams/replay_stream_share10_seed2.jsonl` | 301 | 2,709 | 0.100 |
+| S30 | `python build_replay_stream.py --seed 3 --attack-share 0.3 --min-attacks 300 --exclude-stream experiments/replay_streams/replay_stream_seed1.jsonl --exclude-stream experiments/replay_streams/replay_stream_share10_seed2.jsonl --out experiments/replay_streams/replay_stream_share30_seed3.jsonl` | 301 | 702 | 0.300 |
+
+Unflagged quotas stay at 40 per attack family and 150 benign (never routed). S10 and S30 share no row with the seed-1 stream or with each other. The flagged benign population is 10,989 rows, so S10 uses about a quarter of all flagged benign flows.
+
+**Seed-1 stream (S58, attack share 0.583).** Re-run with all seven policies and reported alongside, but labelled **exploratory**: its earlier results were seen before this plan.
+
+**Primary comparison.** Bandit vs B1-B6 under `designed-simulation-v2`, on S10 and on S30 separately (12 comparisons). Verdicts use the section 4 rule per comparison. The Bonferroni interval (information only) adjusts for the 6 comparisons within a stream.
+
+**Attack-share sensitivity (replaces the resampled 0.1/0.3/0.5/0.8 sweep in section 3).** Covered by the real streams S10 and S30, with S58 as exploratory. `e2e_check.py` still prints its resampled sweep, as a check only.
+
+**Implementation details fixed now (they were not stated above):**
+- B3-B5 learn from full-information labels on the training folds (every action's reward is known for a labelled alert); the bandit only sees the reward of the action it chose. This favours the baselines and is deliberate.
+- B4: if a training fold contains a single class, P(attack) is that fold's attack rate.
+- B5: a held-out alert whose tier had no training alerts uses the training-wide action ranking.
+- Bootstrap: one set of resample indices per stream and reward table, shared by all six comparisons.
+- The run writes `evaluation_decisions.csv` per run instead of the full action ledger (1.7 GB on S58); decisions and rewards are identical.

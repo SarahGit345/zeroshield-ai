@@ -314,9 +314,13 @@ def section_replay(rows, seeds, folds):
         for name, values in table.items():
             std = statistics.stdev(values) if len(values) > 1 else float("nan")
             print(f"      {name:38s} {statistics.fmean(values):7.2f} {std:6.2f}   {[round(v, 2) for v in values]}")
-        bandit, fixed, human, rand = (table[n] for n in names)
-        wins = sum(b > f for b, f in zip(bandit, fixed)); ties = sum(b == f for b, f in zip(bandit, fixed))
-        report("INFO", "Bandit vs fixed rules", f"better in {wins}, tied in {ties}, worse in {len(seeds) - wins - ties} of {len(seeds)} seeds (no significance claimed)")
+        bandit, rand = table[replay.BANDIT_POLICY], table["Random (seeded)"]
+        for name in names:
+            if name == replay.BANDIT_POLICY: continue
+            other = table[name]
+            wins = sum(b > f for b, f in zip(bandit, other)); ties = sum(b == f for b, f in zip(bandit, other))
+            report("INFO", f"Bandit vs {name}", f"higher in {wins}, tied in {ties}, lower in {len(seeds) - wins - ties} of {len(seeds)} seeds "
+                                                 "(per-seed count only; run_replay_study.py gives the bootstrap interval)")
         check(statistics.fmean(bandit) >= statistics.fmean(rand), "Bandit does at least as well as random", bad="bandit is below random: check the reward table and stream", bad_level="WARN")
 
         fam = defaultdict(lambda: defaultdict(list))
