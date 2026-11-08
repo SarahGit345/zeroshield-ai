@@ -1,0 +1,50 @@
+{
+  "seed": 3,
+  "algorithm": "LinUCB",
+  "alpha": 0.25,
+  "reward_version": "designed-simulation-v1",
+  "reward_table": {
+    "attack": {
+      "AUTO_REMEDIATE": 5,
+      "CONFIRM_TO_ACT": 3,
+      "HUMAN_REVIEW": 2,
+      "MONITOR_ONLY": -6
+    },
+    "benign": {
+      "AUTO_REMEDIATE": -12,
+      "CONFIRM_TO_ACT": -2,
+      "HUMAN_REVIEW": -2,
+      "MONITOR_ONLY": 1
+    }
+  },
+  "context_schema": {
+    "version": "context-v1",
+    "features": [
+      "intercept",
+      "normalized_score",
+      "detected",
+      "verification_confidence",
+      "xai_feature_fraction",
+      "leading_xai_magnitude",
+      "mitre_context_present"
+    ]
+  },
+  "baseline_definitions": {
+    "verification_gate": "VERIFIED + detected + confidence>=0.9 -> AUTO_REMEDIATE; else detected -> HUMAN_REVIEW; else MONITOR_ONLY. With template reasoning every alert is VERIFIED at 1.0, so this auto-remediates everything (strawman).",
+    "always_human": "HUMAN_REVIEW for every alert",
+    "random": "Python random.Random(seed), one draw per held-out alert",
+    "best_constant": "Action with the best mean reward on the fold's training alerts (AUTO safety mask per alert)",
+    "supervised": "Logistic regression P(attack) on the 6 non-constant context features (training folds), action with the best expected reward under the table, AUTO safety mask",
+    "score_tier": "Up to 3 normalized-score tiers, cut points from training quantiles 0.05..0.95, each tier's best training action; pair with the best training mean (AUTO safety mask)"
+  },
+  "split": "5-fold over detected alerts only; each alert evaluated once on a policy that did not train on it",
+  "stream": "experiments\\replay_streams\\replay_stream_share30_seed3.jsonl",
+  "routed_alerts": 1003,
+  "not_routed": {
+    "unflagged_attack_flows": 258,
+    "unflagged_benign_flows": 150,
+    "note": "Flows below the detector threshold never become alerts. They are detector misses or true negatives, not response decisions, and are excluded from policy scoring."
+  },
+  "approval_simulator_assumption": "CONFIRM_TO_ACT is assumed approved offline so its reward can be observed; this is not live approval.",
+  "labels_in_context": false
+}

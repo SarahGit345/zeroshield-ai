@@ -1,0 +1,275 @@
+{
+  "metrics": [
+    {
+      "policy": "Contextual bandit (greedy held-out)",
+      "alerts_processed": 1003,
+      "mean_reward_per_alert": -0.4556331006979063,
+      "cumulative_reward": -457,
+      "action_distribution": {
+        "AUTO_REMEDIATE": 82,
+        "CONFIRM_TO_ACT": 0,
+        "HUMAN_REVIEW": 805,
+        "MONITOR_ONLY": 116
+      },
+      "action_selection_rate": {
+        "AUTO_REMEDIATE": 0.08175473579262213,
+        "CONFIRM_TO_ACT": 0.0,
+        "HUMAN_REVIEW": 0.80259222333001,
+        "MONITOR_ONLY": 0.1156530408773679
+      },
+      "benign_remediation_rate": 0.017094017094017096,
+      "attack_remediation_rate": 0.23255813953488372,
+      "attack_human_review_rate": 0.717607973421927,
+      "attack_monitor_only_rate": 0.04983388704318937,
+      "benign_human_review_rate": 0.8390313390313391,
+      "unnecessary_remediation_count": 12,
+      "missed_attack_count": 15,
+      "approval_queue_size": 0,
+      "per_fold_mean_reward": [
+        0.004975124378109453,
+        -0.5870646766169154,
+        -0.44776119402985076,
+        -0.615,
+        -0.635
+      ],
+      "fold_mean_of_means": -0.45597014925373136,
+      "fold_std_of_means": 0.2678926502447336,
+      "policy_training_update_seconds": 103.6134222000037
+    },
+    {
+      "policy": "Always HUMAN_REVIEW",
+      "alerts_processed": 1003,
+      "mean_reward_per_alert": -0.7996011964107677,
+      "cumulative_reward": -802,
+      "action_distribution": {
+        "AUTO_REMEDIATE": 0,
+        "CONFIRM_TO_ACT": 0,
+        "HUMAN_REVIEW": 1003,
+        "MONITOR_ONLY": 0
+      },
+      "action_selection_rate": {
+        "AUTO_REMEDIATE": 0.0,
+        "CONFIRM_TO_ACT": 0.0,
+        "HUMAN_REVIEW": 1.0,
+        "MONITOR_ONLY": 0.0
+      },
+      "benign_remediation_rate": 0.0,
+      "attack_remediation_rate": 0.0,
+      "attack_human_review_rate": 1.0,
+      "attack_monitor_only_rate": 0.0,
+      "benign_human_review_rate": 1.0,
+      "unnecessary_remediation_count": 0,
+      "missed_attack_count": 0,
+      "approval_queue_size": 0,
+      "per_fold_mean_reward": [
+        -0.9054726368159204,
+        -0.8059701492537313,
+        -0.6467661691542289,
+        -0.8,
+        -0.84
+      ],
+      "fold_mean_of_means": -0.7996417910447761,
+      "fold_std_of_means": 0.09518414409239499,
+      "policy_training_update_seconds": null
+    },
+    {
+      "policy": "Random (seeded)",
+      "alerts_processed": 1003,
+      "mean_reward_per_alert": -1.5653040877367896,
+      "cumulative_reward": -1570,
+      "action_distribution": {
+        "AUTO_REMEDIATE": 246,
+        "CONFIRM_TO_ACT": 241,
+        "HUMAN_REVIEW": 263,
+        "MONITOR_ONLY": 253
+      },
+      "action_selection_rate": {
+        "AUTO_REMEDIATE": 0.2452642073778664,
+        "CONFIRM_TO_ACT": 0.24027916251246262,
+        "HUMAN_REVIEW": 0.2622133599202393,
+        "MONITOR_ONLY": 0.2522432701894317
+      },
+      "benign_remediation_rate": 0.24786324786324787,
+      "attack_remediation_rate": 0.23920265780730898,
+      "attack_human_review_rate": 0.2425249169435216,
+      "attack_monitor_only_rate": 0.2857142857142857,
+      "benign_human_review_rate": 0.2706552706552707,
+      "unnecessary_remediation_count": 174,
+      "missed_attack_count": 86,
+      "approval_queue_size": 241,
+      "per_fold_mean_reward": [
+        -1.462686567164179,
+        -1.472636815920398,
+        -1.2189054726368158,
+        -2.07,
+        -1.605
+      ],
+      "fold_mean_of_means": -1.5658457711442786,
+      "fold_std_of_means": 0.31440493059849417,
+      "policy_training_update_seconds": null
+    },
+    {
+      "policy": "Best constant action (training folds)",
+      "alerts_processed": 1003,
+      "mean_reward_per_alert": -0.7996011964107677,
+      "cumulative_reward": -802,
+      "action_distribution": {
+        "AUTO_REMEDIATE": 0,
+        "CONFIRM_TO_ACT": 0,
+        "HUMAN_REVIEW": 1003,
+        "MONITOR_ONLY": 0
+      },
+      "action_selection_rate": {
+        "AUTO_REMEDIATE": 0.0,
+        "CONFIRM_TO_ACT": 0.0,
+        "HUMAN_REVIEW": 1.0,
+        "MONITOR_ONLY": 0.0
+      },
+      "benign_remediation_rate": 0.0,
+      "attack_remediation_rate": 0.0,
+      "attack_human_review_rate": 1.0,
+      "attack_monitor_only_rate": 0.0,
+      "benign_human_review_rate": 1.0,
+      "unnecessary_remediation_count": 0,
+      "missed_attack_count": 0,
+      "approval_queue_size": 0,
+      "per_fold_mean_reward": [
+        -0.9054726368159204,
+        -0.8059701492537313,
+        -0.6467661691542289,
+        -0.8,
+        -0.84
+      ],
+      "fold_mean_of_means": -0.7996417910447761,
+      "fold_std_of_means": 0.09518414409239499,
+      "policy_training_update_seconds": null
+    },
+    {
+      "policy": "Supervised expected-reward (logistic, training folds)",
+      "alerts_processed": 1003,
+      "mean_reward_per_alert": 0.3589232303090728,
+      "cumulative_reward": 360,
+      "action_distribution": {
+        "AUTO_REMEDIATE": 153,
+        "CONFIRM_TO_ACT": 49,
+        "HUMAN_REVIEW": 221,
+        "MONITOR_ONLY": 580
+      },
+      "action_selection_rate": {
+        "AUTO_REMEDIATE": 0.15254237288135594,
+        "CONFIRM_TO_ACT": 0.04885343968095713,
+        "HUMAN_REVIEW": 0.22033898305084745,
+        "MONITOR_ONLY": 0.5782652043868395
+      },
+      "benign_remediation_rate": 0.03418803418803419,
+      "attack_remediation_rate": 0.42857142857142855,
+      "attack_human_review_rate": 0.2059800664451827,
+      "attack_monitor_only_rate": 0.26578073089701,
+      "benign_human_review_rate": 0.2264957264957265,
+      "unnecessary_remediation_count": 24,
+      "missed_attack_count": 80,
+      "approval_queue_size": 49,
+      "per_fold_mean_reward": [
+        0.26865671641791045,
+        0.6268656716417911,
+        0.6666666666666666,
+        0.135,
+        0.095
+      ],
+      "fold_mean_of_means": 0.3584378109452736,
+      "fold_std_of_means": 0.27131306844105996,
+      "policy_training_update_seconds": null
+    },
+    {
+      "policy": "Tuned score-tier rule (training folds)",
+      "alerts_processed": 1003,
+      "mean_reward_per_alert": 0.13858424725822532,
+      "cumulative_reward": 139,
+      "action_distribution": {
+        "AUTO_REMEDIATE": 248,
+        "CONFIRM_TO_ACT": 76,
+        "HUMAN_REVIEW": 16,
+        "MONITOR_ONLY": 663
+      },
+      "action_selection_rate": {
+        "AUTO_REMEDIATE": 0.2472582253240279,
+        "CONFIRM_TO_ACT": 0.07577268195413758,
+        "HUMAN_REVIEW": 0.015952143569292122,
+        "MONITOR_ONLY": 0.6610169491525424
+      },
+      "benign_remediation_rate": 0.14387464387464388,
+      "attack_remediation_rate": 0.4883720930232558,
+      "attack_human_review_rate": 0.006644518272425249,
+      "attack_monitor_only_rate": 0.33554817275747506,
+      "benign_human_review_rate": 0.019943019943019943,
+      "unnecessary_remediation_count": 101,
+      "missed_attack_count": 101,
+      "approval_queue_size": 76,
+      "per_fold_mean_reward": [
+        0.07462686567164178,
+        0.42786069651741293,
+        0.417910447761194,
+        -0.07,
+        -0.16
+      ],
+      "fold_mean_of_means": 0.13807960199004973,
+      "fold_std_of_means": 0.27315435408558286,
+      "policy_training_update_seconds": null
+    },
+    {
+      "policy": "Verification-gate rule (strawman on this stream)",
+      "alerts_processed": 1003,
+      "mean_reward_per_alert": -2.698903290129611,
+      "cumulative_reward": -2707,
+      "action_distribution": {
+        "AUTO_REMEDIATE": 1003,
+        "CONFIRM_TO_ACT": 0,
+        "HUMAN_REVIEW": 0,
+        "MONITOR_ONLY": 0
+      },
+      "action_selection_rate": {
+        "AUTO_REMEDIATE": 1.0,
+        "CONFIRM_TO_ACT": 0.0,
+        "HUMAN_REVIEW": 0.0,
+        "MONITOR_ONLY": 0.0
+      },
+      "benign_remediation_rate": 1.0,
+      "attack_remediation_rate": 1.0,
+      "attack_human_review_rate": 0.0,
+      "attack_monitor_only_rate": 0.0,
+      "benign_human_review_rate": 0.0,
+      "unnecessary_remediation_count": 702,
+      "missed_attack_count": 0,
+      "approval_queue_size": 0,
+      "per_fold_mean_reward": [
+        -2.990049751243781,
+        -2.716417910447761,
+        -2.2786069651741294,
+        -2.7,
+        -2.81
+      ],
+      "fold_mean_of_means": -2.699014925373134,
+      "fold_std_of_means": 0.2617563962540862,
+      "policy_training_update_seconds": null
+    }
+  ],
+  "reward_version": "sens-v2-false-remediation-6",
+  "seed": 1,
+  "folds": 5,
+  "routed_alerts": 1003,
+  "evaluation_alerts": 1003,
+  "not_routed": {
+    "unflagged_attack_flows": 258,
+    "unflagged_benign_flows": 150,
+    "note": "Flows below the detector threshold never become alerts. They are detector misses or true negatives, not response decisions, and are excluded from policy scoring."
+  },
+  "final_policy_version_per_fold": [
+    "linucb-v1+802",
+    "linucb-v1+802",
+    "linucb-v1+802",
+    "linucb-v1+803",
+    "linucb-v1+803"
+  ],
+  "stream_source": "experiments\\replay_streams\\replay_stream_share30_seed3.jsonl",
+  "total_elapsed_seconds": 105.10057489999963
+}

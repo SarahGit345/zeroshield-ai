@@ -1,0 +1,30 @@
+{
+  "Contextual bandit (greedy held-out)": {
+    "queued": 239,
+    "live_approval_simulated": false
+  },
+  "Always HUMAN_REVIEW": {
+    "queued": 0,
+    "live_approval_simulated": false
+  },
+  "Random (seeded)": {
+    "queued": 180,
+    "live_approval_simulated": false
+  },
+  "Best constant action (training folds)": {
+    "queued": 576,
+    "live_approval_simulated": false
+  },
+  "Supervised expected-reward (logistic, training folds)": {
+    "queued": 42,
+    "live_approval_simulated": false
+  },
+  "Tuned score-tier rule (training folds)": {
+    "queued": 0,
+    "live_approval_simulated": false
+  },
+  "Verification-gate rule (strawman on this stream)": {
+    "queued": 0,
+    "live_approval_simulated": false
+  }
+}
