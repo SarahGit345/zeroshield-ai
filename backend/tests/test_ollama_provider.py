@@ -89,6 +89,15 @@ class OllamaProviderTests(unittest.TestCase):
         self.assertIsNone(evidence["attack_family"])                 # no dataset label reaches the model
         self.assertEqual(result["raw_outputs"], [json.dumps(good_report())])
 
+    def test_prompt_asks_for_concise_evidence_and_descriptions_are_capped(self):
+        long = {"techniques": [{"technique_id": "T1498", "description": "x" * 1200, "technique_name": "Network DoS"}]}
+        payload = llm_service.evidence_payload(ANALYSIS, None, long)
+        self.assertEqual(len(payload["mitre_candidates"][0]["description"]), llm_service.MITRE_DESCRIPTION_CHARS)
+        self.assertEqual(payload["mitre_candidates"][0]["technique_id"], "T1498")
+        self.assertEqual(len(long["techniques"][0]["description"]), 1200)           # caller's data untouched
+        self.assertIn("3 to 6 short strings", llm_service.SYSTEM_PROMPT)
+        self.assertIn("Do not copy the whole input", llm_service.SYSTEM_PROMPT)
+
     def test_invalid_reply_gets_exactly_one_retry_with_the_error(self):
         result, fake = self.run_with(["{not json", json.dumps(good_report())])
         self.assertEqual(result["attempts"], 2)

@@ -100,6 +100,12 @@ class DamagedReportsAreCaught(unittest.TestCase):
 
 
 class HonestReportsStillPass(unittest.TestCase):
+    def test_citing_feature_ranks_is_not_an_invented_number(self):
+        # Regression: an LLM report listing "rank 3" was rejected because ranks were not treated as evidence.
+        result = verdict(append_evidence("ACKRatio is rank 3 and PacketDensity is rank 2 of the top features."))
+        self.assertNotIn("numeric_claims_grounded", result["failed_checks"])
+        self.assertIn("numeric_claims_grounded", verdict(append_evidence("ACKRatio is rank 7."))["failed_checks"])  # rank not supplied
+
     def test_template_report_verifies_in_both_detector_states(self):
         for detected in (True, False):
             result = verify_record(analysis(detected), MITRE, base_report(detected))

@@ -54,8 +54,8 @@ Meaning of the evidence fields:
 
 Return one JSON object with exactly these fields:
 - incident_summary (string): one or two sentences on what the detector decided for this flow.
-- evidence (array of strings): observations copied from the evidence, including the exact anomaly_score and threshold
-  and the top contributing features with their contributions.
+- evidence (array of 3 to 6 short strings): the exact anomaly_score and threshold, and the top 3 features by rank
+  with their contributions, one observation per string. Do not copy the whole input.
 - attack_context (string): what the retrieved ATT&CK candidates might suggest, hedged; say if there are none.
 - interpretation (string): what the evidence may and may not mean; flow statistics alone cannot confirm an attack.
 - recommended_action (string): a proposed next step for an analyst, phrased as a recommendation.
@@ -75,9 +75,16 @@ def llm_status() -> str:
     return "Demo Fallback Reasoning"
 
 
+MITRE_DESCRIPTION_CHARS = 300
+
+
 def evidence_payload(result, family, mitre) -> dict:
+    """The evidence sent to an LLM. Technique descriptions are cut to MITRE_DESCRIPTION_CHARS to keep the prompt
+    short on CPU inference; IDs, names, tactics, source and similarity are kept whole."""
+    techniques = [{**t, "description": t["description"][:MITRE_DESCRIPTION_CHARS]} if isinstance(t.get("description"), str) else t
+                  for t in mitre.get("techniques", [])]
     return {"detected": result["detected"], "anomaly_score": result["anomaly_score"], "threshold": result["threshold"],
-            "top_features": result["top_features"], "attack_family": family, "mitre_candidates": mitre.get("techniques", [])}
+            "top_features": result["top_features"], "attack_family": family, "mitre_candidates": techniques}
 
 
 def template_report(result, mitre) -> dict:

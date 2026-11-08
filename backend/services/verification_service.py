@@ -108,6 +108,7 @@ def verify_record(analysis: dict, mitre: dict, reasoning: dict) -> dict:
                          float(len(analysis.get("feature_names", []))), float(len(technique_ids))]
     for feature in analysis.get("top_features", []):
         supported_numbers.extend([float(feature["value"]), float(feature["contribution"])])
+        if "rank" in feature: supported_numbers.append(float(feature["rank"]))   # ranks are part of the supplied XAI evidence
     unsupported_numbers = [m.group(0) for m in NUMERIC.finditer(numeric_text)
                            if not _matches_supported_number(m.group(0), supported_numbers)]
     check("numeric_claims_grounded", not unsupported_numbers,
