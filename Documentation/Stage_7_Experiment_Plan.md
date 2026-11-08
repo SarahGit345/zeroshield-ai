@@ -39,12 +39,14 @@ These values are designed trade-offs, not measured operational costs. They do no
 Baselines: a deterministic fixed rule (verified + detected + confidence at least 0.9 => AUTO_REMEDIATE; detected => HUMAN_REVIEW; otherwise MONITOR_ONLY), always HUMAN_REVIEW, and seeded random choice.
 
 Design (`backend/run_response_experiment.py`):
-- Only flows the detector flagged are routed to the policy. A flow below the threshold never becomes an alert, so no policy acts on it; unflagged flows are counted separately.
+- Only flows the detector flagged are routed to the policy. A flow below the threshold never becomes an alert, so no policy acts on it; unflagged flows are counted separately. The live API follows the same rule (`MONITOR_ONLY`, not recorded).
 - Routed alerts are split into k folds. For each fold a fresh policy trains with exploration and feedback on the other folds, then is evaluated greedily on the held-out fold. Every routed alert is evaluated exactly once, by a policy that did not train on it. All policies see the same held-out alerts and the same reward table.
 - The simulator label is read after an action is chosen, only to compute reward, and is never in the policy's context. A `CONFIRM_TO_ACT` is assumed approved offline so a reward can be observed; live dashboard approvals remain pending until a reviewer decides.
 - Runs are reproducible for a given seed and stream (tested).
 
 ## Current results and limitations
+
+- **The winner depends on the share of real attacks among flagged alerts.** With the v2 table the best constant action is monitor below an attack share of 0.27, human review 0.27-0.50, confirm 0.50-0.82 and auto-remediate above 0.82. Always auto-remediating therefore beats a cautious policy on an attack-heavy stream, and loses badly on a benign-heavy one. Report policy results across several attack shares (`e2e_check.py --prevalence`), not for one arbitrary stream mix.
 
 - **No comparison is claimed yet.** On the ten cached samples the tuned checkpoint flags five (Mirai x3, XSS, Backdoor_Malware), all attacks. The benign row and four other Web-Based attacks fall below the threshold. With only attacks routed, auto-remediate is always right, so the bandit and the fixed rule both average +5.0 per alert (always-review +2.0, random -0.4). There is no false positive to handle, so this cache cannot separate the policies.
 - An earlier run (removed) scored flows the detector never flagged and reported the bandit well ahead of the fixed rule. That gap came from those unrouted flows and is not evidence.

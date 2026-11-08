@@ -52,6 +52,12 @@ class Detector:
             x = torch.from_numpy(vector.reshape(1, -1).astype(np.float32)).to(self.device)
             return float(((self.model(x) - self.center) ** 2).sum(dim=1).item())
 
+    def score_batch(self, matrix: np.ndarray) -> np.ndarray:
+        """Score many prepared rows at once (same distance as score(), used for bulk screening)."""
+        with torch.no_grad():
+            x = torch.from_numpy(np.ascontiguousarray(matrix, dtype=np.float32)).to(self.device)
+            return ((self.model(x) - self.center) ** 2).sum(dim=1).cpu().numpy().astype(np.float64)
+
     def analyze(self, values: dict[str, float]):
         vector = np.asarray([values[name] for name in self.features], dtype=np.float32)
         if not np.isfinite(vector).all():

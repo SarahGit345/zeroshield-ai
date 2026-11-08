@@ -81,8 +81,15 @@ def analyze(features: dict[str, float], label: str | None = None):
                  "xai_evidence": result["top_features"], "retrieval_query": mapping.get("query"), "retrieved_techniques": mapping.get("techniques", []),
                  "llm_explanation": reasoning, "verification_result": verification["verdict"],
                  "verification_checks": verification["checks"], "verification_confidence": verification["verification_confidence"]}
-        # No response policy runs on a failed/uncertain Stage 6 record.
-        if verification["verdict"] == "VERIFIED":
+        # A flow below the threshold is not an alert: nothing is proposed, nothing is recorded, and the policy does not learn from it.
+        # No response policy runs on a failed/uncertain Stage 6 record either.
+        if not result["detected"]:
+            bandit_record = {"selected_action": "MONITOR_ONLY", "policy_version": "no-alert-v1",
+                             "action_scores": {}, "context_features": {}, "selection_mode": "no alert raised",
+                             "reason": "The detector did not flag this flow, so no alert was raised and no response is proposed.",
+                             "approval_status": "NOT_REQUIRED", "simulated_execution_status": "NOT_EXECUTED_NO_ALERT",
+                             "observed_outcome": None, "reward": None, "policy_update_status": "NOT_ELIGIBLE"}
+        elif verification["verdict"] == "VERIFIED":
             bandit_record = services["bandit"].record(alert)
         else:
             bandit_record = {"selected_action": "HUMAN_REVIEW", "policy_version": "safety-fallback-v1",

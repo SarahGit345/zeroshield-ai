@@ -47,6 +47,31 @@ REWARD_TABLES = {
 }
 REWARD_VERSION = "designed-simulation-v2"
 REWARDS = REWARD_TABLES[REWARD_VERSION]
+# Experiment-only perturbations of v2 for the reward-sensitivity check (run_replay_study.py).
+# Each changes one design choice and has its own version name; none is used by the live app.
+SENSITIVITY_REWARD_TABLES = {
+    "sens-v2-false-remediation-6": {   # wrongly blocking a benign flow costs half as much
+        "attack": {"AUTO_REMEDIATE": 5, "CONFIRM_TO_ACT": 3, "HUMAN_REVIEW": 2, "MONITOR_ONLY": -6},
+        "benign": {"AUTO_REMEDIATE": -6, "CONFIRM_TO_ACT": -3, "HUMAN_REVIEW": -2, "MONITOR_ONLY": 1}},
+    "sens-v2-false-remediation-24": {  # ... twice as much
+        "attack": {"AUTO_REMEDIATE": 5, "CONFIRM_TO_ACT": 3, "HUMAN_REVIEW": 2, "MONITOR_ONLY": -6},
+        "benign": {"AUTO_REMEDIATE": -24, "CONFIRM_TO_ACT": -3, "HUMAN_REVIEW": -2, "MONITOR_ONLY": 1}},
+    "sens-v2-missed-attack-12": {      # leaving an attack unhandled costs twice as much
+        "attack": {"AUTO_REMEDIATE": 5, "CONFIRM_TO_ACT": 3, "HUMAN_REVIEW": 2, "MONITOR_ONLY": -12},
+        "benign": {"AUTO_REMEDIATE": -12, "CONFIRM_TO_ACT": -3, "HUMAN_REVIEW": -2, "MONITOR_ONLY": 1}},
+    "sens-v2-analyst-time-x2": {       # analyst time costs twice as much (review and approval)
+        "attack": {"AUTO_REMEDIATE": 5, "CONFIRM_TO_ACT": 1, "HUMAN_REVIEW": 0, "MONITOR_ONLY": -6},
+        "benign": {"AUTO_REMEDIATE": -12, "CONFIRM_TO_ACT": -5, "HUMAN_REVIEW": -4, "MONITOR_ONLY": 1}},
+    "sens-v2-automation-gain-3": {     # automatic containment gains nothing over approved containment
+        "attack": {"AUTO_REMEDIATE": 3, "CONFIRM_TO_ACT": 3, "HUMAN_REVIEW": 2, "MONITOR_ONLY": -6},
+        "benign": {"AUTO_REMEDIATE": -12, "CONFIRM_TO_ACT": -3, "HUMAN_REVIEW": -2, "MONITOR_ONLY": 1}},
+}
+
+
+def reward_table(version: str) -> dict:
+    if version in REWARD_TABLES: return REWARD_TABLES[version]
+    if version in SENSITIVITY_REWARD_TABLES: return SENSITIVITY_REWARD_TABLES[version]
+    raise ValueError(f"Unknown reward version {version!r}")
 # A rejected approval: no containment was performed, so no wrongful-block risk was realised.
 # An attack stays uncontained (-6); a benign flow only costs the analyst's approval time (-2).
 REJECTED_APPROVAL_REWARDS = {"attack": -6, "benign": -2}
@@ -105,7 +130,7 @@ def build_context(alert: dict) -> list[float]:
 def simulate_outcome(action: str, ground_truth_attack: bool, reward_version: str = REWARD_VERSION) -> dict:
     if action not in ACTIONS:
         raise ValueError("Unknown response action")
-    table = REWARD_TABLES[reward_version]
+    table = reward_table(reward_version)
     status = ("SIMULATED_REMEDIATION" if action == "AUTO_REMEDIATE" else
               "PENDING_HUMAN_APPROVAL" if action == "CONFIRM_TO_ACT" else
               "ROUTED_FOR_REVIEW" if action == "HUMAN_REVIEW" else "MONITORING")
@@ -129,8 +154,10 @@ def _identity_state():
 
 
 class BanditService:
-    def __init__(self, db_path: Path, seed: int = 20261020, alpha: float = 0.25):
+    def __init__(self, db_path: Path, seed: int = 20261020, alpha: float = 0.25, reward_version: str = REWARD_VERSION):
         self.db_path, self.seed, self.alpha = Path(db_path), seed, alpha
+        reward_table(reward_version)            # fail fast on an unknown version
+        self.reward_version = reward_version
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.rng = random.Random(seed)
         self._feedback_lock = threading.Lock()
@@ -262,7 +289,7 @@ class BanditService:
             if record.get("policy_update_status") == "UPDATED": return False
             if record["selected_action"] != action: raise ValueError("Feedback action differs from selected action")
             record["reward"] = reward
-            record.setdefault("reward_version", REWARD_VERSION)
+            record.setdefault("reward_version", self.reward_version)
             self._apply_update(c, record, context=context, reward=reward)
             c.execute("UPDATE alerts SET record_json=? WHERE alert_id=?", (json.dumps(record), alert_id))
         self._load_policy()
@@ -303,7 +330,7 @@ class BanditService:
                 approval = reviewer_choice or rec.get("approval_status")
                 if rec["selected_action"] == "CONFIRM_TO_ACT" and approval not in ("APPROVED", "REJECTED"):
                     raise ValueError("Human approval or rejection is required before feedback")
-                outcome = simulate_outcome(rec["selected_action"], ground_truth_attack)
+                outcome = simulate_outcome(rec["selected_action"], ground_truth_attack, self.reward_version)
                 reward = outcome["reward"]
                 if approval in ("APPROVED", "REJECTED"):
                     outcome["approval_status"] = approval
@@ -312,14 +339,14 @@ class BanditService:
                         reward = REJECTED_APPROVAL_REWARDS["attack" if ground_truth_attack else "benign"]
                 now = _utc_now()
                 rec.update(simulated_execution_status=outcome["execution_status"], approval_status=outcome["approval_status"],
-                           observed_outcome=outcome["observed_outcome"], reward=reward, reward_version=REWARD_VERSION,
+                           observed_outcome=outcome["observed_outcome"], reward=reward, reward_version=self.reward_version,
                            outcome_source="offline simulator ground-truth label", feedback_at=now,
                            policy_update_status="WAITING_FOR_UPDATE")
                 if approval in ("APPROVED", "REJECTED"):
                     rec["reviewer_choice"] = approval
                     rec.setdefault("reviewed_at", now)
                 _event(rec, "OUTCOME_OBSERVED", at=now, outcome=outcome["observed_outcome"], reward=reward,
-                       reward_version=REWARD_VERSION)
+                       reward_version=self.reward_version)
             # else: a record stranded by the old two-step write (reward saved, policy not updated);
             # fall through and apply the missing update using the stored reward.
             self._apply_update(c, rec)

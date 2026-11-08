@@ -1,0 +1,44 @@
+{
+  "version": "sens-v2-missed-attack-12",
+  "table": {
+    "attack": {
+      "AUTO_REMEDIATE": 5,
+      "CONFIRM_TO_ACT": 3,
+      "HUMAN_REVIEW": 2,
+      "MONITOR_ONLY": -12
+    },
+    "benign": {
+      "AUTO_REMEDIATE": -12,
+      "CONFIRM_TO_ACT": -3,
+      "HUMAN_REVIEW": -2,
+      "MONITOR_ONLY": 1
+    }
+  },
+  "rejected_approval_outcome": {
+    "attack": -6,
+    "benign": -2
+  },
+  "best_action_by_attack_probability": [
+    {
+      "action": "MONITOR_ONLY",
+      "from": 0.0,
+      "to": 0.176
+    },
+    {
+      "action": "HUMAN_REVIEW",
+      "from": 0.177,
+      "to": 0.499
+    },
+    {
+      "action": "CONFIRM_TO_ACT",
+      "from": 0.5,
+      "to": 0.818
+    },
+    {
+      "action": "AUTO_REMEDIATE",
+      "from": 0.819,
+      "to": 1.0
+    }
+  ],
+  "claim": "Designed trade-off only; not real operational cost or optimal policy."
+}

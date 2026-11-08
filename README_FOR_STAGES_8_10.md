@@ -143,6 +143,8 @@ Ledger and policy (`bandit_service.py`, schema `alert-record-v2`):
 
 Replay (`run_response_experiment.py`): only detector-flagged flows are routed; k-fold evaluation (each alert evaluated once by a policy that did not train on it); reward version taken from the code; `--stream`, `--folds`, `--seed`; logic is importable without PyTorch and tested in `tests/test_replay_experiment.py`. Previous run folders were removed: they scored flows the detector never flagged. Regenerate with `python run_response_experiment.py`.
 
+Live API routing: a flow below the detector threshold is not an alert. It gets `MONITOR_ONLY`, is not recorded in the ledger and the policy does not learn from it (found by `e2e_check.py`, which now checks it). `backend/e2e_check.py` runs the whole pipeline end to end and a policy comparison across attack prevalence.
+
 API and dependencies: strict request schemas, operator access control, checkpoint loaded with `weights_only=True`, SHA-256 check before the TF-IDF index is unpickled, `/api/health` no longer invents a threshold, frontend dependencies updated to 0 audit vulnerabilities with React packages pinned.
 
 ## N. Open work for Stages 8-10

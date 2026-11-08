@@ -1,6 +1,6 @@
 # Repository audit: problems found and what was done
 
-Each row names the problem, the fix, and the test that now guards it. Run the backend suite from `backend/` with `python -m unittest discover -s tests` (84 tests) or `python -m pytest tests`.
+Each row names the problem, the fix, and the test that now guards it. Run the backend suite from `backend/` with `python -m unittest discover -s tests` (86 tests) or `python -m pytest tests`.
 
 | # | Problem | Fix | Test |
 |---|---|---|---|
@@ -21,6 +21,11 @@ Each row names the problem, the fix, and the test that now guards it. Run the ba
 | 15 | Frontend: 2 high `npm audit` advisories; React packages set to `latest`. | Dependencies updated (0 vulnerabilities), React packages pinned, replay caption corrected, template-reasoning note shown. | Clean `npm ci` + `npm run build` |
 | 16 | **MITRE retrieval returned the same irrelevant techniques for every alert** (0 relevant in 180 samples; 159 got the same persistence technique). | Behaviour-phrase query, network-observable tactics only, similarity floor, abstention, reliability note. Held-out: 19 of 53 flagged samples (19 of 30 floods, 0 of 23 web attacks). | `test_mitre_retrieval` (9 tests), `evaluate_retrieval.py`, `docs/mitre-retrieval-evaluation.md` |
 | 17 | Duplicate and stale files. | Removed 9 stale replay runs, 4 root copies of the MITRE mapping, 2 duplicate Word documents. Architecture diagram moved to `Documentation/`. | n/a |
+| 18 | **The live API proposed a containment approval for a flow the detector did not flag.** Found by the end-to-end run: a benign, unflagged flow got a pending `CONFIRM_TO_ACT`. | A flow below the threshold is not an alert: the answer is `MONITOR_ONLY`, nothing is recorded, nothing is learned. The dashboard disables the learn button for such records. | `AnalyzeRoutingTests` (2 tests), `e2e_check.py` |
+
+## End-to-end check
+
+`python backend/e2e_check.py --stream alerts.jsonl --tests --prevalence 0.1 0.3 0.5 0.8` (backend running on port 8000) checks the environment, unit tests, MITRE retrieval, the live API and ledger flow (analyse, approval, feedback, idempotency, bad input), the integrity of a replay stream (thresholds, label leakage, family counts, false-positive count), replay invariants and reproducibility, and the policy comparison across attack prevalence. It prints PASS / WARN / FAIL and never claims a policy wins. The API section writes tagged alerts to the local ledger; use `--skip-ledger` to avoid that.
 
 ## Not fixed (needs data or a decision)
 

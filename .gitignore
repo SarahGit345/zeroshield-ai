@@ -287,3 +287,7 @@ frontend/dist/
 
 # Per-fold replay databases are throwaway working files
 backend/experiments/**/training_policy*.sqlite3
+
+# Stage 10 replay outputs: large and regenerable (build_replay_stream.py --seed N; run_replay_study.py)
+backend/experiments/replay_streams/*.jsonl
+backend/experiments/replay_study_*/**/action_ledger.jsonl

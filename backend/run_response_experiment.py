@@ -33,7 +33,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from services.bandit_service import (  # noqa: E402
     ACTIONS, CONTEXT_FEATURES, REJECTED_APPROVAL_REWARDS, REWARD_VERSION, REWARDS, BanditService,
-    always_human_action, build_context, decision_regions, fixed_rule_action, simulate_outcome,
+    always_human_action, build_context, decision_regions, fixed_rule_action, reward_table, simulate_outcome,
 )
 
 SEED = 20261020
@@ -44,32 +44,42 @@ BASELINE_TEXT = {"fixed": "VERIFIED + detected + confidence>=0.9 -> AUTO_REMEDIA
                  "random": "Python random.Random(seed), one draw per held-out alert"}
 
 
+def pipeline_alert(detector, mitre, features, alert_id, sample_id, timestamp=None, reason_fn=None, verify_fn=None):
+    """Run one prepared flow through detector -> XAI -> retrieval -> reasoning -> verification and
+    return the alert record the policy receives. Shared by the demo cache and build_replay_stream.py,
+    so both streams carry identical fields. Callers add the `_`-prefixed simulator keys."""
+    if reason_fn is None:
+        from services.llm_service import reason as reason_fn
+    if verify_fn is None:
+        from services.verification_service import verify_record as verify_fn
+    result = detector.analyze(features)
+    mapping = mitre.retrieve_behavior(result)
+    reasoning = reason_fn(result, None, mapping)   # no dataset label is passed to the reasoning step
+    verified = verify_fn({**result, "feature_names": [x["feature"] for x in result["top_features"]],
+                          "all_feature_names": [x["feature"] for x in result["all_contributions"]]}, mapping, reasoning)
+    return {
+        "alert_id": alert_id, "sample_id": sample_id,
+        "timestamp": timestamp or datetime.now(timezone.utc).isoformat(),
+        "feature_summary": {x["feature"]: x["value"] for x in result["top_features"]},
+        "anomaly_score": result["anomaly_score"], "threshold": result["threshold"], "detected": result["detected"],
+        "xai_evidence": result["top_features"], "retrieval_query": mapping.get("query"),
+        "retrieved_techniques": mapping.get("techniques", []), "llm_explanation": reasoning,
+        "verification_result": verified["verdict"], "verification_checks": verified["checks"],
+        "verification_confidence": verified["verification_confidence"],
+    }
+
+
 def demo_alert_stream():
     """Build alerts from the ten cached prepared samples. Needs PyTorch (loads the detector)."""
-    from services.llm_service import reason
     from services.mitre_service import MitreService
     from services.model_service import Detector
-    from services.verification_service import verify_record
     samples = json.loads((ROOT / "backend" / "data" / "demo_samples.json").read_text(encoding="utf-8"))
     detector, mitre = Detector(ROOT), MitreService(ROOT)
     stream = []
     for category, features in samples.items():
-        result = detector.analyze(features)
-        mapping = mitre.retrieve_behavior(result)
-        reasoning = reason(result, None, mapping)   # offline: no API key, labelled template reasoning
-        verified = verify_record({**result, "feature_names": [x["feature"] for x in result["top_features"]],
-                                  "all_feature_names": [x["feature"] for x in result["all_contributions"]]}, mapping, reasoning)
-        stream.append({
-            "alert_id": str(uuid.uuid5(uuid.NAMESPACE_URL, f"zeroshield-demo:{category}")),
-            "sample_id": category, "timestamp": datetime.now(timezone.utc).isoformat(),
-            "feature_summary": {x["feature"]: x["value"] for x in result["top_features"]},
-            "anomaly_score": result["anomaly_score"], "threshold": result["threshold"], "detected": result["detected"],
-            "xai_evidence": result["top_features"], "retrieval_query": mapping.get("query"),
-            "retrieved_techniques": mapping.get("techniques", []), "llm_explanation": reasoning,
-            "verification_result": verified["verdict"], "verification_checks": verified["checks"],
-            "verification_confidence": verified["verification_confidence"],
-            "_simulator_attack": category != "BenignTraffic",
-        })
+        alert = pipeline_alert(detector, mitre, features,   # offline: no API key, labelled template reasoning
+                               str(uuid.uuid5(uuid.NAMESPACE_URL, f"zeroshield-demo:{category}")), category)
+        stream.append({**alert, "_simulator_attack": category != "BenignTraffic"})
     return stream
 
 
@@ -98,13 +108,13 @@ def clean(alert):
     return {k: v for k, v in alert.items() if not k.startswith("_")}
 
 
-def score_policy(name, decisions, evaluation):
+def score_policy(name, decisions, evaluation, reward_version=REWARD_VERSION):
     rewards, counts = [], Counter()
     benign_remediations = attack_remediations = attack_human = attack_monitor = benign_human = 0
     n_attack = n_benign = queue = 0
     for alert, action in zip(evaluation, decisions):
         attack = alert["_simulator_attack"]
-        rewards.append(simulate_outcome(action, attack)["reward"]); counts[action] += 1
+        rewards.append(simulate_outcome(action, attack, reward_version)["reward"]); counts[action] += 1
         n_attack += attack; n_benign += not attack
         queue += action == "CONFIRM_TO_ACT"
         if attack and action == "AUTO_REMEDIATE": attack_remediations += 1
@@ -151,8 +161,11 @@ def svg_bars(path: Path, title: str, labels, values):
     path.write_text(f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}"><rect width="100%" height="100%" fill="#101820"/><text x="20" y="25" fill="white" font-size="16">{title}</text>{"".join(bars)}</svg>', encoding="utf-8")
 
 
-def run_replay(stream, out_dir: Path, seed: int = SEED, folds: int = 5, stream_source: str = "demo cache"):
-    """Run the k-fold replay on `stream` and write all artifacts to `out_dir`. Returns the metrics dict."""
+def run_replay(stream, out_dir: Path, seed: int = SEED, folds: int = 5, stream_source: str = "demo cache",
+               reward_version: str = REWARD_VERSION):
+    """Run the k-fold replay on `stream` and write all artifacts to `out_dir`. Returns the metrics dict.
+    `reward_version` sets the table used both to train the bandit and to score every policy."""
+    table = reward_table(reward_version)
     started = time.perf_counter()
     routed, not_routed = route(stream)
     if len(routed) < 2:
@@ -168,7 +181,7 @@ def run_replay(stream, out_dir: Path, seed: int = SEED, folds: int = 5, stream_s
     with tempfile.TemporaryDirectory() as tmp:
         for fold_index, test in enumerate(fold_sets):
             train = [a for i, f in enumerate(fold_sets) if i != fold_index for a in f]
-            bandit = BanditService(Path(tmp) / f"fold{fold_index}.sqlite3", seed=seed + fold_index)
+            bandit = BanditService(Path(tmp) / f"fold{fold_index}.sqlite3", seed=seed + fold_index, reward_version=reward_version)
             t0, curve = time.perf_counter(), []
             for alert in train:
                 record = bandit.record(clean(alert))
@@ -189,7 +202,7 @@ def run_replay(stream, out_dir: Path, seed: int = SEED, folds: int = 5, stream_s
                 for name, decision in choice.items():
                     action = decision["selected_action"]
                     decisions[name].append(action); fold_actions[name].append(action)
-                    outcome = simulate_outcome(action, bool(alert["_simulator_attack"]))
+                    outcome = simulate_outcome(action, bool(alert["_simulator_attack"]), reward_version)
                     traces.append({"phase": "evaluation", "fold": fold_index, "alert": c, "policy": name,
                                    "context_features": decision.get("context_features", dict(zip(CONTEXT_FEATURES, build_context(c)))),
                                    "action_scores": decision.get("action_scores"), "selected_action": action,
@@ -199,19 +212,19 @@ def run_replay(stream, out_dir: Path, seed: int = SEED, folds: int = 5, stream_s
                                    "approval_status": "SIMULATOR_ASSUMES_APPROVED" if action == "CONFIRM_TO_ACT" else "NOT_REQUIRED",
                                    "observed_outcome": outcome["observed_outcome"],
                                    "outcome_source": "offline simulator label; read after selection",
-                                   "reward": outcome["reward"], "reward_version": REWARD_VERSION,
+                                   "reward": outcome["reward"], "reward_version": reward_version,
                                    "policy_update_status": "EVALUATION_NO_UPDATE"})
             for name in POLICIES:
-                rewards = [simulate_outcome(act, bool(a["_simulator_attack"]))["reward"] for a, act in zip(test, fold_actions[name])]
+                rewards = [simulate_outcome(act, bool(a["_simulator_attack"]), reward_version)["reward"] for a, act in zip(test, fold_actions[name])]
                 per_fold[name].append(sum(rewards) / len(rewards))
 
-    metrics = [score_policy(name, decisions[name], evaluation) for name in POLICIES]
+    metrics = [score_policy(name, decisions[name], evaluation, reward_version) for name in POLICIES]
     for row in metrics:
         row["per_fold_mean_reward"] = per_fold[row["policy"]]
         row["fold_mean_of_means"] = statistics.fmean(per_fold[row["policy"]])
         row["fold_std_of_means"] = statistics.stdev(per_fold[row["policy"]]) if len(per_fold[row["policy"]]) > 1 else None
         row["policy_training_update_seconds"] = train_seconds if row["policy"].startswith("Contextual") else None
-    result = {"metrics": metrics, "reward_version": REWARD_VERSION, "seed": seed, "folds": len(fold_sets),
+    result = {"metrics": metrics, "reward_version": reward_version, "seed": seed, "folds": len(fold_sets),
               "routed_alerts": len(routed), "evaluation_alerts": len(evaluation), "not_routed": not_routed,
               "final_policy_version_per_fold": final_versions, "stream_source": stream_source,
               "total_elapsed_seconds": time.perf_counter() - started}
@@ -220,14 +233,14 @@ def run_replay(stream, out_dir: Path, seed: int = SEED, folds: int = 5, stream_s
         for item in ledger + traces: f.write(json.dumps(item) + "\n")
     (out_dir / "policy_comparison_metrics.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
     (out_dir / "reward_table.json").write_text(json.dumps({
-        "version": REWARD_VERSION, "table": REWARDS, "rejected_approval_outcome": REJECTED_APPROVAL_REWARDS,
-        "best_action_by_attack_probability": decision_regions(),
+        "version": reward_version, "table": table, "rejected_approval_outcome": REJECTED_APPROVAL_REWARDS,
+        "best_action_by_attack_probability": decision_regions(table),
         "claim": "Designed trade-off only; not real operational cost or optimal policy."}, indent=2), encoding="utf-8")
     (out_dir / "context_schema.json").write_text(json.dumps({"version": "context-v1", "features": CONTEXT_FEATURES, "no_labels_or_future_outcomes": True}, indent=2), encoding="utf-8")
     (out_dir / "baseline_definitions.json").write_text(json.dumps({**BASELINE_TEXT, "seed": seed}, indent=2), encoding="utf-8")
     (out_dir / "approval_queue_statistics.json").write_text(json.dumps({m["policy"]: {"queued": m["approval_queue_size"], "live_approval_simulated": False} for m in metrics}, indent=2), encoding="utf-8")
     (out_dir / "experiment_config.json").write_text(json.dumps({
-        "seed": seed, "algorithm": "LinUCB", "alpha": 0.25, "reward_version": REWARD_VERSION, "reward_table": REWARDS,
+        "seed": seed, "algorithm": "LinUCB", "alpha": 0.25, "reward_version": reward_version, "reward_table": table,
         "context_schema": {"version": "context-v1", "features": CONTEXT_FEATURES}, "baseline_definitions": BASELINE_TEXT,
         "split": f"{len(fold_sets)}-fold over detected alerts only; each alert evaluated once on a policy that did not train on it",
         "stream": stream_source, "routed_alerts": len(routed), "not_routed": not_routed,
@@ -240,7 +253,7 @@ def run_replay(stream, out_dir: Path, seed: int = SEED, folds: int = 5, stream_s
         f"# Stage 7 replay summary\n\n"
         f"Stream: {stream_source}. {len(stream)} flows, of which {len(routed)} were flagged by the detector and routed to the response policy; "
         f"{not_routed['unflagged_attack_flows']} unflagged attack flow(s) and {not_routed['unflagged_benign_flows']} unflagged benign flow(s) never became alerts and are not scored.\n\n"
-        f"Evaluation: {len(fold_sets)}-fold, every routed alert evaluated once by a policy that did not train on it. Reward table: {REWARD_VERSION}. Seed: {seed}.\n\n"
+        f"Evaluation: {len(fold_sets)}-fold, every routed alert evaluated once by a policy that did not train on it. Reward table: {reward_version}. Seed: {seed}.\n\n"
         f"Bandit mean reward {bandit_row['mean_reward_per_alert']:.2f} per alert (fold std {bandit_row['fold_std_of_means'] if bandit_row['fold_std_of_means'] is None else round(bandit_row['fold_std_of_means'], 2)}); "
         f"fixed rules {fixed_row['mean_reward_per_alert']:.2f}. See policy_comparison_metrics.json.\n\n"
         "The reward values are designed simulation trade-offs, not real-world costs. This response policy does not change or improve detector accuracy. "

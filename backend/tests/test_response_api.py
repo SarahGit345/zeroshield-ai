@@ -97,6 +97,54 @@ class ResponseApiTests(unittest.TestCase):
         self.assertIsNone(body["threshold"])
 
 
+class _StubAnalyzer:
+    loaded = True
+    features = ["SYNRatio", "PacketDensity"]
+    def __init__(self, detected): self.detected = detected
+    def analyze(self, values):
+        top = [{"feature": "SYNRatio", "value": 3.0, "contribution": .12, "rank": 1},
+               {"feature": "PacketDensity", "value": 2.5, "contribution": .08, "rank": 2}]
+        return {"anomaly_score": .2 if self.detected else .02, "threshold": .1, "detected": self.detected,
+                "detection": "ANOMALOUS" if self.detected else "NORMAL", "top_features": top, "all_contributions": top,
+                "xai_method": "stub", "xai_baseline": "0"}
+
+
+class _StubMitre:
+    available, index = True, object()
+    def retrieve_behavior(self, analysis):
+        return {"status": "insufficient_evidence", "techniques": [], "query": "",
+                "message": "Insufficient evidence for a confident ATT&CK mapping."}
+
+
+class AnalyzeRoutingTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.ledger = BanditService(Path(self.tmp.name) / "ledger.sqlite3", seed=3)
+        self.client = TestClient(main.app)
+        patcher = patch.dict(os.environ); patcher.start(); self.addCleanup(patcher.stop)
+        os.environ.pop("OPENAI_API_KEY", None)           # use the labelled template, never a network call
+        self.addCleanup(self.tmp.cleanup); self.addCleanup(main.services.clear)
+
+    def analyse(self, detected):
+        main.services.update(detector=_StubAnalyzer(detected), mitre=_StubMitre(), bandit=self.ledger)
+        r = self.client.post("/api/analyze", json={"features": {"SYNRatio": 1.0, "PacketDensity": 1.0}})
+        self.assertEqual(r.status_code, 200, r.text)
+        return r.json()
+
+    def test_an_unflagged_flow_is_not_an_alert(self):
+        r = self.analyse(detected=False)
+        self.assertEqual(r["bandit"]["selected_action"], "MONITOR_ONLY")
+        self.assertEqual(r["bandit"]["policy_update_status"], "NOT_ELIGIBLE")
+        self.assertEqual(r["bandit"]["simulated_execution_status"], "NOT_EXECUTED_NO_ALERT")
+        self.assertEqual(self.ledger.list_alerts(), [])           # nothing recorded, nothing to approve or learn from
+
+    def test_a_flagged_verified_flow_is_recorded_for_the_policy(self):
+        r = self.analyse(detected=True)
+        self.assertEqual(r["verification"]["verdict"], "VERIFIED", r["verification"]["failed_checks"])
+        self.assertEqual(len(self.ledger.list_alerts()), 1)
+        self.assertEqual(r["bandit"]["policy_update_status"], "WAITING_FOR_FEEDBACK")
+
+
 class IndexIntegrityTests(unittest.TestCase):
     def make_root(self, sidecar_text):
         tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
