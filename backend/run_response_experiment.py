@@ -292,6 +292,7 @@ def main():
     parser.add_argument("--seed", type=int, default=SEED)
     args = parser.parse_args()
     os.environ.pop("OPENAI_API_KEY", None)   # keep the experiment independent of credentials and network
+    os.environ["ZEROSHIELD_LLM_PROVIDER"] = "template"
     stream = load_stream(args.stream) if args.stream else demo_alert_stream()
     out = OUT_ROOT / f"run_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     result = run_replay(stream, out, args.seed, args.folds, str(args.stream) if args.stream else "ten cached demo samples")

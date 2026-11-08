@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from services.model_service import Detector
 from services.mitre_service import MitreService
 from services.sample_service import SampleService
-from services.llm_service import reason
+from services.llm_service import llm_status, reason
 from schemas.analysis import AnalysisRequest
 from schemas.response import ApprovalRequest, FeedbackRequest
 from security import require_operator
@@ -53,7 +53,7 @@ def health():
 @app.get("/api/model-info")
 def model_info():
     d = services["detector"]
-    return {"model": "Deep SVDD", "architecture": {"input": len(d.features), "hidden": d.hidden, "latent": d.latent_dim}, "feature_count": len(d.features), "features": d.features, "threshold": d.threshold, "model_loaded": d.loaded, "scaler_loaded": False, "preprocessing": "Input must use the project's existing StandardScaler-prepared feature space; no scaler artifact was present.", "xai_available": d.loaded, "mitre_available": services["mitre"].available, "mitre_behavior_index_available": services["mitre"].index is not None, "llm_status": "OpenAI configured" if __import__("os").getenv("OPENAI_API_KEY") else "Demo Fallback Reasoning", "response_actions": ["AUTO_REMEDIATE", "CONFIRM_TO_ACT", "HUMAN_REVIEW", "MONITOR_ONLY"]}
+    return {"model": "Deep SVDD", "architecture": {"input": len(d.features), "hidden": d.hidden, "latent": d.latent_dim}, "feature_count": len(d.features), "features": d.features, "threshold": d.threshold, "model_loaded": d.loaded, "scaler_loaded": False, "preprocessing": "Input must use the project's existing StandardScaler-prepared feature space; no scaler artifact was present.", "xai_available": d.loaded, "mitre_available": services["mitre"].available, "mitre_behavior_index_available": services["mitre"].index is not None, "llm_status": llm_status(), "response_actions": ["AUTO_REMEDIATE", "CONFIRM_TO_ACT", "HUMAN_REVIEW", "MONITOR_ONLY"]}
 
 
 @app.get("/api/demo-samples")

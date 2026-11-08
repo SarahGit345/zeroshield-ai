@@ -111,14 +111,9 @@ def default_data_paths():
 
 
 def offline_reason(result, family, mitre):
-    """Labelled template reasoning, even if OPENAI_API_KEY is set (keeps the stream offline and reproducible)."""
-    from services.llm_service import reason
-    saved = os.environ.pop("OPENAI_API_KEY", None)
-    try:
-        return reason(result, family, mitre)
-    finally:
-        if saved is not None:
-            os.environ["OPENAI_API_KEY"] = saved
+    """Labelled template reasoning whatever LLM provider is configured (keeps the stream offline and reproducible)."""
+    from services.llm_service import template_report
+    return template_report(result, mitre)
 
 
 def screen(sources, detector, quotas, seed, chunk_rows=CHUNK_ROWS, max_rows=None, log=print, exclude=None):

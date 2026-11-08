@@ -1,0 +1,221 @@
+"""Ollama provider and the step-3 measurement script, against a fake local Ollama server (no model needed):
+request format (JSON schema, temperature 0, fixed seed, thinking off, field meanings in the prompt),
+parse-and-repair with one retry, labelled fallback when both attempts fail, the real model name in the
+mode, no dataset label in the prompt, and deterministic stratified sampling with saved raw outputs."""
+import json
+import os
+import tempfile
+import threading
+import unittest
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
+from unittest.mock import patch
+
+import build_replay_stream as brs
+import measure_llm_verification as measure
+from services import llm_service
+from services.verification_service import verify_record
+
+ANALYSIS = {"anomaly_score": 0.2345678, "threshold": 0.0614192, "detected": True,
+            "top_features": [{"feature": "Rate", "value": 2.5, "contribution": 0.08, "rank": 1},
+                             {"feature": "SYNRatio", "value": -0.4, "contribution": -0.01, "rank": 2}],
+            "feature_names": ["Rate", "SYNRatio"], "all_feature_names": ["Rate", "SYNRatio", "IAT"]}
+MITRE = {"techniques": [{"technique_id": "T1498.001", "technique_name": "Direct Network Flood"}], "query": "q"}
+
+
+def good_report(analysis=ANALYSIS):
+    return {"incident_summary": "The detector flagged this flow as anomalous because its score exceeded the threshold.",
+            "evidence": [f"Anomaly score {analysis['anomaly_score']} exceeded the threshold {analysis['threshold']}.",
+                         "Rate had the largest positive contribution."],
+            "attack_context": "T1498.001 is a retrieved candidate and may suggest flooding; it is not confirmed.",
+            "interpretation": "Flow statistics alone cannot establish an attack.",
+            "recommended_action": "An analyst should correlate this flow with host telemetry.",
+            "limitations": "Perturbation importance describes model sensitivity, not causation."}
+
+
+class FakeOllama:
+    """Serves queued /api/chat replies (strings) and records every request payload."""
+    def __init__(self, replies):
+        self.replies, self.requests = list(replies), []
+        outer = self
+
+        class Handler(BaseHTTPRequestHandler):
+            def log_message(self, *a): pass
+
+            def _send(self, obj):
+                body = json.dumps(obj).encode()
+                self.send_response(200); self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body))); self.end_headers(); self.wfile.write(body)
+
+            def do_GET(self):
+                if self.path == "/api/tags": self._send({"models": [{"name": "fake:1b", "digest": "abc123", "size": 1}]})
+                else: self._send({"version": "0.0-test"})
+
+            def do_POST(self):
+                payload = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+                outer.requests.append(payload)
+                content = outer.replies.pop(0) if outer.replies else json.dumps(good_report())
+                self._send({"message": {"role": "assistant", "content": content}, "total_duration": 1, "eval_count": 5,
+                            "prompt_eval_count": 7, "eval_duration": 1})
+
+        self.server = HTTPServer(("127.0.0.1", 0), Handler)
+        self.host = f"http://127.0.0.1:{self.server.server_address[1]}"
+        threading.Thread(target=self.server.serve_forever, daemon=True).start()
+
+    def close(self):
+        self.server.shutdown(); self.server.server_close()
+
+
+class OllamaProviderTests(unittest.TestCase):
+    def run_with(self, replies, **kw):
+        fake = FakeOllama(replies); self.addCleanup(fake.close)
+        result = llm_service.ollama_reason(ANALYSIS, None, MITRE, host=fake.host, model="fake:1b", seed=7, **kw)
+        return result, fake
+
+    def test_request_format_and_mode(self):
+        result, fake = self.run_with([json.dumps(good_report())])
+        self.assertEqual(result["mode"], "Ollama LLM (fake:1b)")
+        self.assertEqual((result["attempts"], result["repaired"]), (1, False))
+        payload = fake.requests[0]
+        self.assertEqual(payload["format"], llm_service.REPORT_SCHEMA)
+        self.assertEqual(payload["options"]["temperature"], 0)
+        self.assertEqual(payload["options"]["seed"], 7)
+        self.assertIs(payload["stream"], False)
+        self.assertIs(payload["think"], False)
+        system = payload["messages"][0]["content"]
+        for field in llm_service.FIELDS + ("anomaly_score", "threshold", "top_features", "mitre_candidates", "contribution"):
+            self.assertIn(field, system)
+        evidence = json.loads(payload["messages"][1]["content"])
+        self.assertIsNone(evidence["attack_family"])                 # no dataset label reaches the model
+        self.assertEqual(result["raw_outputs"], [json.dumps(good_report())])
+
+    def test_invalid_reply_gets_exactly_one_retry_with_the_error(self):
+        result, fake = self.run_with(["{not json", json.dumps(good_report())])
+        self.assertEqual(result["attempts"], 2)
+        self.assertEqual(len(fake.requests), 2)
+        self.assertEqual(len(result["parse_errors"]), 1)
+        retry = fake.requests[1]["messages"]
+        self.assertEqual(retry[-2], {"role": "assistant", "content": "{not json"})
+        self.assertIn("could not be used", retry[-1]["content"])
+        self.assertEqual(result["raw_outputs"][0], "{not json")
+
+    def test_fenced_or_wrapped_json_is_repaired_without_retry(self):
+        wrapped = "Here is the report:\n```json\n" + json.dumps(good_report()) + "\n```"
+        result, fake = self.run_with([wrapped])
+        self.assertEqual((result["attempts"], result["repaired"], len(fake.requests)), (1, True, 1))
+
+    def test_single_string_evidence_is_repaired_to_a_list(self):
+        report = {**good_report(), "evidence": "Score 0.2345678 exceeded threshold 0.0614192."}
+        result, _ = self.run_with([json.dumps(report)])
+        self.assertEqual(result["report"]["evidence"], ["Score 0.2345678 exceeded threshold 0.0614192."])
+        self.assertTrue(result["repaired"])
+
+    def test_missing_field_counts_as_invalid(self):
+        report = good_report(); del report["limitations"]
+        result, fake = self.run_with([json.dumps(report), json.dumps(good_report())])
+        self.assertEqual(result["attempts"], 2)
+        self.assertIn("missing fields: limitations", result["parse_errors"][0])
+
+    def test_two_failures_fall_back_to_the_labelled_template(self):
+        fake = FakeOllama(["nope", "still nope"]); self.addCleanup(fake.close)
+        env = {"ZEROSHIELD_LLM_PROVIDER": "ollama", "OLLAMA_HOST": fake.host, "OLLAMA_MODEL": "fake:1b"}
+        with patch.dict(os.environ, env), self.assertLogs(level="ERROR"):
+            result = llm_service.reason(ANALYSIS, None, MITRE)
+        self.assertEqual(result["mode"], "Demo Fallback Reasoning")      # never presented as LLM output
+        self.assertEqual(result["raw_outputs"], ["nope", "still nope"])
+        self.assertIn("no valid report after 2 attempts", result["llm_error"])
+        self.assertEqual(len(fake.requests), 2)
+
+    def test_unreachable_server_falls_back(self):
+        env = {"ZEROSHIELD_LLM_PROVIDER": "ollama", "OLLAMA_HOST": "http://127.0.0.1:9", "ZEROSHIELD_LLM_TIMEOUT": "2"}
+        with patch.dict(os.environ, env), self.assertLogs(level="ERROR"):
+            result = llm_service.reason(ANALYSIS, None, MITRE)
+        self.assertEqual(result["mode"], "Demo Fallback Reasoning")
+        self.assertIn("llm_error", result)
+
+    def test_provider_selection(self):
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(llm_service.provider(), "template")
+            self.assertEqual(llm_service.llm_status(), "Demo Fallback Reasoning")
+        with patch.dict(os.environ, {"OPENAI_API_KEY": "x"}, clear=True):
+            self.assertEqual(llm_service.provider(), "openai")
+        with patch.dict(os.environ, {"OPENAI_API_KEY": "x", "ZEROSHIELD_LLM_PROVIDER": "ollama", "OLLAMA_MODEL": "m:1"}, clear=True):
+            self.assertEqual(llm_service.provider(), "ollama")
+            self.assertEqual(llm_service.llm_status(), "Ollama configured (m:1)")
+
+    def test_llm_report_is_verified_as_llm_not_template(self):
+        result, _ = self.run_with([json.dumps(good_report())])
+        verdict = verify_record(ANALYSIS, MITRE, result)
+        self.assertEqual(verdict["verdict"], "VERIFIED", verdict["failed_checks"])
+        self.assertEqual(verdict["reasoning_mode"], "Ollama LLM (fake:1b)")
+        self.assertNotIn("limitation", verdict)                        # the template-only caveat does not apply
+
+    def test_stream_builder_stays_on_the_template_when_ollama_is_configured(self):
+        with patch.dict(os.environ, {"ZEROSHIELD_LLM_PROVIDER": "ollama", "OLLAMA_HOST": "http://127.0.0.1:9"}):
+            self.assertEqual(brs.offline_reason(ANALYSIS, None, MITRE)["mode"], "Demo Fallback Reasoning")
+
+
+def synthetic_stream():
+    stream, i = [], 0
+    for family, n in [("Benign", 40)] + [(f, 12) for f in measure.ATTACK_FAMILIES]:
+        for _ in range(n):
+            stream.append({"alert_id": f"id{i:04d}", "sample_id": f"s:{i}", "anomaly_score": 0.2 + i * 1e-4, "threshold": 0.0614,
+                           "detected": True, "xai_evidence": ANALYSIS["top_features"], "retrieved_techniques": MITRE["techniques"],
+                           "retrieval_query": "q", "verification_result": "VERIFIED", "verification_confidence": 1.0,
+                           "_family": family, "_attack_label": family, "_simulator_attack": family != "Benign"})
+            i += 1
+        stream.append({**stream[-1], "alert_id": f"un{i:04d}", "detected": False}); i += 1      # unflagged rows are ignored
+    return stream
+
+
+class MeasurementScriptTests(unittest.TestCase):
+    def test_sampling_is_stratified_deterministic_and_disjoint(self):
+        stream = synthetic_stream()
+        a, b = measure.select(stream), measure.select(stream)
+        self.assertEqual([x["alert_id"] for x in a["main"]], [x["alert_id"] for x in b["main"]])
+        self.assertFalse({x["alert_id"] for x in a["pilot"]} & {x["alert_id"] for x in a["main"]})
+        for phase in ("pilot", "main"):
+            from collections import Counter
+            self.assertEqual(dict(Counter(x["_family"] for x in a[phase])), measure.PLAN[phase])
+            self.assertTrue(all(x["detected"] for x in a[phase]))
+        self.assertEqual(len(a["pilot"]), 10); self.assertEqual(len(a["main"]), 100)
+
+    def test_run_saves_raw_outputs_summarises_and_resumes(self):
+        tmp = tempfile.TemporaryDirectory(); self.addCleanup(tmp.cleanup)
+        stream_path = Path(tmp.name) / "s.jsonl"
+        stream_path.write_text("".join(json.dumps(x) + "\n" for x in synthetic_stream()), encoding="utf-8")
+        report = {**good_report(), "evidence": ["Anomaly score is high.", "The threshold was exceeded."]}   # cites no score: REJECTED
+        fake = FakeOllama(["garbage", json.dumps(report)]); self.addCleanup(fake.close)   # first alert: retry, then a report
+        # After the queue, the fake returns good_report() with ANALYSIS's score, which is not these alerts' score.
+        with patch.object(measure, "feature_names", return_value=ANALYSIS["all_feature_names"]):
+            measure.main(["--phase", "pilot", "--stream", str(stream_path), "--out", tmp.name, "--host", fake.host,
+                          "--model", "fake:1b", "--limit", "3"])
+        out = Path(tmp.name) / "pilot_fake_1b"
+        raws = sorted((out / "raw").glob("*.json"))
+        self.assertEqual(len(raws), 3)
+        first = next(r for r in (json.loads(p.read_text()) for p in raws) if r["raw_outputs"][0] == "garbage")
+        self.assertEqual(len(first["raw_outputs"]), 2)                 # both raw outputs kept
+        self.assertIn("prompt_messages", first)
+        summary = json.loads((out / "summary.json").read_text())
+        self.assertEqual(summary["alerts_completed"], 3)
+        self.assertEqual(summary["parsing"]["needed_retry"], 1)
+        self.assertEqual(sum(summary["verdicts"].values()), 3)
+        self.assertEqual(summary["model_info"]["digest"], "abc123")
+        self.assertIn("detector_score", summary["failed_check_counts"])
+        g = summary["gate"]
+        self.assertEqual(g["false_positives_reaching_automation_without_gate"], g["benign_alerts"])
+        n_before = len(fake.requests)
+        with patch.object(measure, "feature_names", return_value=ANALYSIS["all_feature_names"]):
+            measure.main(["--phase", "pilot", "--stream", str(stream_path), "--out", tmp.name, "--host", fake.host,
+                          "--model", "fake:1b", "--limit", "3"])
+        self.assertEqual(len(fake.requests), n_before)                 # resumed: no alert re-sent
+
+    def test_wilson_interval(self):
+        lo, hi = measure.wilson(0, 30)
+        self.assertEqual(lo, 0.0); self.assertGreater(hi, 0.05)
+        lo, hi = measure.wilson(15, 30)
+        self.assertLess(lo, 0.5); self.assertGreater(hi, 0.5)
+
+
+if __name__ == "__main__":
+    unittest.main()

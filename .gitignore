@@ -292,3 +292,4 @@ backend/experiments/**/training_policy*.sqlite3
 backend/experiments/replay_streams/*.jsonl
 backend/experiments/replay_study_*/**/action_ledger.jsonl
 backend/experiments/replay_study_*/**/evaluation_decisions.csv
+backend/experiments/llm_verification/
