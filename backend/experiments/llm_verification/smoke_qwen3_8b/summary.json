@@ -1,0 +1,124 @@
+{
+  "phase": "smoke",
+  "stream": "D:\\B-Tech\\Sem-7\\Final year project\\zeroshield-ai\\backend\\experiments\\replay_streams\\replay_stream_share30_seed3.jsonl",
+  "stream_sha256": "1fb74980c8574b1c9df66eea6f8a911534cd19c2dbd2060758242a4320665e13",
+  "sample_seed": 20261108,
+  "sample_plan": {
+    "Benign": 3,
+    "DDoS": 1,
+    "DoS": 1,
+    "Recon": 1,
+    "Brute Force": 1,
+    "Spoofing": 1,
+    "Mirai": 1,
+    "Web-Based": 1
+  },
+  "llm_seed": 20261108,
+  "temperature": 0,
+  "timeout_seconds_per_alert": 600.0,
+  "num_predict": 768,
+  "model_info": {
+    "ollama_version": "0.40.15",
+    "model": "qwen3:8b",
+    "digest": "500a1f067a9f782620b40bee6f7b0c89e17ae61f686b92c24933e4ca4b2b8b41",
+    "size": 5225388164,
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "qwen3",
+      "families": [
+        "qwen3"
+      ],
+      "parameter_size": "8.2B",
+      "quantization_level": "Q4_K_M",
+      "context_length": 40960,
+      "embedding_length": 4096,
+      "runner": "ggml"
+    }
+  },
+  "started_at": "2026-11-08T12:39:23.439055+00:00",
+  "sample_alert_ids": [
+    "7b4cbfff-746d-54af-ab94-f43232d90c78",
+    "aa6a8d23-16c4-54d2-86ac-d6ed01675181",
+    "4ff51fda-8eef-54d8-8ab4-0f50e8855711",
+    "80ad2805-ec0f-5d8a-952b-1295ae67b421",
+    "90a2a022-a265-5953-9afb-cf8762536ce1",
+    "d8185fa7-21f3-571c-a41c-0cd47ee40d9b",
+    "09e34258-b0f1-51ba-bfac-6cf21500978a",
+    "cf38bfa3-3438-5e47-be33-0c9e052a4e0a",
+    "fed18e69-6396-56f2-8349-15f18247e70e",
+    "aa01bec9-9965-5a94-90cf-8cc780d7b61e"
+  ],
+  "finished_at": "2026-11-08T13:09:08.342838+00:00",
+  "alerts_attempted": 10,
+  "alerts_completed": 10,
+  "errors_not_counted": [],
+  "verdicts": {
+    "VERIFIED": 10
+  },
+  "verdict_shares": {
+    "VERIFIED": 1.0
+  },
+  "verdicts_by_family": {
+    "Benign": {
+      "VERIFIED": 3
+    },
+    "Brute Force": {
+      "VERIFIED": 1
+    },
+    "DDoS": {
+      "VERIFIED": 1
+    },
+    "DoS": {
+      "VERIFIED": 1
+    },
+    "Mirai": {
+      "VERIFIED": 1
+    },
+    "Recon": {
+      "VERIFIED": 1
+    },
+    "Spoofing": {
+      "VERIFIED": 1
+    },
+    "Web-Based": {
+      "VERIFIED": 1
+    }
+  },
+  "failed_check_counts": {},
+  "failed_check_share_of_completed": {},
+  "parsing": {
+    "first_attempt_valid": 10,
+    "first_attempt_invalid": 0,
+    "retry_succeeded": 0,
+    "failed_after_retry": 0,
+    "repaired": 0,
+    "length_capped_replies": 0,
+    "timeouts": 0
+  },
+  "template_verdicts_same_alerts": {
+    "VERIFIED": 10
+  },
+  "gate": {
+    "benign_alerts": 3,
+    "attack_alerts": 7,
+    "false_positives_reaching_automation_without_gate": 3,
+    "false_positives_reaching_automation_with_gate": 3,
+    "false_positive_reduction_share": 0.0,
+    "benign_verified_rate": 1.0,
+    "benign_verified_rate_ci95": [
+      0.43849391955098227,
+      1.0
+    ],
+    "attacks_reaching_automation_with_gate": 7,
+    "attack_verified_rate": 1.0,
+    "attack_verified_rate_ci95": [
+      0.6456611570247934,
+      1.0
+    ],
+    "note": "Without the gate every flagged alert reaches the automated policy. With it, only VERIFIED alerts do; the others go to HUMAN_REVIEW. LLM failures and timeouts count as not VERIFIED."
+  },
+  "mean_seconds_per_alert": 178.48483387000016,
+  "max_seconds_per_alert": 211.04348420000315,
+  "mean_output_tokens_per_attempt": 322.8
+}

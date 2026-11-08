@@ -4,7 +4,7 @@ ZeroShield AI is a research prototype for behavior-based network-flow anomaly de
 
 ## Current implementation
 
-The repository contains the original training/evaluation and XAI code, a FastAPI/React demo, MITRE retrieval assets, verification code, and contextual response experimentation. Stages 1–7 are present. The dashboard and simulated action/feedback workflow also contain parts of Stages 8–10; their limits are listed below. See [docs/project-overview.md](docs/project-overview.md), [docs/methodology.md](docs/methodology.md), and [README_FOR_STAGES_8_10.md](README_FOR_STAGES_8_10.md).
+The repository contains the original training/evaluation and XAI code, a FastAPI/React demo, MITRE retrieval assets, verification code, and contextual response experimentation. Stages 1–7 are present. The dashboard and simulated action/feedback workflow also contain parts of Stages 8–10; their limits are listed below. See [docs/project-overview.md](docs/project-overview.md), [docs/methodology.md](docs/methodology.md), and [README_FOR_STAGES_8_10.md](README_FOR_STAGES_8_10.md). To reproduce the Stage 10 evaluation (replay streams, policy comparison, local-LLM verification), see [README_STAGE10.md](README_STAGE10.md).
 
 | Stage | Current implementation |
 |---|---|
