@@ -37,7 +37,7 @@ Headline result (v2 rewards): the bandit beats always-review, random and the bes
 
 ```powershell
 Set-Location backend
-python -m unittest discover -s tests          # 149 tests, all OK expected (about 4 min)
+python -m unittest discover -s tests          # 156 tests, all OK expected (about 4 min)
 ```
 
 ## 2. End-to-end check
@@ -98,6 +98,25 @@ Settings (fixed in `docs/stage10-evaluation-plan.md`, amendment 2): temperature 
 
 To use the LLM in the dashboard instead of the template: set `$env:ZEROSHIELD_LLM_PROVIDER = "ollama"` (and optionally `OLLAMA_MODEL`) before starting the backend. Without it the app behaves as before (OpenAI if `OPENAI_API_KEY` is set, otherwise the labelled template).
 
+## 7. HTTP content check for Web-Based attacks (code ready, not run)
+
+Signature rules on plaintext HTTP from the original captures; complementary to the flow detector, not zero-day detection. Method fixed in `docs/stage10-evaluation-plan.md`, amendment 3 (rules frozen as `content-rules-v1`, SHA-256 `4275b674…9635`).
+
+1. Get the CIC-IoT-2023 PCAPs for the web attacks (SqlInjection, XSS, CommandInjection, Uploading_Attack, BrowserHijacking, Backdoor_Malware) from the dataset's download page. `BenignTraffic3.pcap` is already in `..\Dataset\`.
+2. Optional quick look at one capture (0 requests means no plaintext HTTP: the go/no-go fails for that attack):
+
+   ```powershell
+   python pcap_http_extract.py path\SqlInjection.pcap --out ..\..\tmp\sqli_requests.jsonl --label SqlInjection
+   ```
+
+3. Run once, from `backend\`:
+
+   ```powershell
+   python -u evaluate_content_check.py --benign ..\..\Dataset\BenignTraffic3.pcap --attack SqlInjection=path\SqlInjection.pcap --attack XSS=path\XSS.pcap --attack CommandInjection=path\CommandInjection.pcap --attack Uploading_Attack=path\Uploading_Attack.pcap --attack BrowserHijacking=path\BrowserHijacking.pcap --attack Backdoor_Malware=path\Backdoor_Malware.pcap --out experiments\content_check
+   ```
+
+   Output: `experiments/content_check/summary.md` (hit rate per capture, benign false positives with a 95% interval, the flow detector's flag rate per family next to it) and one `*_hits.jsonl` per capture with every matching request and snippet. Do not edit the rules after seeing the results.
+
 ## Rules that keep the results honest
 
 - Write or amend `docs/stage10-evaluation-plan.md` and commit it **before** running anything new. Run each confirmatory experiment once and say how many times you looked at its results.
@@ -118,4 +137,4 @@ To use the LLM in the dashboard instead of the template: set `$env:ZEROSHIELD_LL
 
 1. LLM verification main run (step 6), then write `docs/stage10-llm-verification.md` with the method, results and limits.
 2. CLAUDE.md step 5: dashboard alert-detail view, action allowlist, simulated asset criticality (labelled as simulated).
-3. Proposed, not started: a signature-based HTTP content check from the original PCAPs to complement the flow detector for Web-Based attacks. The go/no-go question is whether the CIC-IoT-2023 web-attack captures contain plaintext HTTP; they are not in this repo or on the team drive yet.
+3. HTTP content check (step 7): code and tests done, rules frozen; needs the web-attack PCAPs and one run. Then write the results into `docs/` next to the flow detector's per-family recall.
