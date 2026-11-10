@@ -272,3 +272,34 @@ class MeasurementScriptTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class MainRunHelpers(unittest.TestCase):
+    def rec(self, family, label, attack, text, verdict="VERIFIED", status="ok"):
+        r = {"alert_id": f"{family}-{label}-{text}", "family": family, "attack_label": label, "is_attack": attack,
+             "status": status, "verdict": verdict}
+        if status == "ok": r["reasoning"] = {"report": {"attack_context": text}}
+        return r
+
+    def test_technique_relevance_classes(self):
+        recs = [self.rec("Web-Based", "SqlInjection", True, "maybe T1499.001"),      # flood technique for SQLi: irrelevant
+                self.rec("DDoS", "DDoS-SYN_Flood", True, "maybe T1498"),             # relevant
+                self.rec("Recon", "Recon-PortScan", True, "none retrieved"),
+                self.rec("Benign", "BenignTraffic", False, "T1499"),
+                self.rec("Benign", "BenignTraffic", False, "none"),
+                self.rec("DoS", "DoS-UDP_Flood", True, "", verdict="TIMEOUT", status="timeout")]
+        t = measure.technique_relevance(recs)["total"]
+        self.assertEqual((t["irrelevant"], t["relevant"], t["none"]), (1, 1, 1))
+        self.assertEqual((t["benign_cites_technique"], t["benign_none"], t["no_report"]), (1, 1, 1))
+        self.assertEqual(t["faithful_but_wrong"], 2)
+
+    def test_round_robin_keeps_membership_and_interleaves(self):
+        alerts = [{"_family": f, "alert_id": f + str(i)} for f in ("Benign", "DDoS", "Mirai") for i in range(3)]
+        rr = measure.round_robin(alerts)
+        self.assertEqual(sorted(a["alert_id"] for a in rr), sorted(a["alert_id"] for a in alerts))
+        self.assertEqual([a["_family"] for a in rr[:3]], ["Benign", "DDoS", "Mirai"])
+
+    def test_human_check_sample_is_seeded(self):
+        recs = [self.rec("DDoS", "x", True, str(i)) for i in range(50)]
+        self.assertEqual(measure.human_check_sample(recs), measure.human_check_sample(recs))
+        self.assertEqual(len(measure.human_check_sample(recs)), 30)

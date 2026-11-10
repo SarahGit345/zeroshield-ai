@@ -49,6 +49,63 @@ PHASE_SAMPLE = {"pilot": "pilot", "smoke": "pilot", "main": "main"}     # the sm
 SEEN_BEFORE_MAIN = frozenset({"7b4cbfff-746d-54af-ab94-f43232d90c78"})
 
 
+# Relevant ATT&CK techniques for the "faithful but wrong" count (amendment 2, addendum of 2026-11-11), fixed before the
+# main run. Generous: any sub-technique of a listed technique counts. Label-level entries (from evaluate_retrieval.EXPECTED)
+# take precedence over the family-level ones.
+RELEVANT_BY_FAMILY = {"DDoS": {"T1498", "T1499"}, "DoS": {"T1498", "T1499"}, "Mirai": {"T1498", "T1499", "T1584"},
+                      "Recon": {"T1046", "T1595", "T1018", "T1590"}, "Brute Force": {"T1110"},
+                      "Spoofing": {"T1557"}, "Web-Based": {"T1190", "T1505", "T1059", "T1185", "T1189"}}
+TECHNIQUE_ID = __import__("re").compile(r"\bT\d{4}(?:\.\d{3})?\b")
+HUMAN_CHECK_N = 30
+
+
+def relevant_set(record):
+    from evaluate_retrieval import EXPECTED
+    return EXPECTED.get(record["attack_label"]) or RELEVANT_BY_FAMILY.get(record["family"], set())
+
+
+def technique_relevance(records):
+    """Descriptive: which techniques the reports cite. Attacks: relevant / irrelevant / none. Benign: any cited
+    technique is unsupported (the flow is benign). 'Faithful but wrong' = VERIFIED and (irrelevant, or benign citing one)."""
+    rows, out = [], defaultdict(Counter)
+    for r in records:
+        if r["status"] != "ok":
+            out[r["family"]]["no_report"] += 1; continue
+        cited = sorted(set(TECHNIQUE_ID.findall(json.dumps(r["reasoning"]["report"]))))
+        if not r["is_attack"]:
+            cls = "benign_cites_technique" if cited else "benign_none"
+        elif not cited:
+            cls = "none"
+        else:
+            cls = "relevant" if any(t.split(".")[0] in relevant_set(r) for t in cited) else "irrelevant"
+        out[r["family"]][cls] += 1
+        if r["verdict"] == "VERIFIED" and cls in ("irrelevant", "benign_cites_technique"): out[r["family"]]["faithful_but_wrong"] += 1
+        rows.append({"alert_id": r["alert_id"], "family": r["family"], "label": r["attack_label"], "cited": cited, "class": cls,
+                     "verdict": r["verdict"]})
+    total = Counter()
+    for c in out.values(): total.update(c)
+    return {"by_family": {f: dict(c) for f, c in sorted(out.items())}, "total": dict(total), "per_alert": rows,
+            "relevant_map": {f: sorted(s) for f, s in RELEVANT_BY_FAMILY.items()},
+            "note": "Descriptive only. Label-level relevance from evaluate_retrieval.EXPECTED where available, else RELEVANT_BY_FAMILY."}
+
+
+def human_check_sample(records, seed=SAMPLE_SEED):
+    ok = sorted((r for r in records if r["status"] == "ok"), key=lambda r: r["alert_id"])
+    return sorted(r["alert_id"] for r in random.Random(seed).sample(ok, min(HUMAN_CHECK_N, len(ok))))
+
+
+def round_robin(alerts):
+    """Interleave families (PLAN order) so a partial run stays balanced; membership is unchanged."""
+    groups = defaultdict(list)
+    for a in alerts: groups[a["_family"]].append(a)
+    order = [f for f in PLAN["main"] if f in groups]
+    out = []
+    while any(groups[f] for f in order):
+        for f in order:
+            if groups[f]: out.append(groups[f].pop(0))
+    return out
+
+
 def feature_names():
     return json.loads((ROOT / "model_training" / "outputs" / "zero_shield_feature_columns.json").read_text(encoding="utf-8"))
 
@@ -217,7 +274,13 @@ def main(argv=None):
 
     from build_replay_stream import sha256_file
     stream = replay.load_stream(args.stream)
-    sample = select(stream)[PHASE_SAMPLE[args.phase]][:args.limit]
+    chosen = select(stream)
+    sample = chosen[PHASE_SAMPLE[args.phase]]
+    if PHASE_SAMPLE[args.phase] == "main":
+        seen = SEEN_BEFORE_MAIN | {a["alert_id"] for a in chosen["pilot"]}        # pilot 0 and the 10 smoke alerts
+        assert not seen & {a["alert_id"] for a in sample}, "main set overlaps pilot/smoke alerts"
+        sample = round_robin(sample)
+    sample = sample[:args.limit]
     out = args.out / f"{args.phase}_{args.model.replace(':', '_').replace('/', '_')}"
     (out / "raw").mkdir(parents=True, exist_ok=True)
     meta = {"phase": args.phase, "stream": str(args.stream), "stream_sha256": sha256_file(args.stream), "sample_seed": SAMPLE_SEED,
@@ -240,9 +303,17 @@ def main(argv=None):
         print(f"[{i}/{len(sample)}] {alert['alert_id'][:8]} {record['family']}: {record['verdict']} "
               f"{record['failed_checks']} ({record['elapsed_seconds']:.0f} s)", flush=True)
     summary = summarise(records, {**meta, "finished_at": datetime.now(timezone.utc).isoformat()})
+    summary["technique_relevance"] = technique_relevance(records)
+    summary["human_check_sample"] = human_check_sample(records)
+    t = summary["technique_relevance"]["total"]
+    md = render(summary) + (
+        "\nTechniques cited (descriptive): attacks " + ", ".join(f"{k} {t.get(k, 0)}" for k in ("relevant", "irrelevant", "none"))
+        + f"; benign citing a technique {t.get('benign_cites_technique', 0)} (unsupported), benign citing none {t.get('benign_none', 0)}; "
+        + f"no report {t.get('no_report', 0)}. Faithful but wrong (VERIFIED and irrelevant, or benign citing one): {t.get('faithful_but_wrong', 0)}.\n"
+        + f"\nHuman-check sample ({len(summary['human_check_sample'])} reports, seed {SAMPLE_SEED}): see summary.json `human_check_sample`.\n")
     (out / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
-    (out / "summary.md").write_text(render(summary), encoding="utf-8")
-    print(render(summary))
+    (out / "summary.md").write_text(md, encoding="utf-8")
+    print(md)
     print(f"Written to {out}")
 
 
