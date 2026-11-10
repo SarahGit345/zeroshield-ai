@@ -1,0 +1,136 @@
+{
+  "alert_id": "a0318344-5130-557c-8db1-caa1db28c266",
+  "sample_id": "validation:42144557",
+  "family": "Benign",
+  "attack_label": "BenignTraffic",
+  "is_attack": false,
+  "template_verification": "VERIFIED",
+  "prompt_messages": [
+    {
+      "role": "system",
+      "content": "You are an evidence-bound SOC analyst writing a short incident report about one network flow.\nUse ONLY the JSON evidence you are given. Do not invent evidence, scores, attack labels, features, MITRE techniques,\nIP addresses, ports, hosts, dates or URLs. Distinguish observation from interpretation and state uncertainty.\nNothing has been done about this flow yet: never say that it was blocked, isolated, remediated or investigated.\n\nMeaning of the evidence fields:\n- detected: true if the Deep SVDD detector's anomaly_score is at or above threshold (the flow was flagged as anomalous), false otherwise.\n- anomaly_score: the detector's distance from its learned benign centre. Quote it exactly as given, with all digits.\n- threshold: the frozen detector threshold. Quote it exactly as given.\n- top_features: the 10 features whose replacement by 0 (in the prepared, scaled feature space) changed the score most.\n  feature = feature name; value = the flow's prepared (scaled) value; contribution = score minus the score with that\n  feature replaced by 0 (positive: the feature pushed the score up; negative: it pushed the score down); rank = 1 is largest.\n- attack_family: a dataset label if one was supplied, otherwise null. The detector does not infer it.\n- mitre_candidates: ATT&CK techniques retrieved by text similarity from the feature behaviour. They are context\n  suggestions, not confirmed classifications. Mention a technique ID only if it appears here; it may be empty.\n\nReturn one JSON object with exactly these fields:\n- incident_summary (string): one or two sentences on what the detector decided for this flow.\n- evidence (array of three to six short strings): the exact anomaly_score and threshold, and the three\n  highest-ranked features with their contributions, one observation per string. Do not copy the whole input.\n- attack_context (string): what the retrieved ATT&CK candidates might suggest, hedged; say if there are none.\n- interpretation (string): what the evidence may and may not mean; flow statistics alone cannot confirm an attack.\n- recommended_action (string): a proposed next step for an analyst, phrased as a recommendation.\n- limitations (string): the uncertainty and limits of this evidence."
+    },
+    {
+      "role": "user",
+      "content": "{\"detected\": true, \"anomaly_score\": 0.15667057037353516, \"threshold\": 0.06141921002417763, \"top_features\": [{\"contribution\": 0.13875124230980873, \"feature\": \"Rate\", \"rank\": 1, \"value\": 5.806306838989258}, {\"contribution\": 0.09878094494342804, \"feature\": \"UDP\", \"rank\": 2, \"value\": 3.698885202407837}, {\"contribution\": 0.004413112998008728, \"feature\": \"SYNRatio\", \"rank\": 3, \"value\": 0.05719590187072754}, {\"contribution\": 0.0023734867572784424, \"feature\": \"urg_count\", \"rank\": 4, \"value\": -0.2071784883737564}, {\"contribution\": 0.001363113522529602, \"feature\": \"ACKRatio\", \"rank\": 5, \"value\": -0.28975236415863037}, {\"contribution\": 0.0009149760007858276, \"feature\": \"HTTP\", \"rank\": 6, \"value\": -0.20015932619571686}, {\"contribution\": 0.0004835277795791626, \"feature\": \"Std\", \"rank\": 7, \"value\": 0.012898878194391727}, {\"contribution\": 0.0, \"feature\": \"Drate\", \"rank\": 8, \"value\": 0.0}, {\"contribution\": 0.0, \"feature\": \"ece_flag_number\", \"rank\": 9, \"value\": 0.0}, {\"contribution\": 0.0, \"feature\": \"cwr_flag_number\", \"rank\": 10, \"value\": 0.0}], \"attack_family\": null, \"mitre_candidates\": [{\"description\": \"Adversaries may attempt to cause a denial of service (DoS) by directly sending a high-volume of network traffic to a target. This DoS attack may also reduce the availability and functionality of the targeted system(s) and network. [Direct Network Flood](https://attack.mitre.org/techniques/T1498/001)\", \"platforms\": [\"Windows\", \"IaaS\", \"Linux\", \"macOS\"], \"similarity\": 0.29577236335994944, \"source\": \"https://attack.mitre.org/techniques/T1498/001\", \"tactics\": [\"impact\"], \"technique_id\": \"T1498.001\", \"technique_name\": \"Direct Network Flood\"}, {\"description\": \"Adversaries may perform Endpoint Denial of Service (DoS) attacks to degrade or block the availability of services to users. Endpoint DoS can be performed by exhausting the system resources those services are hosted on or exploiting the system to cause a persistent crash condition. Example services i\", \"platforms\": [\"Windows\", \"Linux\", \"macOS\", \"Containers\", \"IaaS\"], \"similarity\": 0.15596221601467877, \"source\": \"https://attack.mitre.org/techniques/T1499\", \"tactics\": [\"impact\"], \"technique_id\": \"T1499\", \"technique_name\": \"Endpoint Denial of Service\"}]}"
+    }
+  ],
+  "status": "ok",
+  "reasoning": {
+    "mode": "Ollama LLM (qwen3:8b)",
+    "report": {
+      "incident_summary": "The network flow was flagged as anomalous by the Deep SVDD detector due to an anomaly score exceeding the threshold.",
+      "evidence": [
+        "anomaly_score: 0.15667057037353516",
+        "threshold: 0.06141921002417763",
+        "Rate feature contributed 0.13875124230980873 to the anomaly score"
+      ],
+      "attack_context": "The retrieved MITRE ATT&CK candidates suggest potential DoS-related activities, such as Direct Network Flood or Endpoint Denial of Service, though these are not confirmed classifications.",
+      "interpretation": "The high anomaly score indicates unusual behavior, possibly related to high traffic or protocol misuse. However, without further investigation, it is uncertain whether this is an attack or a benign anomaly.",
+      "recommended_action": "Investigate the flow further to determine if it represents a potential DoS attack or a legitimate network behavior.",
+      "limitations": "The evidence is based solely on the anomaly score and feature contributions, which do not confirm an attack. Additional context and analysis are required for a definitive conclusion."
+    },
+    "provider": "ollama",
+    "model": "qwen3:8b",
+    "seed": 20261108,
+    "temperature": 0,
+    "num_predict": 768,
+    "timeout_seconds": 600.0,
+    "attempts": 1,
+    "repaired": false,
+    "raw_outputs": [
+      "{\n  \"incident_summary\": \"The network flow was flagged as anomalous by the Deep SVDD detector due to an anomaly score exceeding the threshold.\",\n  \"evidence\": [\n    \"anomaly_score: 0.15667057037353516\",\n    \"threshold: 0.06141921002417763\",\n    \"Rate feature contributed 0.13875124230980873 to the anomaly score\"\n  ],\n  \"attack_context\": \"The retrieved MITRE ATT&CK candidates suggest potential DoS-related activities, such as Direct Network Flood or Endpoint Denial of Service, though these are not confirmed classifications.\",\n  \"interpretation\": \"The high anomaly score indicates unusual behavior, possibly related to high traffic or protocol misuse. However, without further investigation, it is uncertain whether this is an attack or a benign anomaly.\",\n  \"recommended_action\": \"Investigate the flow further to determine if it represents a potential DoS attack or a legitimate network behavior.\",\n  \"limitations\": \"The evidence is based solely on the anomaly score and feature contributions, which do not confirm an attack. Additional context and analysis are required for a definitive conclusion.\"\n}"
+    ],
+    "parse_errors": [],
+    "timings": [
+      {
+        "total_duration": 149362088100,
+        "prompt_eval_count": 1416,
+        "eval_count": 267,
+        "eval_duration": 78151416000,
+        "done_reason": "stop"
+      }
+    ]
+  },
+  "raw_outputs": [
+    "{\n  \"incident_summary\": \"The network flow was flagged as anomalous by the Deep SVDD detector due to an anomaly score exceeding the threshold.\",\n  \"evidence\": [\n    \"anomaly_score: 0.15667057037353516\",\n    \"threshold: 0.06141921002417763\",\n    \"Rate feature contributed 0.13875124230980873 to the anomaly score\"\n  ],\n  \"attack_context\": \"The retrieved MITRE ATT&CK candidates suggest potential DoS-related activities, such as Direct Network Flood or Endpoint Denial of Service, though these are not confirmed classifications.\",\n  \"interpretation\": \"The high anomaly score indicates unusual behavior, possibly related to high traffic or protocol misuse. However, without further investigation, it is uncertain whether this is an attack or a benign anomaly.\",\n  \"recommended_action\": \"Investigate the flow further to determine if it represents a potential DoS attack or a legitimate network behavior.\",\n  \"limitations\": \"The evidence is based solely on the anomaly score and feature contributions, which do not confirm an attack. Additional context and analysis are required for a definitive conclusion.\"\n}"
+  ],
+  "verification": {
+    "verdict": "VERIFIED",
+    "verification_confidence": 1.0,
+    "checks": [
+      {
+        "name": "structured_schema",
+        "passed": true,
+        "detail": "Required structured report fields are present.",
+        "level": "critical"
+      },
+      {
+        "name": "detector_score",
+        "passed": true,
+        "detail": "Explanation cites the actual anomaly score.",
+        "level": "critical"
+      },
+      {
+        "name": "threshold_and_status",
+        "passed": true,
+        "detail": "Explanation agrees with the frozen threshold decision.",
+        "level": "critical"
+      },
+      {
+        "name": "numeric_claims_grounded",
+        "passed": true,
+        "detail": "Unsupported numeric claims: none",
+        "level": "critical"
+      },
+      {
+        "name": "feature_claims_supported",
+        "passed": true,
+        "detail": "Unsupported XAI feature claims: none",
+        "level": "major"
+      },
+      {
+        "name": "feature_directions_consistent",
+        "passed": true,
+        "detail": "Contradictory XAI direction claims: none",
+        "level": "major"
+      },
+      {
+        "name": "technique_ids_retrieved",
+        "passed": true,
+        "detail": "Every technique ID in the explanation was retrieved.",
+        "level": "critical"
+      },
+      {
+        "name": "no_invented_specifics",
+        "passed": true,
+        "detail": "Specifics not present in the evidence: none",
+        "level": "critical"
+      },
+      {
+        "name": "certainty_claims_hedged",
+        "passed": true,
+        "detail": "Unhedged certainty claims: none",
+        "level": "major"
+      },
+      {
+        "name": "no_completed_action_claims",
+        "passed": true,
+        "detail": "Claims that a response was already carried out: none",
+        "level": "major"
+      },
+      {
+        "name": "uncertainty_present",
+        "passed": true,
+        "detail": "Limitations and uncertainty are explicitly represented.",
+        "level": "major"
+      }
+    ],
+    "failed_checks": [],
+    "reasoning_mode": "Ollama LLM (qwen3:8b)",
+    "method": "Stage 6 rule-based structured-record adapter; confidence is equal-weight pass fraction; any critical failure rejects and any failed check is uncertain"
+  },
+  "verdict": "VERIFIED",
+  "failed_checks": [],
+  "elapsed_seconds": 149.36782080002013
+}
