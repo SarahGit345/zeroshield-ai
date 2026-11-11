@@ -13,7 +13,7 @@ Branch: `stage10-evaluation` on https://github.com/SarahGit345/zeroshield-ai (a 
 | Policy comparison: bandit vs 6 baselines, 5 seeds, 7 reward tables, paired bootstrap | done | `docs/stage10-results.md` |
 | End-to-end check (`e2e_check.py`) | 68 PASS, 6 WARN (expected), 0 FAIL | run it yourself (below) |
 | LLM verification (Ollama `qwen3:8b`): pilot 0 (1 alert) and smoke test (10 alerts) | done | `backend/experiments/llm_verification/*/summary.md` |
-| LLM verification main run (100 alerts) | **not run yet** (about 5 h on a laptop CPU) | step 6 below |
+| LLM verification main run (100 alerts) | done: 98 VERIFIED, 2 UNCERTAIN; gate removed 0 of 30 false positives | `docs/stage10-llm-verification.md` |
 | Dashboard alert-detail view, action allowlist, simulated asset criticality (CLAUDE.md step 5) | not started | |
 
 Headline result (v2 rewards): the bandit beats always-review, random and the best constant action on all three streams, but loses to a supervised logistic policy and a tuned score-tier rule at 30% and 58% attacks; at 10% its edge over the supervised policy is tiny and depends on the reward values. Web-Based attacks are weak at every stage (detector flags 33.9%; retrieval gives no relevant technique). Details and limits are in `docs/stage10-results.md`.
@@ -135,6 +135,6 @@ Signature rules on plaintext HTTP from the original captures; complementary to t
 
 ## Open work
 
-1. LLM verification main run (step 6), then write `docs/stage10-llm-verification.md` with the method, results and limits.
+1. Human check of the 32 reports in `backend/experiments/llm_verification/main_qwen3_8b/human_check_sheet.csv`; add the result to `docs/stage10-llm-verification.md`.
 2. CLAUDE.md step 5: dashboard alert-detail view, action allowlist, simulated asset criticality (labelled as simulated).
 3. HTTP content check (step 7): code and tests done, rules frozen; needs the web-attack PCAPs and one run. Then write the results into `docs/` next to the flow detector's per-family recall.

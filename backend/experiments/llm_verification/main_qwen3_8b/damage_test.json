@@ -1,0 +1,380 @@
+{
+  "run": "D:\\B-Tech\\Sem-7\\Final year project\\zeroshield-ai\\backend\\experiments\\llm_verification\\main_qwen3_8b",
+  "base_reports": 98,
+  "kinds": [
+    {
+      "kind": "status contradicts detector",
+      "expected_check": "threshold_and_status",
+      "n": 98,
+      "caught": 98,
+      "catch_rate": 1.0,
+      "ci95": [
+        0.9622786759045421,
+        1.0
+      ],
+      "caught_by_expected_check": 98
+    },
+    {
+      "kind": "below-threshold claim",
+      "expected_check": "threshold_and_status",
+      "n": 98,
+      "caught": 98,
+      "catch_rate": 1.0,
+      "ci95": [
+        0.9622786759045421,
+        1.0
+      ],
+      "caught_by_expected_check": 98
+    },
+    {
+      "kind": "technique not retrieved",
+      "expected_check": "technique_ids_retrieved",
+      "n": 98,
+      "caught": 98,
+      "catch_rate": 1.0,
+      "ci95": [
+        0.9622786759045421,
+        1.0
+      ],
+      "caught_by_expected_check": 98
+    },
+    {
+      "kind": "fabricated number",
+      "expected_check": "numeric_claims_grounded",
+      "n": 98,
+      "caught": 98,
+      "catch_rate": 1.0,
+      "ci95": [
+        0.9622786759045421,
+        1.0
+      ],
+      "caught_by_expected_check": 98
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "expected_check": "numeric_claims_grounded",
+      "n": 98,
+      "caught": 59,
+      "catch_rate": 0.6020408163265306,
+      "ci95": [
+        0.50304770600903,
+        0.6933356972367949
+      ],
+      "caught_by_expected_check": 59
+    },
+    {
+      "kind": "wrong feature direction",
+      "expected_check": "feature_directions_consistent",
+      "n": 98,
+      "caught": 98,
+      "catch_rate": 1.0,
+      "ci95": [
+        0.9622786759045421,
+        1.0
+      ],
+      "caught_by_expected_check": 98
+    },
+    {
+      "kind": "feature outside XAI evidence",
+      "expected_check": "feature_claims_supported",
+      "n": 98,
+      "caught": 98,
+      "catch_rate": 1.0,
+      "ci95": [
+        0.9622786759045421,
+        1.0
+      ],
+      "caught_by_expected_check": 98
+    },
+    {
+      "kind": "certainty overclaim",
+      "expected_check": "certainty_claims_hedged",
+      "n": 98,
+      "caught": 98,
+      "catch_rate": 1.0,
+      "ci95": [
+        0.9622786759045421,
+        1.0
+      ],
+      "caught_by_expected_check": 98
+    },
+    {
+      "kind": "completed-action claim",
+      "expected_check": "no_completed_action_claims",
+      "n": 98,
+      "caught": 98,
+      "catch_rate": 1.0,
+      "ci95": [
+        0.9622786759045421,
+        1.0
+      ],
+      "caught_by_expected_check": 98
+    },
+    {
+      "kind": "invented IP",
+      "expected_check": "no_invented_specifics",
+      "n": 98,
+      "caught": 98,
+      "catch_rate": 1.0,
+      "ci95": [
+        0.9622786759045421,
+        1.0
+      ],
+      "caught_by_expected_check": 98
+    },
+    {
+      "kind": "invented MAC",
+      "expected_check": "no_invented_specifics",
+      "n": 98,
+      "caught": 98,
+      "catch_rate": 1.0,
+      "ci95": [
+        0.9622786759045421,
+        1.0
+      ],
+      "caught_by_expected_check": 98
+    },
+    {
+      "kind": "invented date",
+      "expected_check": "no_invented_specifics",
+      "n": 98,
+      "caught": 98,
+      "catch_rate": 1.0,
+      "ci95": [
+        0.9622786759045421,
+        1.0
+      ],
+      "caught_by_expected_check": 98
+    },
+    {
+      "kind": "invented URL",
+      "expected_check": "no_invented_specifics",
+      "n": 98,
+      "caught": 98,
+      "catch_rate": 1.0,
+      "ci95": [
+        0.9622786759045421,
+        1.0
+      ],
+      "caught_by_expected_check": 98
+    },
+    {
+      "kind": "limitations removed",
+      "expected_check": "uncertainty_present",
+      "n": 98,
+      "caught": 98,
+      "catch_rate": 1.0,
+      "ci95": [
+        0.9622786759045421,
+        1.0
+      ],
+      "caught_by_expected_check": 98
+    }
+  ],
+  "missed": [
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "033c0453-e431-5719-8219-6f435787d315",
+      "family": "Benign"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "15e00d5f-e1c7-5b90-b2e4-0c40f4e35722",
+      "family": "Web-Based"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "22d5e146-9f23-581b-bf09-524728681782",
+      "family": "Recon"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "22f34ca7-56b2-59d2-bea9-bc0c5d5041eb",
+      "family": "DoS"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "39f4837c-706a-52e7-8f8c-df55eb503925",
+      "family": "Spoofing"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "428627e6-3419-5e91-a83f-f8b0ab56ac09",
+      "family": "Benign"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "442f8b55-e3c9-5a0a-8432-0de4db5a4eef",
+      "family": "Spoofing"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "4aa09179-ba05-5667-ba21-32fc8c4d290a",
+      "family": "Benign"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "56e53003-0f0e-5dec-af5a-b199c05bd874",
+      "family": "Brute Force"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "629b2dc2-aa13-58d7-991f-4c001bf0bbe1",
+      "family": "Benign"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "65c4189f-ae9d-5795-84b0-57a9cba974e5",
+      "family": "Mirai"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "6737701e-44c9-588e-88f1-949259631036",
+      "family": "DoS"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "69c58b33-9925-5269-b2fe-bbcdfc143a1b",
+      "family": "Recon"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "6a3bbd25-bfda-5470-a858-773f625bdb21",
+      "family": "DDoS"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "7142949e-e660-54cb-adb2-f0c9dc7187d3",
+      "family": "Benign"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "7ad4bdb1-580d-5f1f-8126-53b6f8a46d21",
+      "family": "Recon"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "8f44299b-f502-55e2-9244-07c9095ffa29",
+      "family": "Web-Based"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "9308e165-5f85-50c6-bc60-c3c52c21a9c5",
+      "family": "Benign"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "93e81e7f-24e6-5497-9c2a-e178b7d1fde9",
+      "family": "DoS"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "94d0deb5-2065-5846-bed7-b68821ae3c5a",
+      "family": "Spoofing"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "95e4bb50-4f56-55d6-83bf-774852ef3f51",
+      "family": "Benign"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "97c90c8d-8f59-57fa-b784-8867b0f749fa",
+      "family": "Web-Based"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "9e5dd608-3ce9-5a30-a37a-a7a5a0603cde",
+      "family": "Web-Based"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "a0318344-5130-557c-8db1-caa1db28c266",
+      "family": "Benign"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "a2e1a02f-8907-5496-9d79-e27c7e92637f",
+      "family": "Benign"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "a303a3bc-ff70-5706-b658-27c8ffa232f2",
+      "family": "Spoofing"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "a79e49ac-991a-5549-8b49-28f625271c86",
+      "family": "Web-Based"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "b018c3fc-7430-5271-80a8-027eb14fc85e",
+      "family": "Brute Force"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "b0620f9e-4c65-563c-83e3-2988c29f98e4",
+      "family": "Benign"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "b9f6b646-c1fd-5a3c-a10c-5649e48cc53f",
+      "family": "DoS"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "ba1ba39d-006a-587b-9aa5-092ce9149071",
+      "family": "Recon"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "c4108aa3-3ded-5e5e-8fa9-3757a0e232da",
+      "family": "Recon"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "c9a0bb36-8d87-5fc7-8a01-11cf82cf865b",
+      "family": "Mirai"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "ca99bc2e-d307-5acd-a625-6c10e41db5c3",
+      "family": "DDoS"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "ce67c342-b26f-57d9-94f9-90037bc26e76",
+      "family": "Benign"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "d3772bd4-4ebc-55c6-b810-90f29d9d87b9",
+      "family": "Benign"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "dcf923eb-c0c0-5614-949a-811839e601db",
+      "family": "DoS"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "e2cebdd5-9c37-5009-9ee6-96dab2e5976c",
+      "family": "Web-Based"
+    },
+    {
+      "kind": "fake rounding of threshold",
+      "alert_id": "fcd935c5-e4ea-51ca-b67e-bd9786629969",
+      "family": "Spoofing"
+    }
+  ],
+  "overall": {
+    "n": 1372,
+    "caught": 1333,
+    "ci95": [
+      0.9613780267459517,
+      0.9791372186136886
+    ]
+  },
+  "note": "Post-run analysis on saved reports; no LLM calls. Catch = damaged report not VERIFIED."
+}
