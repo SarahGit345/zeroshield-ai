@@ -46,10 +46,33 @@ def row_html(rid, ev, report):
 <p class="small">Top 5 of the 10 features given to the model. Contribution = score minus score with the feature set to 0.</p>
 <h4>ATT&amp;CK candidates retrieved</h4><ul>{cands}</ul></div>
 <div><h3>Report</h3><dl>{rep}</dl></div></div>
-<fieldset><legend>Your check</legend>
-<label>Supported by evidence: <select><option></option><option>Yes</option><option>Partly</option><option>No</option></select></label>
-<label>Technique plausible for this flow: <select><option></option><option>Yes</option><option>No</option><option>None cited</option></select></label>
-<label>Notes <textarea rows="2"></textarea></label></fieldset></section>"""
+<fieldset data-row="{rid}"><legend>Your check</legend>
+<label>Supported by evidence: <select name="supported"><option></option><option>Yes</option><option>Partly</option><option>No</option></select></label>
+<label>Technique plausible for this flow: <select name="technique"><option></option><option>Yes</option><option>No</option><option>None cited</option></select></label>
+<label>Notes <textarea name="notes" rows="2"></textarea></label></fieldset></section>"""
+
+
+SCRIPT = """<script>
+const KEY = "zeroshield-report-check-v1";
+const sets = [...document.querySelectorAll("fieldset[data-row]")];
+function collect() { return sets.map(f => ({row: f.dataset.row, supported: f.querySelector("[name=supported]").value,
+  technique: f.querySelector("[name=technique]").value, notes: f.querySelector("[name=notes]").value})); }
+function progress() { const done = collect().filter(a => a.supported && a.technique).length;
+  document.getElementById("progress").textContent = done + " of " + sets.length + " rows answered"; }
+try { const saved = JSON.parse(localStorage.getItem(KEY) || "[]");
+  saved.forEach(a => { const f = sets.find(s => s.dataset.row === a.row); if (!f) return;
+    f.querySelector("[name=supported]").value = a.supported; f.querySelector("[name=technique]").value = a.technique;
+    f.querySelector("[name=notes]").value = a.notes; }); } catch (e) {}
+document.addEventListener("input", () => { try { localStorage.setItem(KEY, JSON.stringify(collect())); } catch (e) {} progress(); });
+document.getElementById("download").addEventListener("click", () => {
+  const q = s => '"' + String(s).replace(/"/g, '""') + '"';
+  const csv = "row_id,supported_by_evidence,technique_plausible,notes\\n" +
+    collect().map(a => [a.row, a.supported, a.technique, a.notes].map(q).join(",")).join("\\n");
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([csv], {type: "text/csv"}));
+  link.download = "report_check_answers.csv"; link.click(); });
+progress();
+</script>"""
 
 
 def main(argv=None):
@@ -79,8 +102,11 @@ dt{{font-weight:600;margin-top:6px}} dd{{margin:0 0 0 8px}} .small{{font-size:12
 label{{display:block;margin:4px 0}} textarea{{width:100%}}</style></head><body>
 <h1>Report check packet ({len(ids)} reports)</h1>
 <p>For each report, judge only whether its statements are supported by the evidence shown, and whether any cited ATT&amp;CK
-technique is plausible for a flow with these features. Do not look anything up. Record answers here or on paper, by row ID.</p>
-{''.join(sections)}</body></html>"""
+technique is plausible for a flow with these features. Do not look anything up. Answers are kept in this browser as you go;
+when you finish, press <b>Download answers</b> and send the CSV file back.</p>
+<p style="position:sticky;top:0;background:#fff;padding:6px 0;border-bottom:1px solid #ccc"><button id="download">Download answers (CSV)</button>
+<span id="progress"></span></p>
+{''.join(sections)}{SCRIPT}</body></html>"""
     out = args.run / "human_check_packet.html"
     out.write_text(page, encoding="utf-8")
     key_path.parent.mkdir(parents=True, exist_ok=True)
