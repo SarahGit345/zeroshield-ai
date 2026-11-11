@@ -135,6 +135,6 @@ Signature rules on plaintext HTTP from the original captures; complementary to t
 
 ## Open work
 
-1. Human check of the 32 reports in `backend/experiments/llm_verification/main_qwen3_8b/human_check_sheet.csv`; add the result to `docs/stage10-llm-verification.md`.
+1. Human check of the 32 reports in `backend/experiments/llm_verification/main_qwen3_8b/human_check_packet.html` (blind; get the key from the person who built it); add the result to `docs/stage10-llm-verification.md`.
 2. CLAUDE.md step 5: dashboard alert-detail view, action allowlist, simulated asset criticality (labelled as simulated).
 3. HTTP content check (step 7): code and tests done, rules frozen; needs the web-attack PCAPs and one run. Then write the results into `docs/` next to the flow detector's per-family recall.

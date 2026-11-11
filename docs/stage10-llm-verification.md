@@ -13,7 +13,7 @@
 - **Earlier runs, not in the results.** Pilot 0 (1 alert, before the post-pilot fixes; REJECTED for listing feature ranks, 461 s). Smoke test (the 10 pilot alerts, after the fixes; 10 VERIFIED, mean 178 s).
 - **Main-run history.** The first start (00:13 IST) failed on every alert with HTTP 500 because Ollama could not allocate memory (C: full, so the page file could not grow); no model output was produced. After space was freed, the same command was restarted at 00:22 IST, retrying those alerts from scratch, and ran all 100 to completion (4 h 53 min). The stop rule (more than 2 of the first 10 failing or timing out, or mean above 270 s) was checked on the restart's first 10: 0 failures, mean 179 s.
 - **Gate.** As in the live API: only VERIFIED alerts reach the automated response policy; UNCERTAIN and REJECTED go to human review.
-- **Outputs.** `backend/experiments/llm_verification/main_qwen3_8b/`: one raw file per alert (prompt, raw model output, parsed report, every check), `summary.md/.json`, `damage_test.md/.json`, `posthoc_technique_names.json`, `human_check_sheet.csv`.
+- **Outputs.** `backend/experiments/llm_verification/main_qwen3_8b/`: one raw file per alert (prompt, raw model output, parsed report, every check), `summary.md/.json`, `damage_test.md/.json`, `posthoc_technique_names.json`, `human_check_packet.html` (blind; the key is kept outside the repository).
 
 ## Results
 
@@ -97,6 +97,18 @@ The gate removed **no** false positives; it diverted 2 attacks to human review. 
 | Web-Based (10) | 0 | 5 | 5 | 5 |
 | **total** | **17** | **27 + 21 benign** | **35** | **47** |
 
+**Split by verdict (post-hoc classes):**
+
+| class | VERIFIED | UNCERTAIN | total |
+|---|---|---|---|
+| benign, cites a technique (unsupported) | 21 | 0 | 21 |
+| attack, cites only irrelevant techniques | 26 | 1 | 27 |
+| attack, cites a relevant technique | 16 | 1 | 17 |
+| no candidates retrieved (benign 9, attacks 26) | 35 | 0 | 35 |
+| **faithful but wrong = VERIFIED and (benign citing, or irrelevant)** | **21 + 26 = 47** | | |
+
+Reconciliation: a figure of 48 given in conversation before this write-up was a rough sum of benign-citing (21) and irrelevant (27) reports, marked "up to". One of the 27 irrelevant reports (Brute Force, `8bb3a4a2`) was UNCERTAIN, not VERIFIED, so it is not "faithful but wrong" by the definition. The correct count is **47**. The other UNCERTAIN report (DDoS) cites a relevant flood technique.
+
 Every alert that was given candidates cited at least one; in the reports read, the citation was hedged ("suggest", "not confirmed"). The verifier's certainty check found no unhedged claim in any report. Whether the cited technique fits depends on retrieval, not the LLM. Retrieval maps most flagged flows to flood techniques (T1498/T1499), so floods get relevant techniques, while Recon, Spoofing, Web-Based and benign flows get irrelevant ones. The verifier accepts these by design, because the technique was retrieved. In 47 of 100 VERIFIED reports, the report points the analyst at an ATT&CK technique that does not fit the flow. The 17 "relevant" are mostly the generous flood match for flood families, plus T1110 for some Brute Force alerts.
 
 **Relevant sets and when they were fixed.**
@@ -106,7 +118,16 @@ Every alert that was given candidates cited at least one; in the reports read, t
 
 ### Human check (pending)
 
-`main_qwen3_8b/human_check_sheet.csv` has 32 rows: the 30 reports drawn with seed 20261108 before the run, plus the 2 UNCERTAIN ones. It is in alert-ID order, with the verdict and family hidden. A team member reads each raw file's report against its evidence and marks it faithful or not. The result is to be reported here next to the verifier verdicts; it has not been done yet.
+`main_qwen3_8b/human_check_packet.html` (built by `backend/build_human_check_packet.py`) is one self-contained page with 32 rows: the 30 reports drawn with seed 20261108 before the run, plus the 2 UNCERTAIN ones.
+- **Order and IDs:** rows are shuffled with seed 20261108 and labelled R01–R32.
+- **What each row shows:** only the evidence the model was given (score, threshold, top-5 features with values and contributions, ATT&CK candidates with IDs and names) and the report text.
+- **Blank fields:** supported by evidence (Yes / Partly / No), technique plausible (Yes / No / None cited), notes.
+- **What it leaves out:** the verdict, failed checks, family, dataset label, alert ID and file paths.
+- **The key** (row ID to alert ID, verdict, family) is kept outside the repository and is not committed.
+- **Leak scan:** the only matches for family or verdict words are in the model's own report text. "DoS" appears 10 times (for example, "candidates suggest potential DoS attacks") and "benign" 9 times (for example, "a benign anomaly"). There are no alert IDs, verdicts or labels.
+- **Known limit on blindness:** the raw outputs with verdicts are committed in the same folder, and an earlier, non-blind sheet with alert IDs is in the git history (`8b599cc`). A checker could find a report's verdict by searching for its text, so checkers are asked to use only the packet.
+
+The result is to be reported here next to the verifier verdicts. It has not been done yet.
 
 ## Limitations
 

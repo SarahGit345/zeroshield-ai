@@ -4,8 +4,7 @@
 
 1. Technique citations matched by technique NAME or ID (the pre-registered count matched IDs only, but the
    reports name techniques rather than citing IDs). Same relevant sets as the pre-registered count.
-2. A blank human-check sheet: the 30 pre-registered sampled reports plus any UNCERTAIN ones, verdict and
-   family hidden, in alert-ID order.
+The blind human-check packet is built separately by build_human_check_packet.py.
 """
 from __future__ import annotations
 
@@ -50,14 +49,7 @@ def main(argv=None):
            "total": dict(total), "by_family": {f: dict(c) for f, c in sorted(by_family.items())}, "per_alert": rows}
     (args.run / "posthoc_technique_names.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
 
-    summary = json.loads((args.run / "summary.json").read_text(encoding="utf-8"))
-    ids = set(summary["human_check_sample"]) | {r["alert_id"] for r in records if r.get("verdict") == "UNCERTAIN"}
-    with (args.run / "human_check_sheet.csv").open("w", encoding="utf-8", newline="") as f:
-        w = csv.writer(f)
-        w.writerow(["alert_id", "raw_file", "faithful_to_evidence (Y/N)", "unsupported_or_wrong_claims (quote)",
-                    "technique_cited_fits_flow (Y/N/none)", "checker", "notes"])
-        for aid in sorted(ids): w.writerow([aid, f"raw/{aid}.json", "", "", "", "", ""])
-    print(json.dumps({"total": out["total"], "by_family": out["by_family"], "sheet_rows": len(ids)}, indent=1))
+    print(json.dumps({"total": out["total"], "by_family": out["by_family"]}, indent=1))
 
 
 if __name__ == "__main__":
