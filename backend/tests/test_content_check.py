@@ -125,5 +125,30 @@ class ExtractionTests(unittest.TestCase):
         self.assertIn("lower bounds on recall", (out / "summary.md").read_text())
 
 
+class Packaging(unittest.TestCase):
+    def test_dpkt_is_in_requirements(self):
+        # bug: a teammate's fresh install lacked dpkt, so the content-check tests could not import
+        req = (Path(__file__).resolve().parents[1] / "requirements.txt").read_text(encoding="utf-8").lower()
+        self.assertRegex(req, r"(?m)^dpkt==")
+
+
+class E2ETestTimeout(unittest.TestCase):
+    def test_hung_suite_is_reported_as_fail_not_waited_on(self):
+        # bug: e2e_check's test step had no timeout, and a teammate's run sat for two hours with no output
+        import subprocess
+        from unittest import mock
+        import e2e_check
+        results = []
+        with mock.patch.object(e2e_check.subprocess, "run",
+                               side_effect=subprocess.TimeoutExpired("x", 5, stderr="test_a ... ok" + chr(10) + "test_b ...")), \
+             mock.patch.object(e2e_check, "check", side_effect=lambda ok, *a: results.append((ok, a))), \
+             mock.patch.object(e2e_check, "section"):
+            e2e_check.section_tests(timeout=5)
+        self.assertEqual(len(results), 1)
+        self.assertFalse(results[0][0])
+        self.assertIn("timed out after 5 s", results[0][1][2])
+        self.assertIn("test_b", results[0][1][2])
+
+
 if __name__ == "__main__":
     unittest.main()

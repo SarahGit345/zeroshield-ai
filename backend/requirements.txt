@@ -7,3 +7,4 @@ torch>=2.2
 openai>=1.30
 scikit-learn==1.7.2  # matches the serialized Stage 4 TF-IDF index
 httpx>=0.27  # tests only: required by FastAPI's TestClient
+dpkt==1.9.8  # PCAP parsing for the HTTP content check (pcap_http_extract.py)

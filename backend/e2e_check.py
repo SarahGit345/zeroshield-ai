@@ -18,6 +18,7 @@ import statistics
 import subprocess
 import sys
 import tempfile
+import time
 import urllib.error
 import urllib.request
 from collections import Counter, defaultdict
@@ -82,10 +83,22 @@ def section_environment():
 
 
 # ---------------------------------------------------------------- B. unit tests
-def section_tests():
+TEST_TIMEOUT_SECONDS = 1800  # the suite takes about 4 min on a 16 GB laptop; a hang must not run for hours
+
+
+def section_tests(timeout=TEST_TIMEOUT_SECONDS):
     section("B. Backend unit tests")
-    run = subprocess.run([sys.executable, "-W", "ignore", "-m", "unittest", "discover", "-s", "tests"],
-                         cwd=HERE, capture_output=True, text=True)
+    started = time.monotonic()
+    try:
+        run = subprocess.run([sys.executable, "-W", "ignore", "-m", "unittest", "discover", "-s", "tests", "-v"],
+                             cwd=HERE, capture_output=True, text=True, timeout=timeout)
+    except subprocess.TimeoutExpired as exc:
+        out = exc.stderr or exc.stdout or b""
+        out = out.decode("utf-8", "replace") if isinstance(out, bytes) else out
+        last = [line for line in out.strip().splitlines() if line.strip()][-3:]
+        check(False, "All unit tests pass", "", f"timed out after {timeout} s; last test lines:\n" + "\n".join(last))
+        return
+    print(f"  (unit tests took {time.monotonic() - started:.0f} s)")
     tail = (run.stderr or run.stdout).strip().splitlines()
     ran = next((line for line in tail if line.startswith("Ran ")), "")
     check(run.returncode == 0, "All unit tests pass", ran, "failures:\n" + "\n".join(tail[-12:]))
