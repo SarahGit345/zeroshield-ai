@@ -130,7 +130,23 @@ class MitreService:
     def insufficient(self):
         return {"status": "insufficient_evidence", "message": "Insufficient evidence for a confident ATT&CK mapping.", "techniques": []}
 
-    def retrieve_behavior(self, analysis):
+    def retrieve_behavior(self, analysis, abstain_implausible: bool = False):
+        """abstain_implausible (plan amendment 5, default off): drop candidates that plausibility-rules-v1 judges
+        unsupported by the observed behaviours; techniques without a rule are kept."""
+        result = self._retrieve(analysis)
+        if not abstain_implausible or not result.get("techniques"):
+            return result
+        from services.technique_plausibility import RULES_VERSION, plausible
+        top = analysis.get("top_features", [])
+        kept = [t for t in result["techniques"] if plausible(t["technique_id"], top) is not False]
+        removed = [t["technique_id"] for t in result["techniques"] if plausible(t["technique_id"], top) is False]
+        result = {**result, "techniques": kept, "plausibility_rules": RULES_VERSION, "removed_as_implausible": removed}
+        if not kept:
+            result.update(status="abstained_implausible",
+                          message="Retrieved techniques were not supported by the observed flow behaviours, so no ATT&CK mapping is given.")
+        return result
+
+    def _retrieve(self, analysis):
         if not self.index:
             return {**self.insufficient(), "status": "retrieval_unavailable", "message": "Behavior retrieval unavailable; no techniques fabricated.", "error": self.index_error}
         query, used = build_behavior_query(analysis.get("top_features", []))

@@ -114,7 +114,14 @@ def _status_contradictions(text: str, detected: bool) -> tuple[list[str], int]:
     return contradictions, agreeing
 
 
-def verify_record(analysis: dict, mitre: dict, reasoning: dict) -> dict:
+def cited_techniques(text: str, techniques: list) -> list:
+    """Retrieved techniques the text cites by ID or by name (case-insensitive)."""
+    low = text.lower()
+    return [t for t in techniques if str(t.get("technique_id", "")).lower() in low
+            or (t.get("technique_name") and str(t["technique_name"]).lower() in low)]
+
+
+def verify_record(analysis: dict, mitre: dict, reasoning: dict, plausibility: bool = False) -> dict:
     report = reasoning.get("report", {})
     evidence_text = _flatten(report.get("evidence", []))
     all_text = "\n".join(_flatten(v) for v in report.values())
@@ -189,6 +196,13 @@ def verify_record(analysis: dict, mitre: dict, reasoning: dict) -> dict:
           "Claims that a response was already carried out: " + ("; ".join(done) if done else "none"))
 
     check("uncertainty_present", bool(report.get("limitations")), "Limitations and uncertainty are explicitly represented.")
+
+    if plausibility:   # plan amendment 5 (post hoc, default off): faithful is not enough if the cited technique does not fit the flow
+        from services.technique_plausibility import plausible
+        implausible = [t["technique_id"] for t in cited_techniques(all_text, mitre.get("techniques", []))
+                       if plausible(t["technique_id"], analysis.get("top_features", [])) is False]
+        check("cited_techniques_plausible", not implausible,
+              "Cited techniques not supported by the observed flow behaviours: " + (", ".join(implausible) if implausible else "none"))
 
     confidence = sum(c["passed"] for c in checks) / len(checks)
     failed_critical = any(not c["passed"] and c["level"] == "critical" for c in checks)
