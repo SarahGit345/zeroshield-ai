@@ -53,3 +53,17 @@ Third look at the held-out half; nothing tuned (the rules have no threshold). `r
 | tuning half, abstention on | 10 of 47 | 5 | 5 | 50.0% |
 
 Abstention made retrieval worse on both halves: relevant answers for Mirai floods fell from 19 of 30 to 3 of 30 on the test half. Mirai flows are explained by absent ACK and SYN packets (for example `ack_flag_number` -2.36, `syn_count` -1.04), which the v1 flood rule does not list, so the correct flood techniques were removed. On the 100 LLM-run alerts the rules removed 106 of 198 candidates and cut alerts with a relevant candidate from 18 to 8. Abstention stays off; the existing 0.15 similarity floor remains the only abstention rule.
+
+## Post hoc: plausibility rules v2, tuned on S58, tested once on S10 (plan amendment 6, 2026-11-14)
+
+v1 (above) failed because floods in this data appear as missing TCP behaviour. v2 adds two behaviours written from networking knowledge: one-way, non-TCP floods (ACK, SYN or inbound packets far below the benign range) for T1498/T1499, and brute force inside one sustained session (long gaps between packets, pushed application data) for T1110. Three variants were compared on the S58 tuning stream only (`backend/experiments/plausibility_v2/tune_s58.txt`); the best (balanced accuracy 0.682 vs v1 0.493) was frozen in commit `ee5af0e` before the S10 test stream was evaluated once. Unit: flagged alert x retrieved candidate (139 relevant, 7,433 irrelevant; every candidate on a benign alert is irrelevant). Full tables: `backend/experiments/plausibility_v2/test_s10.md`.
+
+| S10, run once | relevant candidates kept [95% CI] | irrelevant candidates removed [95% CI] | balanced accuracy |
+|---|---|---|---|
+| no rules (current) | 100.0% | 0.0% | 0.500 |
+| v1 | 40.3% [32.5%, 48.6%] | 51.9% [50.7%, 53.0%] | 0.461 |
+| **v2** | **90.6% [84.7%, 94.5%]** | **38.4% [37.3%, 39.5%]** | **0.645** |
+
+**Verdict under the pre-stated rule: improvement over v1** (difference +0.185, 95% paired-bootstrap interval [+0.123, +0.245]) and over no rules (interval [+0.101, +0.183]). Per family: Mirai relevant kept 38 of 38 and irrelevant removed 111 of 111 (balanced 1.000; v1 0.697); DDoS 34 of 34 kept (0.815; v1 0.668); Brute Force 37 of 50 kept (v1 0 of 50) but only 6 of 55 irrelevant removed; DoS unchanged (0.850). Attacks keeping a relevant candidate: 76 of 81 (v1: 30 of 81).
+
+Limits. Recon, Spoofing and Web-Based never receive a relevant candidate from retrieval, so rules can only remove their wrong ones; the gain is in floods and brute force. Benign flows often look flood-like, so 62.8% of benign candidates are still kept. This is a candidate-level test; the effect on the verifier with real LLM reports (amendment 5 used v1) has not been measured and needs fresh reports. Both features stay off by default.

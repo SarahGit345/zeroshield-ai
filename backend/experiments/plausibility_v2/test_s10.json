@@ -1,0 +1,734 @@
+{
+  "overall": {
+    "no rules": {
+      "relevant_kept": [
+        139,
+        139,
+        1.0,
+        0.9731058739190823,
+        1.0
+      ],
+      "irrelevant_removed": [
+        0,
+        7433,
+        0.0,
+        0.0,
+        0.000516563375506075
+      ],
+      "balanced_accuracy": 0.5,
+      "attacks_with_relevant_after": [
+        81,
+        81,
+        301
+      ],
+      "benign_with_no_candidate_after": [
+        405,
+        2709
+      ]
+    },
+    "v1": {
+      "relevant_kept": [
+        56,
+        139,
+        0.4028776978417266,
+        0.32501196368104285,
+        0.4859674708814375
+      ],
+      "irrelevant_removed": [
+        3855,
+        7433,
+        0.5186331225615498,
+        0.5072673717483247,
+        0.5299796229974018
+      ],
+      "balanced_accuracy": 0.46075541020163824,
+      "attacks_with_relevant_after": [
+        30,
+        81,
+        301
+      ],
+      "benign_with_no_candidate_after": [
+        829,
+        2709
+      ]
+    },
+    "v2": {
+      "relevant_kept": [
+        126,
+        139,
+        0.9064748201438849,
+        0.8465579345099937,
+        0.9445281356544402
+      ],
+      "irrelevant_removed": [
+        2856,
+        7433,
+        0.3842324767926813,
+        0.373236900358572,
+        0.39534765575191444
+      ],
+      "balanced_accuracy": 0.6453536484682831,
+      "attacks_with_relevant_after": [
+        76,
+        81,
+        301
+      ],
+      "benign_with_no_candidate_after": [
+        706,
+        2709
+      ]
+    }
+  },
+  "per_family": {
+    "Benign": {
+      "no rules": {
+        "relevant_kept": [
+          0,
+          0,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "irrelevant_removed": [
+          0,
+          6915,
+          0.0,
+          0.0,
+          0.0005552374547785571
+        ],
+        "balanced_accuracy": NaN,
+        "attacks_with_relevant_after": [
+          0,
+          0,
+          0
+        ],
+        "benign_with_no_candidate_after": [
+          405,
+          2709
+        ]
+      },
+      "v1": {
+        "relevant_kept": [
+          0,
+          0,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "irrelevant_removed": [
+          3529,
+          6915,
+          0.5103398409255242,
+          0.4985548793862512,
+          0.5221133203308805
+        ],
+        "balanced_accuracy": NaN,
+        "attacks_with_relevant_after": [
+          0,
+          0,
+          0
+        ],
+        "benign_with_no_candidate_after": [
+          829,
+          2709
+        ]
+      },
+      "v2": {
+        "relevant_kept": [
+          0,
+          0,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "irrelevant_removed": [
+          2572,
+          6915,
+          0.37194504699927694,
+          0.36062713583965744,
+          0.3834051599712483
+        ],
+        "balanced_accuracy": NaN,
+        "attacks_with_relevant_after": [
+          0,
+          0,
+          0
+        ],
+        "benign_with_no_candidate_after": [
+          706,
+          2709
+        ]
+      }
+    },
+    "Brute Force": {
+      "no rules": {
+        "relevant_kept": [
+          50,
+          50,
+          1.0,
+          0.9286499658256813,
+          1.0
+        ],
+        "irrelevant_removed": [
+          0,
+          55,
+          0.0,
+          0.0,
+          0.06528714378942788
+        ],
+        "balanced_accuracy": 0.5,
+        "attacks_with_relevant_after": [
+          18,
+          18,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      },
+      "v1": {
+        "relevant_kept": [
+          0,
+          50,
+          0.0,
+          0.0,
+          0.07135003417431873
+        ],
+        "irrelevant_removed": [
+          7,
+          55,
+          0.12727272727272726,
+          0.06304130417480196,
+          0.24017274846822606
+        ],
+        "balanced_accuracy": 0.06363636363636363,
+        "attacks_with_relevant_after": [
+          0,
+          18,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      },
+      "v2": {
+        "relevant_kept": [
+          37,
+          50,
+          0.74,
+          0.6044657801100008,
+          0.8412862034863261
+        ],
+        "irrelevant_removed": [
+          6,
+          55,
+          0.10909090909090909,
+          0.05096655628305132,
+          0.21825793795231957
+        ],
+        "balanced_accuracy": 0.42454545454545456,
+        "attacks_with_relevant_after": [
+          13,
+          18,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      }
+    },
+    "DDoS": {
+      "no rules": {
+        "relevant_kept": [
+          34,
+          34,
+          1.0,
+          0.8984820937803899,
+          1.0
+        ],
+        "irrelevant_removed": [
+          0,
+          46,
+          0.0,
+          -6.40407048689714e-18,
+          0.07707617732978073
+        ],
+        "balanced_accuracy": 0.5,
+        "attacks_with_relevant_after": [
+          24,
+          24,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      },
+      "v1": {
+        "relevant_kept": [
+          24,
+          34,
+          0.7058823529411765,
+          0.5383077411853625,
+          0.8316554739006805
+        ],
+        "irrelevant_removed": [
+          29,
+          46,
+          0.6304347826086957,
+          0.4859983314918479,
+          0.754764404856905
+        ],
+        "balanced_accuracy": 0.6681585677749361,
+        "attacks_with_relevant_after": [
+          14,
+          24,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      },
+      "v2": {
+        "relevant_kept": [
+          34,
+          34,
+          1.0,
+          0.8984820937803899,
+          1.0
+        ],
+        "irrelevant_removed": [
+          29,
+          46,
+          0.6304347826086957,
+          0.4859983314918479,
+          0.754764404856905
+        ],
+        "balanced_accuracy": 0.8152173913043479,
+        "attacks_with_relevant_after": [
+          24,
+          24,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      }
+    },
+    "DoS": {
+      "no rules": {
+        "relevant_kept": [
+          17,
+          17,
+          1.0,
+          0.8156763396284354,
+          1.0
+        ],
+        "irrelevant_removed": [
+          0,
+          10,
+          0.0,
+          -2.0052288475052677e-17,
+          0.2775401687666165
+        ],
+        "balanced_accuracy": 0.5,
+        "attacks_with_relevant_after": [
+          9,
+          9,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      },
+      "v1": {
+        "relevant_kept": [
+          17,
+          17,
+          1.0,
+          0.8156763396284354,
+          1.0
+        ],
+        "irrelevant_removed": [
+          7,
+          10,
+          0.7,
+          0.3967732199795652,
+          0.892210712513788
+        ],
+        "balanced_accuracy": 0.85,
+        "attacks_with_relevant_after": [
+          9,
+          9,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      },
+      "v2": {
+        "relevant_kept": [
+          17,
+          17,
+          1.0,
+          0.8156763396284354,
+          1.0
+        ],
+        "irrelevant_removed": [
+          7,
+          10,
+          0.7,
+          0.3967732199795652,
+          0.892210712513788
+        ],
+        "balanced_accuracy": 0.85,
+        "attacks_with_relevant_after": [
+          9,
+          9,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      }
+    },
+    "Mirai": {
+      "no rules": {
+        "relevant_kept": [
+          38,
+          38,
+          1.0,
+          0.90818706741616,
+          1.0
+        ],
+        "irrelevant_removed": [
+          0,
+          111,
+          0.0,
+          -3.353389465723668e-18,
+          0.03345129291127954
+        ],
+        "balanced_accuracy": 0.5,
+        "attacks_with_relevant_after": [
+          30,
+          30,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      },
+      "v1": {
+        "relevant_kept": [
+          15,
+          38,
+          0.39473684210526316,
+          0.2559785926361891,
+          0.5528241300130402
+        ],
+        "irrelevant_removed": [
+          111,
+          111,
+          1.0,
+          0.9665487070887205,
+          1.0000000000000002
+        ],
+        "balanced_accuracy": 0.6973684210526316,
+        "attacks_with_relevant_after": [
+          7,
+          30,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      },
+      "v2": {
+        "relevant_kept": [
+          38,
+          38,
+          1.0,
+          0.90818706741616,
+          1.0
+        ],
+        "irrelevant_removed": [
+          111,
+          111,
+          1.0,
+          0.9665487070887205,
+          1.0000000000000002
+        ],
+        "balanced_accuracy": 1.0,
+        "attacks_with_relevant_after": [
+          30,
+          30,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      }
+    },
+    "Recon": {
+      "no rules": {
+        "relevant_kept": [
+          0,
+          0,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "irrelevant_removed": [
+          0,
+          111,
+          0.0,
+          -3.353389465723668e-18,
+          0.03345129291127954
+        ],
+        "balanced_accuracy": NaN,
+        "attacks_with_relevant_after": [
+          0,
+          0,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      },
+      "v1": {
+        "relevant_kept": [
+          0,
+          0,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "irrelevant_removed": [
+          60,
+          111,
+          0.5405405405405406,
+          0.44802693921571074,
+          0.6303418748725639
+        ],
+        "balanced_accuracy": NaN,
+        "attacks_with_relevant_after": [
+          0,
+          0,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      },
+      "v2": {
+        "relevant_kept": [
+          0,
+          0,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "irrelevant_removed": [
+          50,
+          111,
+          0.45045045045045046,
+          0.3610945286072419,
+          0.543121365284867
+        ],
+        "balanced_accuracy": NaN,
+        "attacks_with_relevant_after": [
+          0,
+          0,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      }
+    },
+    "Spoofing": {
+      "no rules": {
+        "relevant_kept": [
+          0,
+          0,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "irrelevant_removed": [
+          0,
+          108,
+          0.0,
+          3.3502763802645017e-18,
+          0.03434857870416731
+        ],
+        "balanced_accuracy": NaN,
+        "attacks_with_relevant_after": [
+          0,
+          0,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      },
+      "v1": {
+        "relevant_kept": [
+          0,
+          0,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "irrelevant_removed": [
+          67,
+          108,
+          0.6203703703703703,
+          0.5261993725148565,
+          0.7062722659452514
+        ],
+        "balanced_accuracy": NaN,
+        "attacks_with_relevant_after": [
+          0,
+          0,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      },
+      "v2": {
+        "relevant_kept": [
+          0,
+          0,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "irrelevant_removed": [
+          41,
+          108,
+          0.37962962962962965,
+          0.29372773405474856,
+          0.4738006274851435
+        ],
+        "balanced_accuracy": NaN,
+        "attacks_with_relevant_after": [
+          0,
+          0,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      }
+    },
+    "Web-Based": {
+      "no rules": {
+        "relevant_kept": [
+          0,
+          0,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "irrelevant_removed": [
+          0,
+          77,
+          0.0,
+          3.3045785251705595e-18,
+          0.047520088667220836
+        ],
+        "balanced_accuracy": NaN,
+        "attacks_with_relevant_after": [
+          0,
+          0,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      },
+      "v1": {
+        "relevant_kept": [
+          0,
+          0,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "irrelevant_removed": [
+          45,
+          77,
+          0.5844155844155844,
+          0.47289839936415395,
+          0.6879098973543671
+        ],
+        "balanced_accuracy": NaN,
+        "attacks_with_relevant_after": [
+          0,
+          0,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      },
+      "v2": {
+        "relevant_kept": [
+          0,
+          0,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "irrelevant_removed": [
+          40,
+          77,
+          0.5194805194805194,
+          0.409638111963798,
+          0.6274714949712452
+        ],
+        "balanced_accuracy": NaN,
+        "attacks_with_relevant_after": [
+          0,
+          0,
+          43
+        ],
+        "benign_with_no_candidate_after": [
+          0,
+          0
+        ]
+      }
+    }
+  },
+  "bootstrap_v2_minus_v1": [
+    0.12319666600668566,
+    0.2452034803471313
+  ],
+  "bootstrap_v2_minus_none": [
+    0.10122095665599984,
+    0.1831531347749218
+  ],
+  "verdict": "improvement over v1",
+  "note": "Plan amendment 6. Test set S10 evaluated once with v2 frozen (rules plausibility-rules-v2). Unit: flagged alert x retrieved candidate; benign candidates are all irrelevant."
+}
