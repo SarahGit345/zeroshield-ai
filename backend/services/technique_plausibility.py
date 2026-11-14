@@ -65,9 +65,39 @@ def observed_behaviours(top_features, top_n: int = 8) -> set:
     return seen
 
 
-def plausible(technique_id: str, top_features) -> bool | None:
-    """True if an observed behaviour supports the technique, False if none does, None if the technique has no rule."""
-    signature = SIGNATURES.get(str(technique_id).split(".")[0])
+def plausible(technique_id: str, top_features, rules: dict | None = None) -> bool | None:
+    """True if an observed behaviour supports the technique, False if none does, None if the technique has no rule.
+    rules defaults to v1 (SIGNATURES), so amendment 5 results stay reproducible."""
+    signature = (SIGNATURES if rules is None else rules).get(str(technique_id).split(".")[0])
     if signature is None:
         return None
     return bool(signature & observed_behaviours(top_features))
+
+
+# ---- v2 candidates (plan amendment 6): compared on the S58 tuning set only; every variant listed here is counted.
+# Floods of non-TCP traffic (UDP, GRE, ICMP) and one-way floods have no handshakes and no replies, so they appear
+# as ACK/SYN packets or inbound packets far BELOW the benign range ("no TCP acknowledgement one-way traffic").
+_ONE_WAY = {("ack_flag_number", "low"), ("ack_count", "low"), ("ACKRatio", "low"), ("Drate", "low"), ("syn_count", "low")}
+# Brute force against a login service can also run inside one sustained session: pauses between attempts,
+# credentials pushed as application data, a long connection.
+_SESSION_LOGIN = {("IAT", "high"), ("psh_flag_number", "high"), ("flow_duration", "high")}
+
+
+def _with(base, **changes):
+    rules = dict(base)
+    for root, extra in changes.items():
+        rules[root] = rules[root] | extra
+    return rules
+
+
+_V2A = _with(SIGNATURES, T1498=_ONE_WAY, T1499=_ONE_WAY)
+V2_CANDIDATES = {
+    "v2a one-way floods": _V2A,
+    "v2b + session login": _with(_V2A, T1110=_SESSION_LOGIN),
+    "v2c + session login without long flows": _with(_V2A, T1110=_SESSION_LOGIN - {("flow_duration", "high")}),
+}
+
+# ---- Frozen v2 (plan amendment 6): the candidate with the highest balanced accuracy on S58 (0.682 vs v1 0.493),
+# chosen after 3 variants. Committed before S10 is evaluated.
+RULES_VERSION_V2 = "plausibility-rules-v2"
+SIGNATURES_V2 = V2_CANDIDATES["v2c + session login without long flows"]
