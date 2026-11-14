@@ -147,3 +147,12 @@ Amendment 2 already fixed the main-run method (committed in `dce2f2b`); it stays
 4. **Human check.** 30 completed reports drawn with seed 20261108 (`human_check_sample` in `summary.json`) are read by a team member against the evidence and marked faithful / not faithful; the result is reported next to the verifier verdicts.
 5. **Stop rule.** If more than 2 of the first 10 alerts fail (LLM_FAILED, ERROR) or time out, or their mean time is above 270 s, the run is stopped and reported before continuing.
 6. The verifier damage test (`DamagedReportsAreCaught`) was rerun on 2026-11-11 before the run: passes.
+
+## Amendment 4 (2026-11-14): trade-off table and break-even analysis (post hoc, descriptive)
+
+Decided after the policy results in `docs/stage10-results.md` were seen, to answer "the reward table is designed, not measured". It adds analysis only: no policy is rerun or retrained, no reward table is added or changed, and nothing new is tuned.
+
+1. **Input.** The saved per-alert decisions of the reward-v2 replay studies (`evaluation_decisions.csv`, 5 seeds each) on S10 (`replay_study_share10_seed2`), S30 (`replay_study_share30_seed3`) and S58, exploratory (`replay_study_seed1_all_policies`). Each decision's label is recovered from its (action, reward) pair under that seed's `reward_table.json`; the script stops if a pair is ambiguous.
+2. **Trade-off table.** Per stream and policy, mean ± std over seeds of: attacks left at MONITOR_ONLY, attacks sent to HUMAN_REVIEW, attacks actioned (CONFIRM_TO_ACT or AUTO_REMEDIATE), benign alerts AUTO_REMEDIATED, benign alerts sent to CONFIRM_TO_ACT, and analyst workload (share of all alerts sent to HUMAN_REVIEW or CONFIRM_TO_ACT). No reward is involved.
+3. **Break-even.** With every policy's v2 decisions held fixed, mean reward is linear in each reward entry. One entry at a time, the others at v2: (a) the benign AUTO_REMEDIATE value (wrongful block), (b) the attack MONITOR_ONLY value (missed attack), (c) a shift added to both HUMAN_REVIEW values (analyst cost). For each, the value at which the bandit's mean reward equals each baseline's is solved exactly and reported with the side on which the bandit wins.
+4. **Stated limit.** Break-even values hold the decisions fixed; a policy retrained under a different table would choose differently. The reruns under six other tables (`docs/stage10-results.md`, Sensitivity) remain the evidence for that case. Results are reported as post hoc and descriptive, once.
