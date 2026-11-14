@@ -40,3 +40,16 @@ The samples were split by position within each family. The similarity floor was 
 - The five candidates score close together. Roughly half of the flagged alerts get Credential Stuffing (T1110.004) as the first candidate, even for floods whose relevant technique is lower in the list. Do not read the order as a ranking.
 - Some "wrong" answers are faithful to the evidence: an XSS flow whose statistics look like a flood is given flood techniques and scored wrong, because the label says XSS.
 - Better retrieval for web attacks needs better evidence (application-layer features), not better wording.
+
+## Post hoc: plausibility-based abstention (plan amendment 5, 2026-11-14)
+
+Third look at the held-out half; nothing tuned (the rules have no threshold). `retrieve_behavior(..., abstain_implausible=True)` drops candidates that `plausibility-rules-v1` judges unsupported by the observed behaviours. Full tables: `backend/experiments/plausibility/summary.md`.
+
+| detector-flagged | answered | relevant | wrong answers | precision when answering |
+|---|---|---|---|---|
+| test half, off (current) | 37 of 53 | 19 | 18 | 51.4% |
+| test half, abstention on | 13 of 53 | 3 | 10 | 23.1% |
+| tuning half, off | 29 of 47 | 18 | 11 | 62.1% |
+| tuning half, abstention on | 10 of 47 | 5 | 5 | 50.0% |
+
+Abstention made retrieval worse on both halves: relevant answers for Mirai floods fell from 19 of 30 to 3 of 30 on the test half. Mirai flows are explained by absent ACK and SYN packets (for example `ack_flag_number` -2.36, `syn_count` -1.04), which the v1 flood rule does not list, so the correct flood techniques were removed. On the 100 LLM-run alerts the rules removed 106 of 198 candidates and cut alerts with a relevant candidate from 18 to 8. Abstention stays off; the existing 0.15 similarity floor remains the only abstention rule.

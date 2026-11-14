@@ -1,0 +1,390 @@
+{
+  "note": "POST HOC (plan amendment 5). Rules written after aggregate results were seen; run once.",
+  "rules": "plausibility-rules-v1",
+  "retrieval": {
+    "tuning half, flagged, abstention off": {
+      "samples": 47,
+      "answered": 29,
+      "relevant": 18,
+      "wrong_answers": 11,
+      "precision_when_answering": 0.621
+    },
+    "tuning half, flagged, abstention on": {
+      "samples": 47,
+      "answered": 10,
+      "relevant": 5,
+      "wrong_answers": 5,
+      "precision_when_answering": 0.5
+    },
+    "test half, flagged, abstention off": {
+      "samples": 53,
+      "answered": 37,
+      "relevant": 19,
+      "wrong_answers": 18,
+      "precision_when_answering": 0.514
+    },
+    "test half, flagged, abstention on": {
+      "samples": 53,
+      "answered": 13,
+      "relevant": 3,
+      "wrong_answers": 10,
+      "precision_when_answering": 0.231
+    }
+  },
+  "retrieval_per_family": {
+    "Backdoor_Malware": {
+      "off": {
+        "flagged": 5,
+        "answered": 3,
+        "relevant": 0
+      },
+      "on": {
+        "flagged": 5,
+        "answered": 1,
+        "relevant": 0
+      }
+    },
+    "BrowserHijacking": {
+      "off": {
+        "flagged": 2,
+        "answered": 2,
+        "relevant": 0
+      },
+      "on": {
+        "flagged": 2,
+        "answered": 2,
+        "relevant": 0
+      }
+    },
+    "CommandInjection": {
+      "off": {
+        "flagged": 4,
+        "answered": 1,
+        "relevant": 0
+      },
+      "on": {
+        "flagged": 4,
+        "answered": 1,
+        "relevant": 0
+      }
+    },
+    "Mirai-greeth_flood": {
+      "off": {
+        "flagged": 10,
+        "answered": 10,
+        "relevant": 9
+      },
+      "on": {
+        "flagged": 10,
+        "answered": 1,
+        "relevant": 1
+      }
+    },
+    "Mirai-greip_flood": {
+      "off": {
+        "flagged": 10,
+        "answered": 10,
+        "relevant": 9
+      },
+      "on": {
+        "flagged": 10,
+        "answered": 1,
+        "relevant": 1
+      }
+    },
+    "Mirai-udpplain": {
+      "off": {
+        "flagged": 10,
+        "answered": 4,
+        "relevant": 1
+      },
+      "on": {
+        "flagged": 10,
+        "answered": 1,
+        "relevant": 1
+      }
+    },
+    "SqlInjection": {
+      "off": {
+        "flagged": 6,
+        "answered": 3,
+        "relevant": 0
+      },
+      "on": {
+        "flagged": 6,
+        "answered": 3,
+        "relevant": 0
+      }
+    },
+    "Uploading_Attack": {
+      "off": {
+        "flagged": 2,
+        "answered": 2,
+        "relevant": 0
+      },
+      "on": {
+        "flagged": 2,
+        "answered": 2,
+        "relevant": 0
+      }
+    },
+    "XSS": {
+      "off": {
+        "flagged": 4,
+        "answered": 2,
+        "relevant": 0
+      },
+      "on": {
+        "flagged": 4,
+        "answered": 1,
+        "relevant": 0
+      }
+    }
+  },
+  "llm": {
+    "by_family": {
+      "Benign": {
+        "alerts": 30,
+        "with_candidates_before": 21,
+        "with_candidates_after": 19,
+        "relevant_before": 0,
+        "relevant_after": 0,
+        "verified_v1": 30,
+        "verified_v2": 22,
+        "fbw_v1": 21,
+        "fbw_v2": 13,
+        "relevant_citing_downgraded": 0
+      },
+      "Brute Force": {
+        "alerts": 10,
+        "with_candidates_before": 9,
+        "with_candidates_after": 8,
+        "relevant_before": 5,
+        "relevant_after": 0,
+        "verified_v1": 9,
+        "verified_v2": 4,
+        "fbw_v1": 3,
+        "fbw_v2": 3,
+        "relevant_citing_downgraded": 5
+      },
+      "DDoS": {
+        "alerts": 10,
+        "with_candidates_before": 6,
+        "with_candidates_after": 5,
+        "relevant_before": 5,
+        "relevant_after": 4,
+        "verified_v1": 9,
+        "verified_v2": 6,
+        "fbw_v1": 1,
+        "fbw_v2": 0,
+        "relevant_citing_downgraded": 2
+      },
+      "DoS": {
+        "alerts": 10,
+        "with_candidates_before": 3,
+        "with_candidates_after": 2,
+        "relevant_before": 2,
+        "relevant_after": 2,
+        "verified_v1": 10,
+        "verified_v2": 9,
+        "fbw_v1": 1,
+        "fbw_v2": 0,
+        "relevant_citing_downgraded": 0
+      },
+      "Mirai": {
+        "alerts": 10,
+        "with_candidates_before": 6,
+        "with_candidates_after": 2,
+        "relevant_before": 6,
+        "relevant_after": 2,
+        "verified_v1": 10,
+        "verified_v2": 6,
+        "fbw_v1": 1,
+        "fbw_v2": 0,
+        "relevant_citing_downgraded": 3
+      },
+      "Recon": {
+        "alerts": 10,
+        "with_candidates_before": 8,
+        "with_candidates_after": 6,
+        "relevant_before": 0,
+        "relevant_after": 0,
+        "verified_v1": 10,
+        "verified_v2": 4,
+        "fbw_v1": 8,
+        "fbw_v2": 2,
+        "relevant_citing_downgraded": 0
+      },
+      "Spoofing": {
+        "alerts": 10,
+        "with_candidates_before": 7,
+        "with_candidates_after": 6,
+        "relevant_before": 0,
+        "relevant_after": 0,
+        "verified_v1": 10,
+        "verified_v2": 7,
+        "fbw_v1": 7,
+        "fbw_v2": 4,
+        "relevant_citing_downgraded": 0
+      },
+      "Web-Based": {
+        "alerts": 10,
+        "with_candidates_before": 5,
+        "with_candidates_after": 5,
+        "relevant_before": 0,
+        "relevant_after": 0,
+        "verified_v1": 10,
+        "verified_v2": 9,
+        "fbw_v1": 5,
+        "fbw_v2": 4,
+        "relevant_citing_downgraded": 0
+      }
+    },
+    "total": {
+      "alerts": 100,
+      "with_candidates_before": 65,
+      "with_candidates_after": 53,
+      "relevant_before": 18,
+      "relevant_after": 8,
+      "verified_v1": 98,
+      "verified_v2": 67,
+      "fbw_v1": 47,
+      "fbw_v2": 26,
+      "relevant_citing_downgraded": 10
+    },
+    "candidates": {
+      "candidates": 198,
+      "removed": 106,
+      "not_judged": 0
+    },
+    "v1_recomputed_mismatches": []
+  },
+  "damage": [
+    {
+      "damage": "status contradicts detector",
+      "caught": 67,
+      "n": 67,
+      "ci95": [
+        0.946,
+        1.0
+      ]
+    },
+    {
+      "damage": "below-threshold claim",
+      "caught": 67,
+      "n": 67,
+      "ci95": [
+        0.946,
+        1.0
+      ]
+    },
+    {
+      "damage": "technique not retrieved",
+      "caught": 67,
+      "n": 67,
+      "ci95": [
+        0.946,
+        1.0
+      ]
+    },
+    {
+      "damage": "fabricated number",
+      "caught": 67,
+      "n": 67,
+      "ci95": [
+        0.946,
+        1.0
+      ]
+    },
+    {
+      "damage": "fake rounding of threshold",
+      "caught": 39,
+      "n": 67,
+      "ci95": [
+        0.463,
+        0.693
+      ]
+    },
+    {
+      "damage": "wrong feature direction",
+      "caught": 67,
+      "n": 67,
+      "ci95": [
+        0.946,
+        1.0
+      ]
+    },
+    {
+      "damage": "feature outside XAI evidence",
+      "caught": 67,
+      "n": 67,
+      "ci95": [
+        0.946,
+        1.0
+      ]
+    },
+    {
+      "damage": "certainty overclaim",
+      "caught": 67,
+      "n": 67,
+      "ci95": [
+        0.946,
+        1.0
+      ]
+    },
+    {
+      "damage": "completed-action claim",
+      "caught": 67,
+      "n": 67,
+      "ci95": [
+        0.946,
+        1.0
+      ]
+    },
+    {
+      "damage": "invented IP",
+      "caught": 67,
+      "n": 67,
+      "ci95": [
+        0.946,
+        1.0
+      ]
+    },
+    {
+      "damage": "invented MAC",
+      "caught": 67,
+      "n": 67,
+      "ci95": [
+        0.946,
+        1.0
+      ]
+    },
+    {
+      "damage": "invented date",
+      "caught": 67,
+      "n": 67,
+      "ci95": [
+        0.946,
+        1.0
+      ]
+    },
+    {
+      "damage": "invented URL",
+      "caught": 67,
+      "n": 67,
+      "ci95": [
+        0.946,
+        1.0
+      ]
+    },
+    {
+      "damage": "limitations removed",
+      "caught": 67,
+      "n": 67,
+      "ci95": [
+        0.946,
+        1.0
+      ]
+    }
+  ]
+}

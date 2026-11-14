@@ -143,3 +143,17 @@ The result is to be reported here next to the verifier verdicts. It has not been
 ## Reproduce
 
 From `backend/` with Ollama running: `python -u measure_llm_verification.py --phase main` (about 5 h; resumes), then `python damage_llm_reports.py` and `python posthoc_llm_analysis.py` (seconds; no LLM calls). See `README_STAGE10.md`.
+
+## Post hoc: technique plausibility check (plan amendment 5, 2026-11-14)
+
+Added after the results above were seen; run once on the same 100 saved reports, no LLM call. An optional 12th check, `cited_techniques_plausible` (rules `plausibility-rules-v1`, `backend/services/technique_plausibility.py`), marks a report UNCERTAIN when it cites a retrieved technique that no observed flow behaviour supports. Default off; the 11-check results above are unchanged (recomputed: 0 differences). Full tables: `backend/experiments/plausibility/summary.md`.
+
+| | 11 checks | 12 checks |
+|---|---|---|
+| Benign false positives reaching the policy as VERIFIED | 30 of 30 | **22 of 30** (8 removed) |
+| Attacks VERIFIED | 68 of 70 | **45 of 70** (23 more UNCERTAIN) |
+| Faithful-but-wrong (VERIFIED and wrong or benign-cited technique; name-or-ID count) | 47 | **26** |
+| Attacks citing a *relevant* technique downgraded | | 10 (Brute Force 5, Mirai 3, DDoS 2) |
+| Damage test (reports still VERIFIED with the check on) | | unchanged: every kind 100% except fake rounding, 39 of 67 |
+
+This is the first verifier change that removes any false positives, but it costs attacks: for every benign alert removed, about three attacks lose their VERIFIED status, ten of them reports whose technique was relevant. The cause is the rules, not the reports: in this data floods appear in the XAI evidence as missing normal TCP behaviour (no ACK packets, few SYN packets, no HTTPS), not as a high packet rate, so the flood rule judges T1498/T1499 implausible for many flood flows; the brute-force rule similarly misses brute-force flows. A revised rule set would have to be written and then evaluated on reports not used here; it is not tuned on these. Verdict: a trade-off, not an improvement; the check stays off by default.
