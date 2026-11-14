@@ -87,6 +87,38 @@ Counts of verdicts for bandit minus baseline across the six other tables (`desig
 
 The ordering against non-learning baselines does not depend on the reward values tried. Against the supervised policy, the bandit loses under every table at 30% and 58%, and at 10% the sign flips with the table (worse under v1, missed-attack x2 and analyst-time x2; no difference with false-remediation -6; better under false-remediation -24 and automation-gain 3). Cell-level intervals are in each `study_summary.md`.
 
+## Trade-off and break-even (post hoc, plan amendment 4, 2026-11-14)
+
+Decided after the results above were seen; descriptive only. It reruns no policy and changes no reward table: it reads the saved reward-v2 decisions (5 seeds per stream). Script `backend/analyze_tradeoffs.py`; full tables in `backend/experiments/tradeoff_analysis/tradeoff.md`. Run once. Its reward differences at v2 reproduce the table above exactly (S30: +0.540, -0.444, -0.386), which cross-checks both.
+
+### What each policy does (mean over seeds; no reward involved)
+
+| stream | policy | attacks missed (MONITOR_ONLY) | attacks actioned (CONFIRM or AUTO) | benign wrongly AUTO_REMEDIATED | analyst workload (REVIEW or CONFIRM, all alerts) |
+|---|---|---|---|---|---|
+| S10 | Contextual bandit | 51.4% | 5.9% | 0.0% | 8.2% |
+| S10 | Supervised expected-reward | 56.2% | 25.5% | 0.0% | 7.6% |
+| S10 | Tuned score-tier rule | 34.6% | 0.0% | 0.0% | 19.7% |
+| S30 | Contextual bandit | 18.1% | 11.2% | 0.1% | 62.2% |
+| S30 | Supervised expected-reward | 26.6% | 51.8% | 1.1% | 37.4% |
+| S30 | Tuned score-tier rule | 32.8% | 65.8% | 0.0% | 35.4% |
+| S58 (exploratory) | Contextual bandit | 0.9% | 58.4% | 4.7% | 79.6% |
+| S58 (exploratory) | Supervised expected-reward | 11.4% | 76.1% | 3.0% | 42.1% |
+| S58 (exploratory) | Tuned score-tier rule | 3.3% | 66.2% | 11.1% | 48.3% |
+
+The bandit is the cautious policy: at 30% and 58% attacks it misses fewer attacks than the supervised policy but sends far more alerts to analysts (62% vs 37% at S30; 80% vs 42% at S58). Its lower mean reward under v2 comes from that analyst workload, not from more missed attacks or wrongful blocks.
+
+### Break-even against the supervised policy (decisions held fixed; one entry varied, the others at v2)
+
+| stream | missed-attack value (v2: -6) | wrongful-block value (v2: -12) | shift added to both HUMAN_REVIEW values (v2: 0) |
+|---|---|---|---|
+| S10 | bandit better below -1.15 (holds at v2) | no effect (neither policy auto-remediates benign) | bandit better above -0.72: if review costs 0.72 more per alert, the bandit's edge is gone |
+| S30 | bandit better only below -23.40 | bandit better only below -79.48 | bandit better only above +1.25 |
+| S58 (exploratory) | bandit better only below -13.25 | no realistic value (above +49.92) | bandit better only above +1.24 |
+
+At S30 the supervised policy stays ahead unless a missed attack is penalised about 4 times harder than v2, a wrongful block about 7 times harder, or analyst review is made 1.25 points cheaper; so the S30 conclusion is not an artefact of the exact reward values. At S10 the bandit's small edge disappears if review costs a little more. Against the tuned score-tier rule, see `tradeoff.md` (for example at S58 the bandit is better only if a wrongful block is worse than -23.82, because that rule auto-remediates 11.1% of benign alerts).
+
+**Limit.** Break-even values hold each policy's v2 decisions fixed; a policy retrained under a different table would choose differently. The reruns under six other tables (Sensitivity, above) remain the evidence for that case.
+
 ## How many times results were looked at
 
 - S58: the bandit / fixed rule / always-review / random results were seen before the plan (exploratory study and `e2e_check.py`); the all-policy study was read once, after it finished.
