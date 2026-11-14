@@ -37,7 +37,7 @@ Headline result (v2 rewards): the bandit beats always-review, random and the bes
 
 ```powershell
 Set-Location backend
-python -m unittest discover -s tests          # 161 tests, all OK expected (about 3-4 min)
+python -m unittest discover -s tests          # 164 tests, all OK expected (about 3-4 min)
 ```
 
 ## 2. End-to-end check
