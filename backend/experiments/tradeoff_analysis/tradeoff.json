@@ -1,0 +1,1010 @@
+{
+  "note": "POST HOC, descriptive (plan amendment 4). Decisions are the saved reward-v2 replay decisions; break-even holds them fixed, so a policy retrained under another table could choose differently.",
+  "streams": {
+    "S10": {
+      "seeds": 5,
+      "reward_table": {
+        "attack": {
+          "AUTO_REMEDIATE": 5,
+          "CONFIRM_TO_ACT": 3,
+          "HUMAN_REVIEW": 2,
+          "MONITOR_ONLY": -6
+        },
+        "benign": {
+          "AUTO_REMEDIATE": -12,
+          "CONFIRM_TO_ACT": -3,
+          "HUMAN_REVIEW": -2,
+          "MONITOR_ONLY": 1
+        }
+      },
+      "tradeoff": {
+        "Contextual bandit (greedy held-out)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.5142857142857142,
+            "std": 0.02813151246513827
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.42657807308970097,
+            "std": 0.10906931711948228
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.05913621262458472,
+            "std": 0.08287022305353017
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.0023624953857511997,
+            "std": 0.0032768314538460168
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 0.08225913621262458,
+            "std": 0.006235766233686628
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 1.0,
+            "std": 0.0
+          }
+        },
+        "Best constant action (training folds)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 0.0,
+            "std": 0.0
+          }
+        },
+        "Random (seeded)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.24584717607973422,
+            "std": 0.014289576855552526
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.27109634551495015,
+            "std": 0.019738805019950775
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.4830564784053156,
+            "std": 0.028443660854490356
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.24880029531192321,
+            "std": 0.002462470296073521
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.24953857511997046,
+            "std": 0.005469004204514222
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 0.5038538205980067,
+            "std": 0.0060698319955398
+          }
+        },
+        "Supervised expected-reward (logistic, training folds)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.5621262458471761,
+            "std": 0.008599454555179267
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.18272425249169436,
+            "std": 0.017579742930661727
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.25514950166112954,
+            "std": 0.012952550624330848
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.01077888519748985,
+            "std": 0.0004812995500334188
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 0.07601328903654485,
+            "std": 0.0014173241865582423
+          }
+        },
+        "Tuned score-tier rule (training folds)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.34551495016611294,
+            "std": 0.0
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.654485049833887,
+            "std": 0.0
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 0.19740863787375415,
+            "std": 0.00014857594534881924
+          }
+        },
+        "Verification-gate rule (strawman on this stream)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 0.0,
+            "std": 0.0
+          }
+        }
+      },
+      "break_even": {
+        "wrongful block (benign AUTO_REMEDIATE value)": {
+          "Always HUMAN_REVIEW": {
+            "difference_at_v2": 2.191295681063123,
+            "slope": 0.0,
+            "tie_at": null,
+            "v2_value": -12.0,
+            "verdict": "same decisions on this entry: difference does not depend on it"
+          },
+          "Best constant action (training folds)": {
+            "difference_at_v2": 0.2912956810631229,
+            "slope": 0.0,
+            "tie_at": null,
+            "v2_value": -12.0,
+            "verdict": "same decisions on this entry: difference does not depend on it"
+          },
+          "Random (seeded)": {
+            "difference_at_v2": 4.083986710963456,
+            "slope": -0.2239202657807309,
+            "tie_at": 6.2385756676557875,
+            "v2_value": -12.0,
+            "verdict": "bandit better when value < +6.24"
+          },
+          "Supervised expected-reward (logistic, training folds)": {
+            "difference_at_v2": 0.023189368770764118,
+            "slope": 0.0,
+            "tie_at": null,
+            "v2_value": -12.0,
+            "verdict": "same decisions on this entry: difference does not depend on it"
+          },
+          "Tuned score-tier rule (training folds)": {
+            "difference_at_v2": 0.16358803986710965,
+            "slope": 0.0,
+            "tie_at": null,
+            "v2_value": -12.0,
+            "verdict": "same decisions on this entry: difference does not depend on it"
+          },
+          "Verification-gate rule (strawman on this stream)": {
+            "difference_at_v2": 10.891295681063124,
+            "slope": -0.9,
+            "tie_at": 0.10143964562569252,
+            "v2_value": -12.0,
+            "verdict": "bandit better when value < +0.10"
+          }
+        },
+        "missed attack (attack MONITOR_ONLY value)": {
+          "Always HUMAN_REVIEW": {
+            "difference_at_v2": 2.191295681063123,
+            "slope": 0.05142857142857143,
+            "tie_at": -48.60852713178295,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value > -48.61"
+          },
+          "Best constant action (training folds)": {
+            "difference_at_v2": 0.2912956810631229,
+            "slope": -0.04857142857142858,
+            "tie_at": -0.00273597811217563,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value < -0.00"
+          },
+          "Random (seeded)": {
+            "difference_at_v2": 4.083986710963456,
+            "slope": 0.026843853820598007,
+            "tie_at": -158.13861386138615,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value > -158.14"
+          },
+          "Supervised expected-reward (logistic, training folds)": {
+            "difference_at_v2": 0.023189368770764118,
+            "slope": -0.004784053156146181,
+            "tie_at": -1.1527777777777795,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value < -1.15"
+          },
+          "Tuned score-tier rule (training folds)": {
+            "difference_at_v2": 0.16358803986710965,
+            "slope": 0.01687707641196013,
+            "tie_at": -15.692913385826774,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value > -15.69"
+          },
+          "Verification-gate rule (strawman on this stream)": {
+            "difference_at_v2": 10.891295681063124,
+            "slope": 0.05142857142857143,
+            "tie_at": -217.77519379844964,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value > -217.78"
+          }
+        },
+        "analyst cost (shift added to both HUMAN_REVIEW values)": {
+          "Always HUMAN_REVIEW": {
+            "difference_at_v2": 2.191295681063123,
+            "slope": -0.92578073089701,
+            "tie_at": 2.366970501686643,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift < +2.37"
+          },
+          "Best constant action (training folds)": {
+            "difference_at_v2": 0.2912956810631229,
+            "slope": 0.07421926910299004,
+            "tie_at": -3.9247985675917634,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift > -3.92"
+          },
+          "Random (seeded)": {
+            "difference_at_v2": 4.083986710963456,
+            "slope": -0.18019933554817275,
+            "tie_at": 22.663716814159297,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift < +22.66"
+          },
+          "Supervised expected-reward (logistic, training folds)": {
+            "difference_at_v2": 0.023189368770764118,
+            "slope": 0.03209302325581396,
+            "tie_at": -0.7225672877846789,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift > -0.72"
+          },
+          "Tuned score-tier rule (training folds)": {
+            "difference_at_v2": 0.16358803986710965,
+            "slope": -0.12318936877076411,
+            "tie_at": 1.3279395900755127,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift < +1.33"
+          },
+          "Verification-gate rule (strawman on this stream)": {
+            "difference_at_v2": 10.891295681063124,
+            "slope": 0.07421926910299004,
+            "tie_at": -146.74485228290064,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift > -146.74"
+          }
+        }
+      }
+    },
+    "S30": {
+      "seeds": 5,
+      "reward_table": {
+        "attack": {
+          "AUTO_REMEDIATE": 5,
+          "CONFIRM_TO_ACT": 3,
+          "HUMAN_REVIEW": 2,
+          "MONITOR_ONLY": -6
+        },
+        "benign": {
+          "AUTO_REMEDIATE": -12,
+          "CONFIRM_TO_ACT": -3,
+          "HUMAN_REVIEW": -2,
+          "MONITOR_ONLY": 1
+        }
+      },
+      "tradeoff": {
+        "Contextual bandit (greedy held-out)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.1813953488372093,
+            "std": 0.1277796319951725
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.706312292358804,
+            "std": 0.19876163227829724
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.1122923588039867,
+            "std": 0.11900923948033547
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.0011396011396011397,
+            "std": 0.0025482256153843757
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.023931623931623933,
+            "std": 0.02496741002872552
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 0.6215353938185444,
+            "std": 0.25053171111678635
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 1.0,
+            "std": 0.0
+          }
+        },
+        "Best constant action (training folds)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 1.0,
+            "std": 0.0
+          }
+        },
+        "Random (seeded)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.2584717607973422,
+            "std": 0.030934496603281805
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.24186046511627907,
+            "std": 0.033831626891962695
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.49966777408637875,
+            "std": 0.026432324625802115
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.249002849002849,
+            "std": 0.012637182402402775
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.2472934472934473,
+            "std": 0.01054515984234857
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 0.5002991026919242,
+            "std": 0.019234781240050534
+          }
+        },
+        "Supervised expected-reward (logistic, training folds)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.2664451827242525,
+            "std": 0.0027796014170567212
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.21528239202657806,
+            "std": 0.0054590288123438505
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.5182724252491695,
+            "std": 0.006644518272425237
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.010541310541310541,
+            "std": 0.000780231563397673
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.05156695156695157,
+            "std": 0.003400950537411202
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 0.3744765702891326,
+            "std": 0.0035670077407773376
+          }
+        },
+        "Tuned score-tier rule (training folds)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.3282392026578073,
+            "std": 0.006390493043744633
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.013953488372093023,
+            "std": 0.006390493043744633
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.6578073089700996,
+            "std": 0.0
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.1794871794871795,
+            "std": 0.0
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 0.35413758723828515,
+            "std": 0.015371408273945598
+          }
+        },
+        "Verification-gate rule (strawman on this stream)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 0.0,
+            "std": 0.0
+          }
+        }
+      },
+      "break_even": {
+        "wrongful block (benign AUTO_REMEDIATE value)": {
+          "Always HUMAN_REVIEW": {
+            "difference_at_v2": 0.539581256231306,
+            "slope": 0.0007976071784646061,
+            "tie_at": -688.5,
+            "v2_value": -12.0,
+            "verdict": "bandit better when value > -688.50"
+          },
+          "Best constant action (training folds)": {
+            "difference_at_v2": 0.539581256231306,
+            "slope": 0.0007976071784646061,
+            "tie_at": -688.5,
+            "v2_value": -12.0,
+            "verdict": "bandit better when value > -688.50"
+          },
+          "Random (seeded)": {
+            "difference_at_v2": 2.2576271186440677,
+            "slope": -0.17347956131605186,
+            "tie_at": 1.0137931034482754,
+            "v2_value": -12.0,
+            "verdict": "bandit better when value < +1.01"
+          },
+          "Supervised expected-reward (logistic, training folds)": {
+            "difference_at_v2": -0.4440677966101695,
+            "slope": -0.006580259222333001,
+            "tie_at": -79.48484848484848,
+            "v2_value": -12.0,
+            "verdict": "bandit better when value < -79.48"
+          },
+          "Tuned score-tier rule (training folds)": {
+            "difference_at_v2": -0.38624127617148557,
+            "slope": 0.0007976071784646061,
+            "tie_at": 472.25000000000006,
+            "v2_value": -12.0,
+            "verdict": "bandit better when value > +472.25"
+          },
+          "Verification-gate rule (strawman on this stream)": {
+            "difference_at_v2": 6.638285144566301,
+            "slope": -0.6991026919242274,
+            "tie_at": -2.5045636052481477,
+            "v2_value": -12.0,
+            "verdict": "bandit better when value < -2.50"
+          }
+        },
+        "missed attack (attack MONITOR_ONLY value)": {
+          "Always HUMAN_REVIEW": {
+            "difference_at_v2": 0.539581256231306,
+            "slope": 0.05443668993020937,
+            "tie_at": -15.91208791208791,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value > -15.91"
+          },
+          "Best constant action (training folds)": {
+            "difference_at_v2": 0.539581256231306,
+            "slope": 0.05443668993020937,
+            "tie_at": -15.91208791208791,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value > -15.91"
+          },
+          "Random (seeded)": {
+            "difference_at_v2": 2.2576271186440677,
+            "slope": -0.023130608175473577,
+            "tie_at": 91.60344827586208,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value < +91.60"
+          },
+          "Supervised expected-reward (logistic, training folds)": {
+            "difference_at_v2": -0.4440677966101695,
+            "slope": -0.0255234297108674,
+            "tie_at": -23.3984375,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value < -23.40"
+          },
+          "Tuned score-tier rule (training folds)": {
+            "difference_at_v2": -0.38624127617148557,
+            "slope": -0.04406779661016949,
+            "tie_at": -14.764705882352942,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value < -14.76"
+          },
+          "Verification-gate rule (strawman on this stream)": {
+            "difference_at_v2": 6.638285144566301,
+            "slope": 0.05443668993020937,
+            "tie_at": -127.94505494505495,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value > -127.95"
+          }
+        },
+        "analyst cost (shift added to both HUMAN_REVIEW values)": {
+          "Always HUMAN_REVIEW": {
+            "difference_at_v2": 0.539581256231306,
+            "slope": -0.42532402791625123,
+            "tie_at": 1.2686357243319268,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift < +1.27"
+          },
+          "Best constant action (training folds)": {
+            "difference_at_v2": 0.539581256231306,
+            "slope": -0.42532402791625123,
+            "tie_at": 1.2686357243319268,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift < +1.27"
+          },
+          "Random (seeded)": {
+            "difference_at_v2": 2.2576271186440677,
+            "slope": 0.3222333000997009,
+            "tie_at": -7.00618811881188,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift > -7.01"
+          },
+          "Supervised expected-reward (logistic, training folds)": {
+            "difference_at_v2": -0.4440677966101695,
+            "slope": 0.35493519441674976,
+            "tie_at": 1.251123595505618,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift > +1.25"
+          },
+          "Tuned score-tier rule (training folds)": {
+            "difference_at_v2": -0.38624127617148557,
+            "slope": 0.5435692921236291,
+            "tie_at": 0.710564930300807,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift > +0.71"
+          },
+          "Verification-gate rule (strawman on this stream)": {
+            "difference_at_v2": 6.638285144566301,
+            "slope": 0.5746759720837488,
+            "tie_at": -11.551353226925745,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift > -11.55"
+          }
+        }
+      }
+    },
+    "S58 (exploratory)": {
+      "seeds": 5,
+      "reward_table": {
+        "attack": {
+          "AUTO_REMEDIATE": 5,
+          "CONFIRM_TO_ACT": 3,
+          "HUMAN_REVIEW": 2,
+          "MONITOR_ONLY": -6
+        },
+        "benign": {
+          "AUTO_REMEDIATE": -12,
+          "CONFIRM_TO_ACT": -3,
+          "HUMAN_REVIEW": -2,
+          "MONITOR_ONLY": 1
+        }
+      },
+      "tradeoff": {
+        "Contextual bandit (greedy held-out)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.008571428571428572,
+            "std": 0.012777531299998798
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.4076190476190476,
+            "std": 0.17810574198716386
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.5838095238095238,
+            "std": 0.1752662373883058
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.04733333333333333,
+            "std": 0.06152686856614398
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.138,
+            "std": 0.10861757582351844
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 0.7955555555555556,
+            "std": 0.22810232637195155
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 1.0,
+            "std": 0.0
+          }
+        },
+        "Best constant action (training folds)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 1.0,
+            "std": 0.0
+          }
+        },
+        "Random (seeded)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.2419047619047619,
+            "std": 0.02665178155991567
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.25666666666666665,
+            "std": 0.016183471874253747
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.5014285714285714,
+            "std": 0.022054354622684597
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.24866666666666667,
+            "std": 0.01849924923401548
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.24933333333333335,
+            "std": 0.021002645336031158
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 0.5027777777777778,
+            "std": 0.023240556292613204
+          }
+        },
+        "Supervised expected-reward (logistic, training folds)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.11428571428571428,
+            "std": 0.002916059217599017
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.12428571428571429,
+            "std": 0.0063887656499994
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.7614285714285715,
+            "std": 0.004259177099999618
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.03,
+            "std": 0.0023570226039551574
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.23133333333333334,
+            "std": 0.008692269873603529
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 0.42138888888888887,
+            "std": 0.008925705007255346
+          }
+        },
+        "Tuned score-tier rule (training folds)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.032857142857142856,
+            "std": 0.018085837156983753
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.30523809523809525,
+            "std": 0.018085837156983753
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 0.6619047619047619,
+            "std": 0.0
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 0.11133333333333334,
+            "std": 0.0029814239699997203
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 0.48305555555555557,
+            "std": 0.027540654573212073
+          }
+        },
+        "Verification-gate rule (strawman on this stream)": {
+          "attacks missed (MONITOR_ONLY)": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "attacks to HUMAN_REVIEW": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "attacks actioned (CONFIRM or AUTO)": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "benign wrongly AUTO_REMEDIATED": {
+            "mean": 1.0,
+            "std": 0.0
+          },
+          "benign to CONFIRM_TO_ACT": {
+            "mean": 0.0,
+            "std": 0.0
+          },
+          "analyst workload (REVIEW or CONFIRM, all alerts)": {
+            "mean": 0.0,
+            "std": 0.0
+          }
+        }
+      },
+      "break_even": {
+        "wrongful block (benign AUTO_REMEDIATE value)": {
+          "Always HUMAN_REVIEW": {
+            "difference_at_v2": 0.4216666666666667,
+            "slope": 0.019722222222222224,
+            "tie_at": -33.38028169014085,
+            "v2_value": -12.0,
+            "verdict": "bandit better when value > -33.38"
+          },
+          "Best constant action (training folds)": {
+            "difference_at_v2": 0.255,
+            "slope": 0.019722222222222224,
+            "tie_at": -24.929577464788732,
+            "v2_value": -12.0,
+            "verdict": "bandit better when value > -24.93"
+          },
+          "Random (seeded)": {
+            "difference_at_v2": 1.787777777777778,
+            "slope": -0.08388888888888889,
+            "tie_at": 9.311258278145697,
+            "v2_value": -12.0,
+            "verdict": "bandit better when value < +9.31"
+          },
+          "Supervised expected-reward (logistic, training folds)": {
+            "difference_at_v2": -0.44722222222222224,
+            "slope": 0.007222222222222222,
+            "tie_at": 49.92307692307693,
+            "v2_value": -12.0,
+            "verdict": "bandit better when value > +49.92"
+          },
+          "Tuned score-tier rule (training folds)": {
+            "difference_at_v2": -0.31527777777777777,
+            "slope": -0.026666666666666665,
+            "tie_at": -23.822916666666668,
+            "v2_value": -12.0,
+            "verdict": "bandit better when value < -23.82"
+          },
+          "Verification-gate rule (strawman on this stream)": {
+            "difference_at_v2": 2.8383333333333334,
+            "slope": -0.3969444444444445,
+            "tie_at": -4.849545136459063,
+            "v2_value": -12.0,
+            "verdict": "bandit better when value < -4.85"
+          }
+        },
+        "missed attack (attack MONITOR_ONLY value)": {
+          "Always HUMAN_REVIEW": {
+            "difference_at_v2": 0.4216666666666667,
+            "slope": 0.005,
+            "tie_at": -90.33333333333334,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value > -90.33"
+          },
+          "Best constant action (training folds)": {
+            "difference_at_v2": 0.255,
+            "slope": 0.005,
+            "tie_at": -57.0,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value > -57.00"
+          },
+          "Random (seeded)": {
+            "difference_at_v2": 1.787777777777778,
+            "slope": -0.13611111111111113,
+            "tie_at": 7.134693877551021,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value < +7.13"
+          },
+          "Supervised expected-reward (logistic, training folds)": {
+            "difference_at_v2": -0.44722222222222224,
+            "slope": -0.06166666666666667,
+            "tie_at": -13.252252252252251,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value < -13.25"
+          },
+          "Tuned score-tier rule (training folds)": {
+            "difference_at_v2": -0.31527777777777777,
+            "slope": -0.014166666666666668,
+            "tie_at": -28.254901960784313,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value < -28.25"
+          },
+          "Verification-gate rule (strawman on this stream)": {
+            "difference_at_v2": 2.8383333333333334,
+            "slope": 0.005,
+            "tie_at": -573.6666666666666,
+            "v2_value": -6.0,
+            "verdict": "bandit better when value > -573.67"
+          }
+        },
+        "analyst cost (shift added to both HUMAN_REVIEW values)": {
+          "Always HUMAN_REVIEW": {
+            "difference_at_v2": 0.4216666666666667,
+            "slope": -0.4391666666666667,
+            "tie_at": 0.9601518026565464,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift < +0.96"
+          },
+          "Best constant action (training folds)": {
+            "difference_at_v2": 0.255,
+            "slope": 0.5608333333333333,
+            "tie_at": -0.4546805349182764,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift > -0.45"
+          },
+          "Random (seeded)": {
+            "difference_at_v2": 1.787777777777778,
+            "slope": 0.30722222222222223,
+            "tie_at": -5.819168173598554,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift > -5.82"
+          },
+          "Supervised expected-reward (logistic, training folds)": {
+            "difference_at_v2": -0.44722222222222224,
+            "slope": 0.3611111111111111,
+            "tie_at": 1.2384615384615385,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift > +1.24"
+          },
+          "Tuned score-tier rule (training folds)": {
+            "difference_at_v2": -0.31527777777777777,
+            "slope": 0.07777777777777778,
+            "tie_at": 4.053571428571428,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift > +4.05"
+          },
+          "Verification-gate rule (strawman on this stream)": {
+            "difference_at_v2": 2.8383333333333334,
+            "slope": 0.5608333333333333,
+            "tie_at": -5.0609212481426455,
+            "v2_value": 0.0,
+            "verdict": "bandit better when shift > -5.06"
+          }
+        }
+      }
+    }
+  }
+}

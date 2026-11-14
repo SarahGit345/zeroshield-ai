@@ -60,5 +60,19 @@ class Tradeoffs(unittest.TestCase):
             at.label_lookup({"attack": {"HUMAN_REVIEW": 2}, "benign": {"HUMAN_REVIEW": 2}})
 
 
+class ConsoleEncoding(unittest.TestCase):
+    def test_main_prints_on_a_cp1252_console(self):
+        # bug: on Windows, printing the minus and plus-minus signs crashed main after the files were written
+        import io, sys
+        from unittest import mock
+        fake = io.TextIOWrapper(io.BytesIO(), encoding="cp1252")
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(sys, "stdout", fake),              mock.patch.object(at, "analyse", return_value={"note": "n", "streams": {"T": {
+                 "seeds": 1, "tradeoff": {"p": {"k": {"mean": 0.5, "std": 0.0}}},
+                 "break_even": {"x": {"p": {"difference_at_v2": -1.0, "verdict": "v"}}}}}}):
+            at.main(["--out", tmp])
+            fake.flush()
+        self.assertIn(b"50.0%", fake.buffer.getvalue())  # the row with the plus-minus sign was printed
+
+
 if __name__ == "__main__":
     unittest.main()

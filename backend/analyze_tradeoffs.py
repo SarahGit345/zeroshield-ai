@@ -13,6 +13,7 @@ import argparse
 import csv
 import json
 import statistics
+import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -157,6 +158,8 @@ def main(argv=None):
     args.out.mkdir(parents=True, exist_ok=True)
     (args.out / "tradeoff.json").write_text(json.dumps(res, indent=2), encoding="utf-8")
     (args.out / "tradeoff.md").write_text(to_markdown(res), encoding="utf-8")
+    if hasattr(sys.stdout, "reconfigure"):  # Windows consoles default to cp1252, which lacks the minus and plus-minus signs
+        sys.stdout.reconfigure(errors="replace")
     print(to_markdown(res))
     print(f"\nWritten to {args.out}")
 
