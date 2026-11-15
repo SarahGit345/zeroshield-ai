@@ -1,0 +1,116 @@
+{
+  "stream_version": "replay-stream-v1",
+  "seed": 2,
+  "chunk_rows": 200000,
+  "max_rows_per_source": null,
+  "quotas": {
+    "benign_flagged": 2709,
+    "benign_unflagged": 150,
+    "attack_flagged": 43,
+    "attack_unflagged": 40
+  },
+  "threshold": 0.06141921002417763,
+  "built_at": "2026-11-08T08:36:12.944277+00:00",
+  "target_attack_share": 0.1,
+  "min_attacks": 300,
+  "flagged_attack_share": 0.1,
+  "excluded_streams": [
+    {
+      "path": "experiments\\replay_streams\\replay_stream_seed1.jsonl",
+      "sha256": "fb07d3f7e8e7ba18aa05879e71786328d5f95eba8079fba17e8f5c26ea336aa3"
+    }
+  ],
+  "reasoning_mode": [
+    "Demo Fallback Reasoning"
+  ],
+  "sources": [
+    {
+      "name": "validation",
+      "path": "D:\\B-Tech\\Sem-7\\Final year project\\Dataset\\Dataset\\csv\\validation_set.csv",
+      "bytes": 31840234859
+    },
+    {
+      "name": "zero_day",
+      "path": "D:\\B-Tech\\Sem-7\\Final year project\\Dataset\\Dataset\\csv\\zero_day_test_scaled_v2.csv",
+      "bytes": 2051913808
+    }
+  ],
+  "rows_read": 45808251,
+  "non_finite_rows_skipped": 0,
+  "excluded_rows_skipped": 1150,
+  "screen_vs_pipeline_detection_mismatches": 0,
+  "population": {
+    "Benign|unflagged": 208878,
+    "Benign|flagged": 10989,
+    "Brute Force|unflagged": 10345,
+    "Brute Force|flagged": 2719,
+    "DDoS|unflagged": 540,
+    "DDoS|flagged": 33984020,
+    "DoS|unflagged": 98,
+    "DoS|flagged": 8090640,
+    "Mirai|unflagged": 182,
+    "Mirai|flagged": 2633942,
+    "Recon|unflagged": 153845,
+    "Recon|flagged": 200720,
+    "Spoofing|unflagged": 361335,
+    "Spoofing|flagged": 125169,
+    "Web-Based|unflagged": 16409,
+    "Web-Based|flagged": 8420
+  },
+  "sampled": {
+    "Benign|unflagged": 150,
+    "Benign|flagged": 2709,
+    "Brute Force|unflagged": 40,
+    "Brute Force|flagged": 43,
+    "DDoS|unflagged": 40,
+    "DDoS|flagged": 43,
+    "DoS|unflagged": 40,
+    "DoS|flagged": 43,
+    "Mirai|unflagged": 40,
+    "Mirai|flagged": 43,
+    "Recon|unflagged": 40,
+    "Recon|flagged": 43,
+    "Spoofing|unflagged": 40,
+    "Spoofing|flagged": 43,
+    "Web-Based|unflagged": 40,
+    "Web-Based|flagged": 43
+  },
+  "population_labels": {
+    "Backdoor_Malware": 3218,
+    "BenignTraffic": 219867,
+    "BrowserHijacking": 5859,
+    "CommandInjection": 5409,
+    "DDoS-ACK_Fragmentation": 285104,
+    "DDoS-HTTP_Flood": 28790,
+    "DDoS-ICMP_Flood": 7200504,
+    "DDoS-ICMP_Fragmentation": 452489,
+    "DDoS-PSHACK_Flood": 4094755,
+    "DDoS-RSTFINFlood": 4045285,
+    "DDoS-SYN_Flood": 4059190,
+    "DDoS-SlowLoris": 23426,
+    "DDoS-SynonymousIP_Flood": 3598138,
+    "DDoS-TCP_Flood": 4497667,
+    "DDoS-UDP_Flood": 5412287,
+    "DDoS-UDP_Fragmentation": 286925,
+    "DNS_Spoofing": 178911,
+    "DictionaryBruteForce": 13064,
+    "DoS-HTTP_Flood": 71864,
+    "DoS-SYN_Flood": 2028834,
+    "DoS-TCP_Flood": 2671445,
+    "DoS-UDP_Flood": 3318595,
+    "MITM-ArpSpoofing": 307593,
+    "Mirai-greeth_flood": 991866,
+    "Mirai-greip_flood": 751682,
+    "Mirai-udpplain": 890576,
+    "Recon-HostDiscovery": 134378,
+    "Recon-OSScan": 98259,
+    "Recon-PingSweep": 2262,
+    "Recon-PortScan": 82284,
+    "SqlInjection": 5245,
+    "Uploading_Attack": 1252,
+    "VulnerabilityScan": 37382,
+    "XSS": 3846
+  },
+  "note": "Strata are sampled to fixed quotas, not at natural prevalence. False positives are over-sampled on purpose. Keys starting with '_' are simulator-only and never reach the policy.",
+  "stream_sha256": "81cf6c5d86bceea087a9773906dc2cb65a01177013f69b2de2bf0818fcf09604"
+}

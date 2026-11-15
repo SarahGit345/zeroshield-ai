@@ -9,15 +9,17 @@ from datetime import datetime, timezone
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from services.model_service import Detector
 from services.mitre_service import MitreService
 from services.sample_service import SampleService
-from services.llm_service import reason
+from services.llm_service import llm_status, reason
 from schemas.analysis import AnalysisRequest
+from schemas.response import ApprovalRequest, FeedbackRequest
+from security import require_operator
 from services.bandit_service import BanditService
 from services.verification_service import verify_record
 
@@ -44,14 +46,14 @@ app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http
 def health():
     d = services.get("detector")
     if not d or not d.loaded:
-        return {"status": "degraded", "model": "Deep SVDD", "threshold": 0.0614192100, "features": 43}
+        return {"status": "degraded", "model": "Deep SVDD", "threshold": None, "features": None}
     return {"status": "ok", "model": "Deep SVDD", "threshold": d.threshold, "features": len(d.features)}
 
 
 @app.get("/api/model-info")
 def model_info():
     d = services["detector"]
-    return {"model": "Deep SVDD", "architecture": {"input": len(d.features), "hidden": d.hidden, "latent": d.latent_dim}, "feature_count": len(d.features), "features": d.features, "threshold": d.threshold, "model_loaded": d.loaded, "scaler_loaded": False, "preprocessing": "Input must use the project's existing StandardScaler-prepared feature space; no scaler artifact was present.", "xai_available": d.loaded, "mitre_available": services["mitre"].available, "mitre_behavior_index_available": services["mitre"].index is not None, "llm_status": "OpenAI configured" if __import__("os").getenv("OPENAI_API_KEY") else "Demo Fallback Reasoning", "response_actions": ["AUTO_REMEDIATE", "CONFIRM_TO_ACT", "HUMAN_REVIEW", "MONITOR_ONLY"]}
+    return {"model": "Deep SVDD", "architecture": {"input": len(d.features), "hidden": d.hidden, "latent": d.latent_dim}, "feature_count": len(d.features), "features": d.features, "threshold": d.threshold, "model_loaded": d.loaded, "scaler_loaded": False, "preprocessing": "Input must use the project's existing StandardScaler-prepared feature space; no scaler artifact was present.", "xai_available": d.loaded, "mitre_available": services["mitre"].available, "mitre_behavior_index_available": services["mitre"].index is not None, "llm_status": llm_status(), "response_actions": ["AUTO_REMEDIATE", "CONFIRM_TO_ACT", "HUMAN_REVIEW", "MONITOR_ONLY"]}
 
 
 @app.get("/api/demo-samples")
@@ -79,8 +81,15 @@ def analyze(features: dict[str, float], label: str | None = None):
                  "xai_evidence": result["top_features"], "retrieval_query": mapping.get("query"), "retrieved_techniques": mapping.get("techniques", []),
                  "llm_explanation": reasoning, "verification_result": verification["verdict"],
                  "verification_checks": verification["checks"], "verification_confidence": verification["verification_confidence"]}
-        # No response policy runs on a failed/uncertain Stage 6 record.
-        if verification["verdict"] == "VERIFIED":
+        # A flow below the threshold is not an alert: nothing is proposed, nothing is recorded, and the policy does not learn from it.
+        # No response policy runs on a failed/uncertain Stage 6 record either.
+        if not result["detected"]:
+            bandit_record = {"selected_action": "MONITOR_ONLY", "policy_version": "no-alert-v1",
+                             "action_scores": {}, "context_features": {}, "selection_mode": "no alert raised",
+                             "reason": "The detector did not flag this flow, so no alert was raised and no response is proposed.",
+                             "approval_status": "NOT_REQUIRED", "simulated_execution_status": "NOT_EXECUTED_NO_ALERT",
+                             "observed_outcome": None, "reward": None, "policy_update_status": "NOT_ELIGIBLE"}
+        elif verification["verdict"] == "VERIFIED":
             bandit_record = services["bandit"].record(alert)
         else:
             bandit_record = {"selected_action": "HUMAN_REVIEW", "policy_version": "safety-fallback-v1",
@@ -134,27 +143,27 @@ def response_approvals():
     return {"pending": [x for x in services["bandit"].list_alerts() if x.get("approval_status") == "PENDING"]}
 
 
-@app.post("/api/response/approval/{alert_id}")
-def response_approval(alert_id: str, payload: dict):
+@app.post("/api/response/approval/{alert_id}", dependencies=[Depends(require_operator)])
+def response_approval(alert_id: str, payload: ApprovalRequest):
     try:
-        return services["bandit"].decide_approval(alert_id, str(payload.get("choice", "")).upper())
+        return services["bandit"].decide_approval(alert_id, payload.choice)
     except KeyError as exc:
         raise HTTPException(404, "Alert not found.") from exc
     except ValueError as exc:
         raise HTTPException(409, str(exc)) from exc
 
 
-@app.post("/api/response/feedback/{alert_id}")
-def response_feedback(alert_id: str, payload: dict):
+@app.post("/api/response/feedback/{alert_id}", dependencies=[Depends(require_operator)])
+def response_feedback(alert_id: str, payload: FeedbackRequest):
     try:
-        return services["bandit"].feedback(alert_id, bool(payload["ground_truth_attack"]), payload.get("reviewer_choice"))
+        return services["bandit"].feedback(alert_id, payload.ground_truth_attack, payload.reviewer_choice)
     except KeyError as exc:
-        raise HTTPException(404, "Alert not found or ground_truth_attack was not supplied.") from exc
+        raise HTTPException(404, "Alert not found.") from exc
     except ValueError as exc:
         raise HTTPException(409, str(exc)) from exc
 
 
-@app.post("/api/response/reset-policy")
+@app.post("/api/response/reset-policy", dependencies=[Depends(require_operator)])
 def reset_policy():
     services["bandit"].reset_policy()
     return {"status": "policy_reset", "policy_version": "linucb-v1", "ledger_preserved": True}
@@ -185,7 +194,7 @@ def response_experiment_plot(plot_name: str):
     raise HTTPException(404, "No completed replay plot is available.")
 
 
-@app.post("/api/response/replay/start")
+@app.post("/api/response/replay/start", dependencies=[Depends(require_operator)])
 def start_response_replay():
     global replay_process
     with replay_lock:

@@ -1,0 +1,4540 @@
+{
+  "stream_source": "experiments\\replay_streams\\replay_stream_seed1.jsonl",
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "folds": 5,
+  "default_reward_version": "designed-simulation-v2",
+  "routed_alerts": 720,
+  "routed_by_family": {
+    "Benign": 300,
+    "Brute Force": 60,
+    "DDoS": 60,
+    "DoS": 60,
+    "Mirai": 60,
+    "Recon": 60,
+    "Spoofing": 60,
+    "Web-Based": 60
+  },
+  "routed_attacks": 420,
+  "routed_benign": 300,
+  "not_routed": {
+    "unflagged_attack_flows": 280,
+    "unflagged_benign_flows": 150,
+    "note": "Flows below the detector threshold never become alerts. They are detector misses or true negatives, not response decisions, and are excluded from policy scoring."
+  },
+  "versions": {
+    "designed-simulation-v1": {
+      "reward_table": {
+        "attack": {
+          "AUTO_REMEDIATE": 5,
+          "CONFIRM_TO_ACT": 3,
+          "HUMAN_REVIEW": 2,
+          "MONITOR_ONLY": -6
+        },
+        "benign": {
+          "AUTO_REMEDIATE": -12,
+          "CONFIRM_TO_ACT": -2,
+          "HUMAN_REVIEW": -2,
+          "MONITOR_ONLY": 1
+        }
+      },
+      "policies": {
+        "Contextual bandit (greedy held-out)": {
+          "mean_reward_per_alert": {
+            "mean": 1.0027777777777778,
+            "std": 0.13612882537789503,
+            "min": 0.9166666666666666,
+            "max": 1.2416666666666667,
+            "n": 5
+          },
+          "per_seed": [
+            0.9166666666666666,
+            0.9166666666666666,
+            1.2416666666666667,
+            0.9680555555555556,
+            0.9708333333333333
+          ],
+          "mean_within_seed_fold_std": 0.3167333308463505,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.043333333333333335,
+            "attack_remediation_rate": 0.2776190476190476,
+            "attack_human_review_rate": 0.10095238095238095,
+            "attack_monitor_only_rate": 0.0014285714285714286,
+            "benign_human_review_rate": 0.18,
+            "share_AUTO_REMEDIATE": 0.18,
+            "share_CONFIRM_TO_ACT": 0.6822222222222222,
+            "share_HUMAN_REVIEW": 0.1338888888888889,
+            "share_MONITOR_ONLY": 0.0038888888888888888
+          }
+        },
+        "Fixed rules": {
+          "mean_reward_per_alert": {
+            "mean": -2.0833333333333335,
+            "std": 0.0,
+            "min": -2.0833333333333335,
+            "max": -2.0833333333333335,
+            "n": 5
+          },
+          "per_seed": [
+            -2.0833333333333335,
+            -2.0833333333333335,
+            -2.0833333333333335,
+            -2.0833333333333335,
+            -2.0833333333333335
+          ],
+          "mean_within_seed_fold_std": 0.8148316536218754,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 1.0,
+            "attack_remediation_rate": 1.0,
+            "attack_human_review_rate": 0.0,
+            "attack_monitor_only_rate": 0.0,
+            "benign_human_review_rate": 0.0,
+            "share_AUTO_REMEDIATE": 1.0,
+            "share_CONFIRM_TO_ACT": 0.0,
+            "share_HUMAN_REVIEW": 0.0,
+            "share_MONITOR_ONLY": 0.0
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "mean_reward_per_alert": {
+            "mean": 0.3333333333333333,
+            "std": 0.0,
+            "min": 0.3333333333333333,
+            "max": 0.3333333333333333,
+            "n": 5
+          },
+          "per_seed": [
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333
+          ],
+          "mean_within_seed_fold_std": 0.19172509496985304,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.0,
+            "attack_remediation_rate": 0.0,
+            "attack_human_review_rate": 1.0,
+            "attack_monitor_only_rate": 0.0,
+            "benign_human_review_rate": 1.0,
+            "share_AUTO_REMEDIATE": 0.0,
+            "share_CONFIRM_TO_ACT": 0.0,
+            "share_HUMAN_REVIEW": 1.0,
+            "share_MONITOR_ONLY": 0.0
+          }
+        },
+        "Random (seeded)": {
+          "mean_reward_per_alert": {
+            "mean": -0.9288888888888888,
+            "std": 0.15012019361453074,
+            "min": -1.0833333333333333,
+            "max": -0.7291666666666666,
+            "n": 5
+          },
+          "per_seed": [
+            -0.8569444444444444,
+            -0.9027777777777778,
+            -1.0833333333333333,
+            -0.7291666666666666,
+            -1.0722222222222222
+          ],
+          "mean_within_seed_fold_std": 0.3425549167480898,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.24866666666666667,
+            "attack_remediation_rate": 0.2523809523809524,
+            "attack_human_review_rate": 0.2566666666666667,
+            "attack_monitor_only_rate": 0.2419047619047619,
+            "benign_human_review_rate": 0.24933333333333332,
+            "share_AUTO_REMEDIATE": 0.25083333333333335,
+            "share_CONFIRM_TO_ACT": 0.24916666666666668,
+            "share_HUMAN_REVIEW": 0.2536111111111111,
+            "share_MONITOR_ONLY": 0.24638888888888885
+          }
+        }
+      },
+      "hindsight_references": {
+        "Oracle (hindsight, labels)": 3.3333333333333335,
+        "Always AUTO_REMEDIATE (hindsight reference)": -2.0833333333333335,
+        "Always CONFIRM_TO_ACT (hindsight reference)": 0.9166666666666666,
+        "Always HUMAN_REVIEW (hindsight reference)": 0.3333333333333333,
+        "Always MONITOR_ONLY (hindsight reference)": -3.0833333333333335
+      },
+      "bandit_minus_fixed": {
+        "per_seed": [
+          3.0,
+          3.0,
+          3.325,
+          3.051388888888889,
+          3.0541666666666667
+        ],
+        "mean": 3.0861111111111112,
+        "std": 0.13612882537789509,
+        "min": 3.0,
+        "max": 3.325,
+        "n": 5,
+        "seeds_bandit_higher": 5,
+        "seeds_tied": 0,
+        "seeds_bandit_lower": 0
+      },
+      "per_family": {
+        "Contextual bandit (greedy held-out)": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -2.4113333333333333,
+              "std": 0.5192708563189564,
+              "min": -2.99,
+              "max": -2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.043333333333333335,
+              "CONFIRM_TO_ACT": 0.7693333333333333,
+              "HUMAN_REVIEW": 0.18,
+              "MONITOR_ONLY": 0.007333333333333333
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 3.1,
+              "std": 0.2345207879911715,
+              "min": 2.9,
+              "max": 3.5,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.16,
+              "CONFIRM_TO_ACT": 0.6733333333333333,
+              "HUMAN_REVIEW": 0.16,
+              "MONITOR_ONLY": 0.006666666666666667
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 3.7600000000000002,
+              "std": 0.9328570213179629,
+              "min": 3.0,
+              "max": 4.933333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.4066666666666667,
+              "CONFIRM_TO_ACT": 0.54,
+              "HUMAN_REVIEW": 0.05333333333333334,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 3.97,
+              "std": 0.9133576639095017,
+              "min": 3.0,
+              "max": 4.966666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.4866666666666667,
+              "CONFIRM_TO_ACT": 0.51,
+              "HUMAN_REVIEW": 0.0033333333333333335,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 3.72,
+              "std": 0.957601169589929,
+              "min": 3.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.38333333333333336,
+              "CONFIRM_TO_ACT": 0.57,
+              "HUMAN_REVIEW": 0.04666666666666667,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 3.3200000000000003,
+              "std": 0.5187324294213089,
+              "min": 2.8833333333333333,
+              "max": 4.083333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23666666666666666,
+              "CONFIRM_TO_ACT": 0.6366666666666667,
+              "HUMAN_REVIEW": 0.12333333333333334,
+              "MONITOR_ONLY": 0.0033333333333333335
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 3.02,
+              "std": 0.2885307609250702,
+              "min": 2.75,
+              "max": 3.5,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.1,
+              "CONFIRM_TO_ACT": 0.72,
+              "HUMAN_REVIEW": 0.18,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 3.2,
+              "std": 0.4,
+              "min": 2.8666666666666667,
+              "max": 3.8666666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.17,
+              "CONFIRM_TO_ACT": 0.69,
+              "HUMAN_REVIEW": 0.14,
+              "MONITOR_ONLY": 0.0
+            }
+          }
+        },
+        "Fixed rules": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -12.0,
+              "std": 0.0,
+              "min": -12.0,
+              "max": -12.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -2.0,
+              "std": 0.0,
+              "min": -2.0,
+              "max": -2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          }
+        },
+        "Random (seeded)": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -3.728666666666667,
+              "std": 0.20826798975251942,
+              "min": -3.9266666666666667,
+              "max": -3.4133333333333336,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.24866666666666667,
+              "CONFIRM_TO_ACT": 0.24933333333333332,
+              "HUMAN_REVIEW": 0.24933333333333332,
+              "MONITOR_ONLY": 0.25266666666666665
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 1.0066666666666666,
+              "std": 0.7091270063332176,
+              "min": 0.15,
+              "max": 1.7333333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23333333333333334,
+              "CONFIRM_TO_ACT": 0.28,
+              "HUMAN_REVIEW": 0.24,
+              "MONITOR_ONLY": 0.24666666666666667
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 0.9,
+              "std": 0.5240069974087497,
+              "min": 0.3,
+              "max": 1.6833333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23333333333333334,
+              "CONFIRM_TO_ACT": 0.25333333333333335,
+              "HUMAN_REVIEW": 0.25666666666666665,
+              "MONITOR_ONLY": 0.25666666666666665
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 1.35,
+              "std": 0.5739725119240855,
+              "min": 0.35,
+              "max": 1.7833333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.29333333333333333,
+              "CONFIRM_TO_ACT": 0.20333333333333334,
+              "HUMAN_REVIEW": 0.2866666666666667,
+              "MONITOR_ONLY": 0.21666666666666667
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 1.1199999999999999,
+              "std": 0.7613401926135839,
+              "min": 0.13333333333333333,
+              "max": 2.1,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.2833333333333333,
+              "CONFIRM_TO_ACT": 0.21666666666666667,
+              "HUMAN_REVIEW": 0.25666666666666665,
+              "MONITOR_ONLY": 0.24333333333333335
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 1.01,
+              "std": 0.29990739311401515,
+              "min": 0.7,
+              "max": 1.3333333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.21,
+              "CONFIRM_TO_ACT": 0.3,
+              "HUMAN_REVIEW": 0.25,
+              "MONITOR_ONLY": 0.24
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 0.9766666666666668,
+              "std": 0.3923929436447886,
+              "min": 0.48333333333333334,
+              "max": 1.4833333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.25,
+              "CONFIRM_TO_ACT": 0.25333333333333335,
+              "HUMAN_REVIEW": 0.24333333333333335,
+              "MONITOR_ONLY": 0.25333333333333335
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 1.1333333333333333,
+              "std": 0.2034425935955617,
+              "min": 0.8833333333333333,
+              "max": 1.4,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.2633333333333333,
+              "CONFIRM_TO_ACT": 0.23666666666666666,
+              "HUMAN_REVIEW": 0.2633333333333333,
+              "MONITOR_ONLY": 0.23666666666666666
+            }
+          }
+        }
+      }
+    },
+    "designed-simulation-v2": {
+      "reward_table": {
+        "attack": {
+          "AUTO_REMEDIATE": 5,
+          "CONFIRM_TO_ACT": 3,
+          "HUMAN_REVIEW": 2,
+          "MONITOR_ONLY": -6
+        },
+        "benign": {
+          "AUTO_REMEDIATE": -12,
+          "CONFIRM_TO_ACT": -3,
+          "HUMAN_REVIEW": -2,
+          "MONITOR_ONLY": 1
+        }
+      },
+      "policies": {
+        "Contextual bandit (greedy held-out)": {
+          "mean_reward_per_alert": {
+            "mean": 0.755,
+            "std": 0.1749189627185072,
+            "min": 0.5597222222222222,
+            "max": 1.0083333333333333,
+            "n": 5
+          },
+          "per_seed": [
+            0.5597222222222222,
+            0.6680555555555555,
+            1.0083333333333333,
+            0.6916666666666667,
+            0.8472222222222222
+          ],
+          "mean_within_seed_fold_std": 0.34802894612701607,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.04733333333333333,
+            "attack_remediation_rate": 0.28,
+            "attack_human_review_rate": 0.4076190476190476,
+            "attack_monitor_only_rate": 0.008571428571428572,
+            "benign_human_review_rate": 0.7753333333333333,
+            "share_AUTO_REMEDIATE": 0.18305555555555555,
+            "share_CONFIRM_TO_ACT": 0.23472222222222222,
+            "share_HUMAN_REVIEW": 0.5608333333333333,
+            "share_MONITOR_ONLY": 0.021388888888888888
+          }
+        },
+        "Fixed rules": {
+          "mean_reward_per_alert": {
+            "mean": -2.0833333333333335,
+            "std": 0.0,
+            "min": -2.0833333333333335,
+            "max": -2.0833333333333335,
+            "n": 5
+          },
+          "per_seed": [
+            -2.0833333333333335,
+            -2.0833333333333335,
+            -2.0833333333333335,
+            -2.0833333333333335,
+            -2.0833333333333335
+          ],
+          "mean_within_seed_fold_std": 0.8148316536218754,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 1.0,
+            "attack_remediation_rate": 1.0,
+            "attack_human_review_rate": 0.0,
+            "attack_monitor_only_rate": 0.0,
+            "benign_human_review_rate": 0.0,
+            "share_AUTO_REMEDIATE": 1.0,
+            "share_CONFIRM_TO_ACT": 0.0,
+            "share_HUMAN_REVIEW": 0.0,
+            "share_MONITOR_ONLY": 0.0
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "mean_reward_per_alert": {
+            "mean": 0.3333333333333333,
+            "std": 0.0,
+            "min": 0.3333333333333333,
+            "max": 0.3333333333333333,
+            "n": 5
+          },
+          "per_seed": [
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333
+          ],
+          "mean_within_seed_fold_std": 0.19172509496985304,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.0,
+            "attack_remediation_rate": 0.0,
+            "attack_human_review_rate": 1.0,
+            "attack_monitor_only_rate": 0.0,
+            "benign_human_review_rate": 1.0,
+            "share_AUTO_REMEDIATE": 0.0,
+            "share_CONFIRM_TO_ACT": 0.0,
+            "share_HUMAN_REVIEW": 1.0,
+            "share_MONITOR_ONLY": 0.0
+          }
+        },
+        "Random (seeded)": {
+          "mean_reward_per_alert": {
+            "mean": -1.0327777777777778,
+            "std": 0.14394478215149717,
+            "min": -1.175,
+            "max": -0.8347222222222223,
+            "n": 5
+          },
+          "per_seed": [
+            -0.9694444444444444,
+            -1.0138888888888888,
+            -1.175,
+            -0.8347222222222223,
+            -1.1708333333333334
+          ],
+          "mean_within_seed_fold_std": 0.3481264826527848,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.24866666666666667,
+            "attack_remediation_rate": 0.2523809523809524,
+            "attack_human_review_rate": 0.2566666666666667,
+            "attack_monitor_only_rate": 0.2419047619047619,
+            "benign_human_review_rate": 0.24933333333333332,
+            "share_AUTO_REMEDIATE": 0.25083333333333335,
+            "share_CONFIRM_TO_ACT": 0.24916666666666668,
+            "share_HUMAN_REVIEW": 0.2536111111111111,
+            "share_MONITOR_ONLY": 0.24638888888888885
+          }
+        }
+      },
+      "hindsight_references": {
+        "Oracle (hindsight, labels)": 3.3333333333333335,
+        "Always AUTO_REMEDIATE (hindsight reference)": -2.0833333333333335,
+        "Always CONFIRM_TO_ACT (hindsight reference)": 0.5,
+        "Always HUMAN_REVIEW (hindsight reference)": 0.3333333333333333,
+        "Always MONITOR_ONLY (hindsight reference)": -3.0833333333333335
+      },
+      "bandit_minus_fixed": {
+        "per_seed": [
+          2.6430555555555557,
+          2.751388888888889,
+          3.091666666666667,
+          2.7750000000000004,
+          2.930555555555556
+        ],
+        "mean": 2.838333333333334,
+        "std": 0.17491896271850718,
+        "min": 2.6430555555555557,
+        "max": 3.091666666666667,
+        "n": 5,
+        "seeds_bandit_higher": 5,
+        "seeds_tied": 0,
+        "seeds_bandit_lower": 0
+      },
+      "per_family": {
+        "Contextual bandit (greedy held-out)": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -2.493333333333333,
+              "std": 0.45227204202780436,
+              "min": -2.993333333333333,
+              "max": -2.0766666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.04733333333333333,
+              "CONFIRM_TO_ACT": 0.138,
+              "HUMAN_REVIEW": 0.7753333333333333,
+              "MONITOR_ONLY": 0.03933333333333333
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 2.6333333333333333,
+              "std": 0.4501542945356503,
+              "min": 2.1666666666666665,
+              "max": 3.2333333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.16333333333333333,
+              "CONFIRM_TO_ACT": 0.22333333333333333,
+              "HUMAN_REVIEW": 0.6033333333333334,
+              "MONITOR_ONLY": 0.01
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 3.6,
+              "std": 1.0186456149657197,
+              "min": 2.65,
+              "max": 4.966666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.4066666666666667,
+              "CONFIRM_TO_ACT": 0.38,
+              "HUMAN_REVIEW": 0.21333333333333335,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 3.8566666666666665,
+              "std": 0.9427795783391436,
+              "min": 2.75,
+              "max": 4.966666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.49,
+              "CONFIRM_TO_ACT": 0.38666666666666666,
+              "HUMAN_REVIEW": 0.12333333333333334,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 3.5166666666666666,
+              "std": 1.0553435459602716,
+              "min": 2.6166666666666667,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.38333333333333336,
+              "CONFIRM_TO_ACT": 0.36666666666666664,
+              "HUMAN_REVIEW": 0.25,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 2.8466666666666667,
+              "std": 0.44369033245171247,
+              "min": 2.4166666666666665,
+              "max": 3.4,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23666666666666666,
+              "CONFIRM_TO_ACT": 0.27,
+              "HUMAN_REVIEW": 0.4766666666666667,
+              "MONITOR_ONLY": 0.016666666666666666
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 2.3600000000000003,
+              "std": 0.30654889042732203,
+              "min": 1.95,
+              "max": 2.7,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.10666666666666667,
+              "CONFIRM_TO_ACT": 0.2,
+              "HUMAN_REVIEW": 0.6733333333333333,
+              "MONITOR_ONLY": 0.02
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 2.7133333333333334,
+              "std": 0.42807709586007997,
+              "min": 2.183333333333333,
+              "max": 3.2333333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.17333333333333334,
+              "CONFIRM_TO_ACT": 0.3,
+              "HUMAN_REVIEW": 0.5133333333333333,
+              "MONITOR_ONLY": 0.013333333333333334
+            }
+          }
+        },
+        "Fixed rules": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -12.0,
+              "std": 0.0,
+              "min": -12.0,
+              "max": -12.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -2.0,
+              "std": 0.0,
+              "min": -2.0,
+              "max": -2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          }
+        },
+        "Random (seeded)": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -3.978,
+              "std": 0.1908984605024938,
+              "min": -4.1466666666666665,
+              "max": -3.68,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.24866666666666667,
+              "CONFIRM_TO_ACT": 0.24933333333333332,
+              "HUMAN_REVIEW": 0.24933333333333332,
+              "MONITOR_ONLY": 0.25266666666666665
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 1.0066666666666666,
+              "std": 0.7091270063332176,
+              "min": 0.15,
+              "max": 1.7333333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23333333333333334,
+              "CONFIRM_TO_ACT": 0.28,
+              "HUMAN_REVIEW": 0.24,
+              "MONITOR_ONLY": 0.24666666666666667
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 0.9,
+              "std": 0.5240069974087497,
+              "min": 0.3,
+              "max": 1.6833333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23333333333333334,
+              "CONFIRM_TO_ACT": 0.25333333333333335,
+              "HUMAN_REVIEW": 0.25666666666666665,
+              "MONITOR_ONLY": 0.25666666666666665
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 1.35,
+              "std": 0.5739725119240855,
+              "min": 0.35,
+              "max": 1.7833333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.29333333333333333,
+              "CONFIRM_TO_ACT": 0.20333333333333334,
+              "HUMAN_REVIEW": 0.2866666666666667,
+              "MONITOR_ONLY": 0.21666666666666667
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 1.1199999999999999,
+              "std": 0.7613401926135839,
+              "min": 0.13333333333333333,
+              "max": 2.1,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.2833333333333333,
+              "CONFIRM_TO_ACT": 0.21666666666666667,
+              "HUMAN_REVIEW": 0.25666666666666665,
+              "MONITOR_ONLY": 0.24333333333333335
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 1.01,
+              "std": 0.29990739311401515,
+              "min": 0.7,
+              "max": 1.3333333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.21,
+              "CONFIRM_TO_ACT": 0.3,
+              "HUMAN_REVIEW": 0.25,
+              "MONITOR_ONLY": 0.24
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 0.9766666666666668,
+              "std": 0.3923929436447886,
+              "min": 0.48333333333333334,
+              "max": 1.4833333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.25,
+              "CONFIRM_TO_ACT": 0.25333333333333335,
+              "HUMAN_REVIEW": 0.24333333333333335,
+              "MONITOR_ONLY": 0.25333333333333335
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 1.1333333333333333,
+              "std": 0.2034425935955617,
+              "min": 0.8833333333333333,
+              "max": 1.4,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.2633333333333333,
+              "CONFIRM_TO_ACT": 0.23666666666666666,
+              "HUMAN_REVIEW": 0.2633333333333333,
+              "MONITOR_ONLY": 0.23666666666666666
+            }
+          }
+        }
+      }
+    },
+    "sens-v2-false-remediation-6": {
+      "reward_table": {
+        "attack": {
+          "AUTO_REMEDIATE": 5,
+          "CONFIRM_TO_ACT": 3,
+          "HUMAN_REVIEW": 2,
+          "MONITOR_ONLY": -6
+        },
+        "benign": {
+          "AUTO_REMEDIATE": -6,
+          "CONFIRM_TO_ACT": -3,
+          "HUMAN_REVIEW": -2,
+          "MONITOR_ONLY": 1
+        }
+      },
+      "policies": {
+        "Contextual bandit (greedy held-out)": {
+          "mean_reward_per_alert": {
+            "mean": 1.0611111111111111,
+            "std": 0.2917741204179682,
+            "min": 0.5597222222222222,
+            "max": 1.3,
+            "n": 5
+          },
+          "per_seed": [
+            0.5597222222222222,
+            1.2180555555555554,
+            1.3,
+            1.1444444444444444,
+            1.0833333333333333
+          ],
+          "mean_within_seed_fold_std": 0.41696461752660874,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.10600000000000001,
+            "attack_remediation_rate": 0.4795238095238095,
+            "attack_human_review_rate": 0.32904761904761903,
+            "attack_monitor_only_rate": 0.011904761904761904,
+            "benign_human_review_rate": 0.738,
+            "share_AUTO_REMEDIATE": 0.3238888888888889,
+            "share_CONFIRM_TO_ACT": 0.14944444444444444,
+            "share_HUMAN_REVIEW": 0.49944444444444447,
+            "share_MONITOR_ONLY": 0.027222222222222224
+          }
+        },
+        "Fixed rules": {
+          "mean_reward_per_alert": {
+            "mean": 0.4166666666666667,
+            "std": 0.0,
+            "min": 0.4166666666666667,
+            "max": 0.4166666666666667,
+            "n": 5
+          },
+          "per_seed": [
+            0.4166666666666667,
+            0.4166666666666667,
+            0.4166666666666667,
+            0.4166666666666667,
+            0.4166666666666667
+          ],
+          "mean_within_seed_fold_std": 0.5272440111670958,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 1.0,
+            "attack_remediation_rate": 1.0,
+            "attack_human_review_rate": 0.0,
+            "attack_monitor_only_rate": 0.0,
+            "benign_human_review_rate": 0.0,
+            "share_AUTO_REMEDIATE": 1.0,
+            "share_CONFIRM_TO_ACT": 0.0,
+            "share_HUMAN_REVIEW": 0.0,
+            "share_MONITOR_ONLY": 0.0
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "mean_reward_per_alert": {
+            "mean": 0.3333333333333333,
+            "std": 0.0,
+            "min": 0.3333333333333333,
+            "max": 0.3333333333333333,
+            "n": 5
+          },
+          "per_seed": [
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333
+          ],
+          "mean_within_seed_fold_std": 0.19172509496985304,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.0,
+            "attack_remediation_rate": 0.0,
+            "attack_human_review_rate": 1.0,
+            "attack_monitor_only_rate": 0.0,
+            "benign_human_review_rate": 1.0,
+            "share_AUTO_REMEDIATE": 0.0,
+            "share_CONFIRM_TO_ACT": 0.0,
+            "share_HUMAN_REVIEW": 1.0,
+            "share_MONITOR_ONLY": 0.0
+          }
+        },
+        "Random (seeded)": {
+          "mean_reward_per_alert": {
+            "mean": -0.4111111111111111,
+            "std": 0.1215456336088743,
+            "min": -0.5083333333333333,
+            "max": -0.21805555555555556,
+            "n": 5
+          },
+          "per_seed": [
+            -0.36944444444444446,
+            -0.45555555555555555,
+            -0.5083333333333333,
+            -0.21805555555555556,
+            -0.5041666666666667
+          ],
+          "mean_within_seed_fold_std": 0.26996849169582043,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.24866666666666667,
+            "attack_remediation_rate": 0.2523809523809524,
+            "attack_human_review_rate": 0.2566666666666667,
+            "attack_monitor_only_rate": 0.2419047619047619,
+            "benign_human_review_rate": 0.24933333333333332,
+            "share_AUTO_REMEDIATE": 0.25083333333333335,
+            "share_CONFIRM_TO_ACT": 0.24916666666666668,
+            "share_HUMAN_REVIEW": 0.2536111111111111,
+            "share_MONITOR_ONLY": 0.24638888888888885
+          }
+        }
+      },
+      "hindsight_references": {
+        "Oracle (hindsight, labels)": 3.3333333333333335,
+        "Always AUTO_REMEDIATE (hindsight reference)": 0.4166666666666667,
+        "Always CONFIRM_TO_ACT (hindsight reference)": 0.5,
+        "Always HUMAN_REVIEW (hindsight reference)": 0.3333333333333333,
+        "Always MONITOR_ONLY (hindsight reference)": -3.0833333333333335
+      },
+      "bandit_minus_fixed": {
+        "per_seed": [
+          0.14305555555555555,
+          0.8013888888888887,
+          0.8833333333333333,
+          0.7277777777777776,
+          0.6666666666666665
+        ],
+        "mean": 0.6444444444444444,
+        "std": 0.2917741204179682,
+        "min": 0.14305555555555555,
+        "max": 0.8833333333333333,
+        "n": 5,
+        "seeds_bandit_higher": 5,
+        "seeds_tied": 0,
+        "seeds_bandit_lower": 0
+      },
+      "per_family": {
+        "Contextual bandit (greedy held-out)": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -2.385333333333333,
+              "std": 0.2610512933846103,
+              "min": -2.68,
+              "max": -2.1066666666666665,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.106,
+              "CONFIRM_TO_ACT": 0.10733333333333334,
+              "HUMAN_REVIEW": 0.738,
+              "MONITOR_ONLY": 0.048666666666666664
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 2.84,
+              "std": 0.379619692733545,
+              "min": 2.283333333333333,
+              "max": 3.2333333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.28,
+              "CONFIRM_TO_ACT": 0.16,
+              "HUMAN_REVIEW": 0.54,
+              "MONITOR_ONLY": 0.02
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 4.263333333333334,
+              "std": 0.9330654377433081,
+              "min": 2.65,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.6866666666666666,
+              "CONFIRM_TO_ACT": 0.20333333333333334,
+              "HUMAN_REVIEW": 0.11,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 4.33,
+              "std": 0.9251426316460014,
+              "min": 2.75,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.7133333333333334,
+              "CONFIRM_TO_ACT": 0.19,
+              "HUMAN_REVIEW": 0.09666666666666666,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 4.24,
+              "std": 0.9482879309576812,
+              "min": 2.6166666666666667,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.6833333333333333,
+              "CONFIRM_TO_ACT": 0.19,
+              "HUMAN_REVIEW": 0.12666666666666668,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 3.3200000000000003,
+              "std": 0.5147005601965735,
+              "min": 2.5,
+              "max": 3.7666666666666666,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.44,
+              "CONFIRM_TO_ACT": 0.16,
+              "HUMAN_REVIEW": 0.38,
+              "MONITOR_ONLY": 0.02
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 2.6233333333333335,
+              "std": 0.431824295544174,
+              "min": 2.15,
+              "max": 3.05,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23,
+              "CONFIRM_TO_ACT": 0.14666666666666667,
+              "HUMAN_REVIEW": 0.5966666666666667,
+              "MONITOR_ONLY": 0.02666666666666667
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 3.0433333333333334,
+              "std": 0.44152513455571757,
+              "min": 2.4,
+              "max": 3.6166666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.3233333333333333,
+              "CONFIRM_TO_ACT": 0.20666666666666667,
+              "HUMAN_REVIEW": 0.4533333333333333,
+              "MONITOR_ONLY": 0.016666666666666666
+            }
+          }
+        },
+        "Fixed rules": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -6.0,
+              "std": 0.0,
+              "min": -6.0,
+              "max": -6.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -2.0,
+              "std": 0.0,
+              "min": -2.0,
+              "max": -2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          }
+        },
+        "Random (seeded)": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -2.4859999999999998,
+              "std": 0.09328570213179639,
+              "min": -2.58,
+              "max": -2.34,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.24866666666666667,
+              "CONFIRM_TO_ACT": 0.24933333333333332,
+              "HUMAN_REVIEW": 0.24933333333333332,
+              "MONITOR_ONLY": 0.25266666666666665
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 1.0066666666666666,
+              "std": 0.7091270063332176,
+              "min": 0.15,
+              "max": 1.7333333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23333333333333334,
+              "CONFIRM_TO_ACT": 0.28,
+              "HUMAN_REVIEW": 0.24,
+              "MONITOR_ONLY": 0.24666666666666667
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 0.9,
+              "std": 0.5240069974087497,
+              "min": 0.3,
+              "max": 1.6833333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23333333333333334,
+              "CONFIRM_TO_ACT": 0.25333333333333335,
+              "HUMAN_REVIEW": 0.25666666666666665,
+              "MONITOR_ONLY": 0.25666666666666665
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 1.35,
+              "std": 0.5739725119240855,
+              "min": 0.35,
+              "max": 1.7833333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.29333333333333333,
+              "CONFIRM_TO_ACT": 0.20333333333333334,
+              "HUMAN_REVIEW": 0.2866666666666667,
+              "MONITOR_ONLY": 0.21666666666666667
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 1.1199999999999999,
+              "std": 0.7613401926135839,
+              "min": 0.13333333333333333,
+              "max": 2.1,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.2833333333333333,
+              "CONFIRM_TO_ACT": 0.21666666666666667,
+              "HUMAN_REVIEW": 0.25666666666666665,
+              "MONITOR_ONLY": 0.24333333333333335
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 1.01,
+              "std": 0.29990739311401515,
+              "min": 0.7,
+              "max": 1.3333333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.21,
+              "CONFIRM_TO_ACT": 0.3,
+              "HUMAN_REVIEW": 0.25,
+              "MONITOR_ONLY": 0.24
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 0.9766666666666668,
+              "std": 0.3923929436447886,
+              "min": 0.48333333333333334,
+              "max": 1.4833333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.25,
+              "CONFIRM_TO_ACT": 0.25333333333333335,
+              "HUMAN_REVIEW": 0.24333333333333335,
+              "MONITOR_ONLY": 0.25333333333333335
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 1.1333333333333333,
+              "std": 0.2034425935955617,
+              "min": 0.8833333333333333,
+              "max": 1.4,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.2633333333333333,
+              "CONFIRM_TO_ACT": 0.23666666666666666,
+              "HUMAN_REVIEW": 0.2633333333333333,
+              "MONITOR_ONLY": 0.23666666666666666
+            }
+          }
+        }
+      }
+    },
+    "sens-v2-false-remediation-24": {
+      "reward_table": {
+        "attack": {
+          "AUTO_REMEDIATE": 5,
+          "CONFIRM_TO_ACT": 3,
+          "HUMAN_REVIEW": 2,
+          "MONITOR_ONLY": -6
+        },
+        "benign": {
+          "AUTO_REMEDIATE": -24,
+          "CONFIRM_TO_ACT": -3,
+          "HUMAN_REVIEW": -2,
+          "MONITOR_ONLY": 1
+        }
+      },
+      "policies": {
+        "Contextual bandit (greedy held-out)": {
+          "mean_reward_per_alert": {
+            "mean": 0.5755555555555556,
+            "std": 0.10392379092867837,
+            "min": 0.4125,
+            "max": 0.6680555555555555,
+            "n": 5
+          },
+          "per_seed": [
+            0.5597222222222222,
+            0.6680555555555555,
+            0.6638888888888889,
+            0.4125,
+            0.5736111111111111
+          ],
+          "mean_within_seed_fold_std": 0.3405881870437042,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.011333333333333334,
+            "attack_remediation_rate": 0.12571428571428572,
+            "attack_human_review_rate": 0.5528571428571428,
+            "attack_monitor_only_rate": 0.008095238095238096,
+            "benign_human_review_rate": 0.8099999999999999,
+            "share_AUTO_REMEDIATE": 0.07805555555555556,
+            "share_CONFIRM_TO_ACT": 0.24333333333333335,
+            "share_HUMAN_REVIEW": 0.6599999999999999,
+            "share_MONITOR_ONLY": 0.018611111111111113
+          }
+        },
+        "Fixed rules": {
+          "mean_reward_per_alert": {
+            "mean": -7.083333333333333,
+            "std": 0.0,
+            "min": -7.083333333333333,
+            "max": -7.083333333333333,
+            "n": 5
+          },
+          "per_seed": [
+            -7.083333333333333,
+            -7.083333333333333,
+            -7.083333333333333,
+            -7.083333333333333,
+            -7.083333333333333
+          ],
+          "mean_within_seed_fold_std": 1.3900069385314344,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 1.0,
+            "attack_remediation_rate": 1.0,
+            "attack_human_review_rate": 0.0,
+            "attack_monitor_only_rate": 0.0,
+            "benign_human_review_rate": 0.0,
+            "share_AUTO_REMEDIATE": 1.0,
+            "share_CONFIRM_TO_ACT": 0.0,
+            "share_HUMAN_REVIEW": 0.0,
+            "share_MONITOR_ONLY": 0.0
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "mean_reward_per_alert": {
+            "mean": 0.3333333333333333,
+            "std": 0.0,
+            "min": 0.3333333333333333,
+            "max": 0.3333333333333333,
+            "n": 5
+          },
+          "per_seed": [
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333
+          ],
+          "mean_within_seed_fold_std": 0.19172509496985304,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.0,
+            "attack_remediation_rate": 0.0,
+            "attack_human_review_rate": 1.0,
+            "attack_monitor_only_rate": 0.0,
+            "benign_human_review_rate": 1.0,
+            "share_AUTO_REMEDIATE": 0.0,
+            "share_CONFIRM_TO_ACT": 0.0,
+            "share_HUMAN_REVIEW": 1.0,
+            "share_MONITOR_ONLY": 0.0
+          }
+        },
+        "Random (seeded)": {
+          "mean_reward_per_alert": {
+            "mean": -2.276111111111111,
+            "std": 0.21318290775879256,
+            "min": -2.5083333333333333,
+            "max": -2.0680555555555555,
+            "n": 5
+          },
+          "per_seed": [
+            -2.1694444444444443,
+            -2.1305555555555555,
+            -2.5083333333333333,
+            -2.0680555555555555,
+            -2.504166666666667
+          ],
+          "mean_within_seed_fold_std": 0.5723509053930433,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.24866666666666667,
+            "attack_remediation_rate": 0.2523809523809524,
+            "attack_human_review_rate": 0.2566666666666667,
+            "attack_monitor_only_rate": 0.2419047619047619,
+            "benign_human_review_rate": 0.24933333333333332,
+            "share_AUTO_REMEDIATE": 0.25083333333333335,
+            "share_CONFIRM_TO_ACT": 0.24916666666666668,
+            "share_HUMAN_REVIEW": 0.2536111111111111,
+            "share_MONITOR_ONLY": 0.24638888888888885
+          }
+        }
+      },
+      "hindsight_references": {
+        "Oracle (hindsight, labels)": 3.3333333333333335,
+        "Always AUTO_REMEDIATE (hindsight reference)": -7.083333333333333,
+        "Always CONFIRM_TO_ACT (hindsight reference)": 0.5,
+        "Always HUMAN_REVIEW (hindsight reference)": 0.3333333333333333,
+        "Always MONITOR_ONLY (hindsight reference)": -3.0833333333333335
+      },
+      "bandit_minus_fixed": {
+        "per_seed": [
+          7.643055555555556,
+          7.751388888888888,
+          7.747222222222222,
+          7.495833333333333,
+          7.656944444444444
+        ],
+        "mean": 7.658888888888889,
+        "std": 0.10392379092867839,
+        "min": 7.495833333333333,
+        "max": 7.751388888888888,
+        "n": 5,
+        "seeds_bandit_higher": 5,
+        "seeds_tied": 0,
+        "seeds_bandit_lower": 0
+      },
+      "per_family": {
+        "Contextual bandit (greedy held-out)": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -2.2946666666666666,
+              "std": 0.2993938320451287,
+              "min": -2.7733333333333334,
+              "max": -1.9766666666666666,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.011333333333333334,
+              "CONFIRM_TO_ACT": 0.14533333333333334,
+              "HUMAN_REVIEW": 0.81,
+              "MONITOR_ONLY": 0.03333333333333333
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 2.4366666666666665,
+              "std": 0.29116623735896613,
+              "min": 2.1666666666666665,
+              "max": 2.9,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.09666666666666666,
+              "CONFIRM_TO_ACT": 0.22666666666666666,
+              "HUMAN_REVIEW": 0.6666666666666666,
+              "MONITOR_ONLY": 0.01
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 2.95,
+              "std": 0.6621723508439643,
+              "min": 2.2333333333333334,
+              "max": 4.016666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.18666666666666668,
+              "CONFIRM_TO_ACT": 0.39,
+              "HUMAN_REVIEW": 0.42333333333333334,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 3.2566666666666664,
+              "std": 0.9287536451251932,
+              "min": 2.1666666666666665,
+              "max": 4.516666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.29,
+              "CONFIRM_TO_ACT": 0.38666666666666666,
+              "HUMAN_REVIEW": 0.3233333333333333,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 2.7866666666666666,
+              "std": 0.4424364361125787,
+              "min": 2.216666666666667,
+              "max": 3.4,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.13666666666666666,
+              "CONFIRM_TO_ACT": 0.37666666666666665,
+              "HUMAN_REVIEW": 0.4866666666666667,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 2.3966666666666665,
+              "std": 0.2125898502855779,
+              "min": 2.1166666666666667,
+              "max": 2.683333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.08333333333333333,
+              "CONFIRM_TO_ACT": 0.28,
+              "HUMAN_REVIEW": 0.62,
+              "MONITOR_ONLY": 0.016666666666666666
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 2.1166666666666667,
+              "std": 0.2715695122800055,
+              "min": 1.9,
+              "max": 2.566666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.02,
+              "CONFIRM_TO_ACT": 0.21666666666666667,
+              "HUMAN_REVIEW": 0.7433333333333333,
+              "MONITOR_ONLY": 0.02
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 2.4366666666666665,
+              "std": 0.2958978802822954,
+              "min": 2.033333333333333,
+              "max": 2.75,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.06666666666666667,
+              "CONFIRM_TO_ACT": 0.31666666666666665,
+              "HUMAN_REVIEW": 0.6066666666666667,
+              "MONITOR_ONLY": 0.01
+            }
+          }
+        },
+        "Fixed rules": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -24.0,
+              "std": 0.0,
+              "min": -24.0,
+              "max": -24.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -2.0,
+              "std": 0.0,
+              "min": -2.0,
+              "max": -2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          }
+        },
+        "Random (seeded)": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -6.962000000000001,
+              "std": 0.4072373045562282,
+              "min": -7.346666666666667,
+              "max": -6.36,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.24866666666666667,
+              "CONFIRM_TO_ACT": 0.24933333333333332,
+              "HUMAN_REVIEW": 0.24933333333333332,
+              "MONITOR_ONLY": 0.25266666666666665
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 1.0066666666666666,
+              "std": 0.7091270063332176,
+              "min": 0.15,
+              "max": 1.7333333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23333333333333334,
+              "CONFIRM_TO_ACT": 0.28,
+              "HUMAN_REVIEW": 0.24,
+              "MONITOR_ONLY": 0.24666666666666667
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 0.9,
+              "std": 0.5240069974087497,
+              "min": 0.3,
+              "max": 1.6833333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23333333333333334,
+              "CONFIRM_TO_ACT": 0.25333333333333335,
+              "HUMAN_REVIEW": 0.25666666666666665,
+              "MONITOR_ONLY": 0.25666666666666665
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 1.35,
+              "std": 0.5739725119240855,
+              "min": 0.35,
+              "max": 1.7833333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.29333333333333333,
+              "CONFIRM_TO_ACT": 0.20333333333333334,
+              "HUMAN_REVIEW": 0.2866666666666667,
+              "MONITOR_ONLY": 0.21666666666666667
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 1.1199999999999999,
+              "std": 0.7613401926135839,
+              "min": 0.13333333333333333,
+              "max": 2.1,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.2833333333333333,
+              "CONFIRM_TO_ACT": 0.21666666666666667,
+              "HUMAN_REVIEW": 0.25666666666666665,
+              "MONITOR_ONLY": 0.24333333333333335
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 1.01,
+              "std": 0.29990739311401515,
+              "min": 0.7,
+              "max": 1.3333333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.21,
+              "CONFIRM_TO_ACT": 0.3,
+              "HUMAN_REVIEW": 0.25,
+              "MONITOR_ONLY": 0.24
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 0.9766666666666668,
+              "std": 0.3923929436447886,
+              "min": 0.48333333333333334,
+              "max": 1.4833333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.25,
+              "CONFIRM_TO_ACT": 0.25333333333333335,
+              "HUMAN_REVIEW": 0.24333333333333335,
+              "MONITOR_ONLY": 0.25333333333333335
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 1.1333333333333333,
+              "std": 0.2034425935955617,
+              "min": 0.8833333333333333,
+              "max": 1.4,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.2633333333333333,
+              "CONFIRM_TO_ACT": 0.23666666666666666,
+              "HUMAN_REVIEW": 0.2633333333333333,
+              "MONITOR_ONLY": 0.23666666666666666
+            }
+          }
+        }
+      }
+    },
+    "sens-v2-missed-attack-12": {
+      "reward_table": {
+        "attack": {
+          "AUTO_REMEDIATE": 5,
+          "CONFIRM_TO_ACT": 3,
+          "HUMAN_REVIEW": 2,
+          "MONITOR_ONLY": -12
+        },
+        "benign": {
+          "AUTO_REMEDIATE": -12,
+          "CONFIRM_TO_ACT": -3,
+          "HUMAN_REVIEW": -2,
+          "MONITOR_ONLY": 1
+        }
+      },
+      "policies": {
+        "Contextual bandit (greedy held-out)": {
+          "mean_reward_per_alert": {
+            "mean": 0.7522222222222222,
+            "std": 0.1604951106904991,
+            "min": 0.5597222222222222,
+            "max": 0.9722222222222222,
+            "n": 5
+          },
+          "per_seed": [
+            0.5597222222222222,
+            0.6680555555555555,
+            0.9722222222222222,
+            0.7138888888888889,
+            0.8472222222222222
+          ],
+          "mean_within_seed_fold_std": 0.33694244078801794,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.04733333333333333,
+            "attack_remediation_rate": 0.2804761904761905,
+            "attack_human_review_rate": 0.42428571428571427,
+            "attack_monitor_only_rate": 0.0,
+            "benign_human_review_rate": 0.8400000000000001,
+            "share_AUTO_REMEDIATE": 0.18333333333333332,
+            "share_CONFIRM_TO_ACT": 0.21916666666666668,
+            "share_HUMAN_REVIEW": 0.5974999999999999,
+            "share_MONITOR_ONLY": 0.0
+          }
+        },
+        "Fixed rules": {
+          "mean_reward_per_alert": {
+            "mean": -2.0833333333333335,
+            "std": 0.0,
+            "min": -2.0833333333333335,
+            "max": -2.0833333333333335,
+            "n": 5
+          },
+          "per_seed": [
+            -2.0833333333333335,
+            -2.0833333333333335,
+            -2.0833333333333335,
+            -2.0833333333333335,
+            -2.0833333333333335
+          ],
+          "mean_within_seed_fold_std": 0.8148316536218754,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 1.0,
+            "attack_remediation_rate": 1.0,
+            "attack_human_review_rate": 0.0,
+            "attack_monitor_only_rate": 0.0,
+            "benign_human_review_rate": 0.0,
+            "share_AUTO_REMEDIATE": 1.0,
+            "share_CONFIRM_TO_ACT": 0.0,
+            "share_HUMAN_REVIEW": 0.0,
+            "share_MONITOR_ONLY": 0.0
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "mean_reward_per_alert": {
+            "mean": 0.3333333333333333,
+            "std": 0.0,
+            "min": 0.3333333333333333,
+            "max": 0.3333333333333333,
+            "n": 5
+          },
+          "per_seed": [
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333
+          ],
+          "mean_within_seed_fold_std": 0.19172509496985304,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.0,
+            "attack_remediation_rate": 0.0,
+            "attack_human_review_rate": 1.0,
+            "attack_monitor_only_rate": 0.0,
+            "benign_human_review_rate": 1.0,
+            "share_AUTO_REMEDIATE": 0.0,
+            "share_CONFIRM_TO_ACT": 0.0,
+            "share_HUMAN_REVIEW": 1.0,
+            "share_MONITOR_ONLY": 0.0
+          }
+        },
+        "Random (seeded)": {
+          "mean_reward_per_alert": {
+            "mean": -1.8794444444444445,
+            "std": 0.22686002441816933,
+            "min": -2.091666666666667,
+            "max": -1.5263888888888888,
+            "n": 5
+          },
+          "per_seed": [
+            -1.8027777777777778,
+            -1.9305555555555556,
+            -2.091666666666667,
+            -1.5263888888888888,
+            -2.0458333333333334
+          ],
+          "mean_within_seed_fold_std": 0.3959920574807779,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.24866666666666667,
+            "attack_remediation_rate": 0.2523809523809524,
+            "attack_human_review_rate": 0.2566666666666667,
+            "attack_monitor_only_rate": 0.2419047619047619,
+            "benign_human_review_rate": 0.24933333333333332,
+            "share_AUTO_REMEDIATE": 0.25083333333333335,
+            "share_CONFIRM_TO_ACT": 0.24916666666666668,
+            "share_HUMAN_REVIEW": 0.2536111111111111,
+            "share_MONITOR_ONLY": 0.24638888888888885
+          }
+        }
+      },
+      "hindsight_references": {
+        "Oracle (hindsight, labels)": 3.3333333333333335,
+        "Always AUTO_REMEDIATE (hindsight reference)": -2.0833333333333335,
+        "Always CONFIRM_TO_ACT (hindsight reference)": 0.5,
+        "Always HUMAN_REVIEW (hindsight reference)": 0.3333333333333333,
+        "Always MONITOR_ONLY (hindsight reference)": -6.583333333333333
+      },
+      "bandit_minus_fixed": {
+        "per_seed": [
+          2.6430555555555557,
+          2.751388888888889,
+          3.055555555555556,
+          2.7972222222222225,
+          2.930555555555556
+        ],
+        "mean": 2.8355555555555556,
+        "std": 0.16049511069049913,
+        "min": 2.6430555555555557,
+        "max": 3.055555555555556,
+        "n": 5,
+        "seeds_bandit_higher": 5,
+        "seeds_tied": 0,
+        "seeds_bandit_lower": 0
+      },
+      "per_family": {
+        "Contextual bandit (greedy held-out)": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -2.586,
+              "std": 0.5745162216063956,
+              "min": -3.4066666666666667,
+              "max": -2.1266666666666665,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.04733333333333333,
+              "CONFIRM_TO_ACT": 0.11266666666666666,
+              "HUMAN_REVIEW": 0.84,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 2.6966666666666668,
+              "std": 0.45573505948571097,
+              "min": 2.283333333333333,
+              "max": 3.3666666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.16333333333333333,
+              "CONFIRM_TO_ACT": 0.20666666666666667,
+              "HUMAN_REVIEW": 0.63,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 3.6,
+              "std": 1.0186456149657197,
+              "min": 2.65,
+              "max": 4.966666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.4066666666666667,
+              "CONFIRM_TO_ACT": 0.38,
+              "HUMAN_REVIEW": 0.21333333333333335,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 3.8566666666666665,
+              "std": 0.9427795783391436,
+              "min": 2.75,
+              "max": 4.966666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.49,
+              "CONFIRM_TO_ACT": 0.38666666666666666,
+              "HUMAN_REVIEW": 0.12333333333333334,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 3.5166666666666666,
+              "std": 1.0553435459602716,
+              "min": 2.6166666666666667,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.38333333333333336,
+              "CONFIRM_TO_ACT": 0.36666666666666664,
+              "HUMAN_REVIEW": 0.25,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 2.9799999999999995,
+              "std": 0.643924598760514,
+              "min": 2.4166666666666665,
+              "max": 3.9,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23666666666666666,
+              "CONFIRM_TO_ACT": 0.27,
+              "HUMAN_REVIEW": 0.49333333333333335,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 2.5033333333333334,
+              "std": 0.3797660098300297,
+              "min": 2.1,
+              "max": 3.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.11,
+              "CONFIRM_TO_ACT": 0.17333333333333334,
+              "HUMAN_REVIEW": 0.7166666666666667,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 2.8033333333333332,
+              "std": 0.46910079466523563,
+              "min": 2.3666666666666667,
+              "max": 3.5,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.17333333333333334,
+              "CONFIRM_TO_ACT": 0.2833333333333333,
+              "HUMAN_REVIEW": 0.5433333333333333,
+              "MONITOR_ONLY": 0.0
+            }
+          }
+        },
+        "Fixed rules": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -12.0,
+              "std": 0.0,
+              "min": -12.0,
+              "max": -12.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -2.0,
+              "std": 0.0,
+              "min": -2.0,
+              "max": -2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          }
+        },
+        "Random (seeded)": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -3.978,
+              "std": 0.1908984605024938,
+              "min": -4.1466666666666665,
+              "max": -3.68,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.24866666666666667,
+              "CONFIRM_TO_ACT": 0.24933333333333332,
+              "HUMAN_REVIEW": 0.24933333333333332,
+              "MONITOR_ONLY": 0.25266666666666665
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": -0.47333333333333333,
+              "std": 1.1399683231466469,
+              "min": -1.85,
+              "max": 0.7333333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23333333333333334,
+              "CONFIRM_TO_ACT": 0.28,
+              "HUMAN_REVIEW": 0.24,
+              "MONITOR_ONLY": 0.24666666666666667
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": -0.6399999999999999,
+              "std": 0.847594635817539,
+              "min": -1.7,
+              "max": 0.5833333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23333333333333334,
+              "CONFIRM_TO_ACT": 0.25333333333333335,
+              "HUMAN_REVIEW": 0.25666666666666665,
+              "MONITOR_ONLY": 0.25666666666666665
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 0.050000000000000024,
+              "std": 0.8959786703810408,
+              "min": -1.45,
+              "max": 0.7833333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.29333333333333333,
+              "CONFIRM_TO_ACT": 0.20333333333333334,
+              "HUMAN_REVIEW": 0.2866666666666667,
+              "MONITOR_ONLY": 0.21666666666666667
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": -0.33999999999999997,
+              "std": 1.221940624125775,
+              "min": -1.9666666666666666,
+              "max": 1.2,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.2833333333333333,
+              "CONFIRM_TO_ACT": 0.21666666666666667,
+              "HUMAN_REVIEW": 0.25666666666666665,
+              "MONITOR_ONLY": 0.24333333333333335
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": -0.43,
+              "std": 0.4534436140371933,
+              "min": -0.9,
+              "max": 0.13333333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.21,
+              "CONFIRM_TO_ACT": 0.3,
+              "HUMAN_REVIEW": 0.25,
+              "MONITOR_ONLY": 0.24
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": -0.5433333333333333,
+              "std": 0.6479240353278736,
+              "min": -1.3166666666666667,
+              "max": 0.2833333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.25,
+              "CONFIRM_TO_ACT": 0.25333333333333335,
+              "HUMAN_REVIEW": 0.24333333333333335,
+              "MONITOR_ONLY": 0.25333333333333335
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": -0.2866666666666667,
+              "std": 0.28587098877329653,
+              "min": -0.6166666666666667,
+              "max": 0.1,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.2633333333333333,
+              "CONFIRM_TO_ACT": 0.23666666666666666,
+              "HUMAN_REVIEW": 0.2633333333333333,
+              "MONITOR_ONLY": 0.23666666666666666
+            }
+          }
+        }
+      }
+    },
+    "sens-v2-analyst-time-x2": {
+      "reward_table": {
+        "attack": {
+          "AUTO_REMEDIATE": 5,
+          "CONFIRM_TO_ACT": 1,
+          "HUMAN_REVIEW": 0,
+          "MONITOR_ONLY": -6
+        },
+        "benign": {
+          "AUTO_REMEDIATE": -12,
+          "CONFIRM_TO_ACT": -5,
+          "HUMAN_REVIEW": -4,
+          "MONITOR_ONLY": 1
+        }
+      },
+      "policies": {
+        "Contextual bandit (greedy held-out)": {
+          "mean_reward_per_alert": {
+            "mean": -0.20194444444444443,
+            "std": 0.5650820368170744,
+            "min": -0.8986111111111111,
+            "max": 0.3638888888888889,
+            "n": 5
+          },
+          "per_seed": [
+            -0.8986111111111111,
+            -0.6986111111111111,
+            -0.006944444444444444,
+            0.3638888888888889,
+            0.23055555555555557
+          ],
+          "mean_within_seed_fold_std": 0.62902491913949,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.09,
+            "attack_remediation_rate": 0.37047619047619046,
+            "attack_human_review_rate": 0.14952380952380953,
+            "attack_monitor_only_rate": 0.16952380952380952,
+            "benign_human_review_rate": 0.2613333333333333,
+            "share_AUTO_REMEDIATE": 0.2536111111111111,
+            "share_CONFIRM_TO_ACT": 0.22361111111111112,
+            "share_HUMAN_REVIEW": 0.1961111111111111,
+            "share_MONITOR_ONLY": 0.32666666666666666
+          }
+        },
+        "Fixed rules": {
+          "mean_reward_per_alert": {
+            "mean": -2.0833333333333335,
+            "std": 0.0,
+            "min": -2.0833333333333335,
+            "max": -2.0833333333333335,
+            "n": 5
+          },
+          "per_seed": [
+            -2.0833333333333335,
+            -2.0833333333333335,
+            -2.0833333333333335,
+            -2.0833333333333335,
+            -2.0833333333333335
+          ],
+          "mean_within_seed_fold_std": 0.8148316536218754,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 1.0,
+            "attack_remediation_rate": 1.0,
+            "attack_human_review_rate": 0.0,
+            "attack_monitor_only_rate": 0.0,
+            "benign_human_review_rate": 0.0,
+            "share_AUTO_REMEDIATE": 1.0,
+            "share_CONFIRM_TO_ACT": 0.0,
+            "share_HUMAN_REVIEW": 0.0,
+            "share_MONITOR_ONLY": 0.0
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "mean_reward_per_alert": {
+            "mean": -1.6666666666666667,
+            "std": 0.0,
+            "min": -1.6666666666666667,
+            "max": -1.6666666666666667,
+            "n": 5
+          },
+          "per_seed": [
+            -1.6666666666666667,
+            -1.6666666666666667,
+            -1.6666666666666667,
+            -1.6666666666666667,
+            -1.6666666666666667
+          ],
+          "mean_within_seed_fold_std": 0.19172509496985302,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.0,
+            "attack_remediation_rate": 0.0,
+            "attack_human_review_rate": 1.0,
+            "attack_monitor_only_rate": 0.0,
+            "benign_human_review_rate": 1.0,
+            "share_AUTO_REMEDIATE": 0.0,
+            "share_CONFIRM_TO_ACT": 0.0,
+            "share_HUMAN_REVIEW": 1.0,
+            "share_MONITOR_ONLY": 0.0
+          }
+        },
+        "Random (seeded)": {
+          "mean_reward_per_alert": {
+            "mean": -2.038333333333333,
+            "std": 0.10870041085933231,
+            "min": -2.173611111111111,
+            "max": -1.9152777777777779,
+            "n": 5
+          },
+          "per_seed": [
+            -1.9694444444444446,
+            -2.0055555555555555,
+            -2.1277777777777778,
+            -1.9152777777777779,
+            -2.173611111111111
+          ],
+          "mean_within_seed_fold_std": 0.3465956173189274,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.24866666666666667,
+            "attack_remediation_rate": 0.2523809523809524,
+            "attack_human_review_rate": 0.2566666666666667,
+            "attack_monitor_only_rate": 0.2419047619047619,
+            "benign_human_review_rate": 0.24933333333333332,
+            "share_AUTO_REMEDIATE": 0.25083333333333335,
+            "share_CONFIRM_TO_ACT": 0.24916666666666668,
+            "share_HUMAN_REVIEW": 0.2536111111111111,
+            "share_MONITOR_ONLY": 0.24638888888888885
+          }
+        }
+      },
+      "hindsight_references": {
+        "Oracle (hindsight, labels)": 3.3333333333333335,
+        "Always AUTO_REMEDIATE (hindsight reference)": -2.0833333333333335,
+        "Always CONFIRM_TO_ACT (hindsight reference)": -1.5,
+        "Always HUMAN_REVIEW (hindsight reference)": -1.6666666666666667,
+        "Always MONITOR_ONLY (hindsight reference)": -3.0833333333333335
+      },
+      "bandit_minus_fixed": {
+        "per_seed": [
+          1.1847222222222222,
+          1.3847222222222224,
+          2.076388888888889,
+          2.4472222222222224,
+          2.313888888888889
+        ],
+        "mean": 1.881388888888889,
+        "std": 0.5650820368170744,
+        "min": 1.1847222222222222,
+        "max": 2.4472222222222224,
+        "n": 5,
+        "seeds_bandit_higher": 5,
+        "seeds_tied": 0,
+        "seeds_bandit_lower": 0
+      },
+      "per_family": {
+        "Contextual bandit (greedy held-out)": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -2.0886666666666667,
+              "std": 1.3992331232976634,
+              "min": -4.576666666666667,
+              "max": -1.2833333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.09,
+              "CONFIRM_TO_ACT": 0.102,
+              "HUMAN_REVIEW": 0.2613333333333333,
+              "MONITOR_ONLY": 0.5466666666666666
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": -0.75,
+              "std": 1.482256163196272,
+              "min": -2.283333333333333,
+              "max": 1.5,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.22,
+              "CONFIRM_TO_ACT": 0.23,
+              "HUMAN_REVIEW": 0.20333333333333334,
+              "MONITOR_ONLY": 0.3466666666666667
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 3.01,
+              "std": 1.8901646018858311,
+              "min": 0.7833333333333333,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.5233333333333333,
+              "CONFIRM_TO_ACT": 0.3933333333333333,
+              "HUMAN_REVIEW": 0.08333333333333333,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 3.0366666666666666,
+              "std": 1.9021333052946396,
+              "min": 0.8166666666666667,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.53,
+              "CONFIRM_TO_ACT": 0.38666666666666666,
+              "HUMAN_REVIEW": 0.08333333333333333,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 3.0166666666666666,
+              "std": 1.8197222010210485,
+              "min": 0.8,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.5266666666666666,
+              "CONFIRM_TO_ACT": 0.38333333333333336,
+              "HUMAN_REVIEW": 0.09,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 0.5033333333333333,
+              "std": 1.7364315259878358,
+              "min": -1.3333333333333333,
+              "max": 3.05,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.33666666666666667,
+              "CONFIRM_TO_ACT": 0.28,
+              "HUMAN_REVIEW": 0.14,
+              "MONITOR_ONLY": 0.24333333333333335
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": -1.1566666666666667,
+              "std": 1.4033491685567383,
+              "min": -2.5166666666666666,
+              "max": 1.2,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.18666666666666668,
+              "CONFIRM_TO_ACT": 0.21,
+              "HUMAN_REVIEW": 0.22,
+              "MONITOR_ONLY": 0.38333333333333336
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 0.36,
+              "std": 1.185479274855158,
+              "min": -1.0333333333333334,
+              "max": 2.05,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.27,
+              "CONFIRM_TO_ACT": 0.29,
+              "HUMAN_REVIEW": 0.22666666666666666,
+              "MONITOR_ONLY": 0.21333333333333335
+            }
+          }
+        },
+        "Fixed rules": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -12.0,
+              "std": 0.0,
+              "min": -12.0,
+              "max": -12.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 5.0,
+              "std": 0.0,
+              "min": 5.0,
+              "max": 5.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -4.0,
+              "std": 0.0,
+              "min": -4.0,
+              "max": -4.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 0.0,
+              "std": 0.0,
+              "min": 0.0,
+              "max": 0.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 0.0,
+              "std": 0.0,
+              "min": 0.0,
+              "max": 0.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 0.0,
+              "std": 0.0,
+              "min": 0.0,
+              "max": 0.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 0.0,
+              "std": 0.0,
+              "min": 0.0,
+              "max": 0.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 0.0,
+              "std": 0.0,
+              "min": 0.0,
+              "max": 0.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 0.0,
+              "std": 0.0,
+              "min": 0.0,
+              "max": 0.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 0.0,
+              "std": 0.0,
+              "min": 0.0,
+              "max": 0.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          }
+        },
+        "Random (seeded)": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -4.975333333333333,
+              "std": 0.18414366372180435,
+              "min": -5.126666666666667,
+              "max": -4.6866666666666665,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.24866666666666667,
+              "CONFIRM_TO_ACT": 0.24933333333333332,
+              "HUMAN_REVIEW": 0.24933333333333332,
+              "MONITOR_ONLY": 0.25266666666666665
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": -0.03333333333333334,
+              "std": 0.664684553420309,
+              "min": -0.85,
+              "max": 0.5666666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23333333333333334,
+              "CONFIRM_TO_ACT": 0.28,
+              "HUMAN_REVIEW": 0.24,
+              "MONITOR_ONLY": 0.24666666666666667
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": -0.12,
+              "std": 0.4692488086766385,
+              "min": -0.5666666666666667,
+              "max": 0.6166666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23333333333333334,
+              "CONFIRM_TO_ACT": 0.25333333333333335,
+              "HUMAN_REVIEW": 0.25666666666666665,
+              "MONITOR_ONLY": 0.25666666666666665
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 0.37,
+              "std": 0.5974947698515862,
+              "min": -0.6833333333333333,
+              "max": 0.75,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.29333333333333333,
+              "CONFIRM_TO_ACT": 0.20333333333333334,
+              "HUMAN_REVIEW": 0.2866666666666667,
+              "MONITOR_ONLY": 0.21666666666666667
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 0.1733333333333334,
+              "std": 0.697674709302265,
+              "min": -0.6666666666666666,
+              "max": 1.1,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.2833333333333333,
+              "CONFIRM_TO_ACT": 0.21666666666666667,
+              "HUMAN_REVIEW": 0.25666666666666665,
+              "MONITOR_ONLY": 0.24333333333333335
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": -0.09,
+              "std": 0.3209361307176243,
+              "min": -0.36666666666666664,
+              "max": 0.38333333333333336,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.21,
+              "CONFIRM_TO_ACT": 0.3,
+              "HUMAN_REVIEW": 0.25,
+              "MONITOR_ONLY": 0.24
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": -0.01666666666666667,
+              "std": 0.35217577681859064,
+              "min": -0.48333333333333334,
+              "max": 0.45,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.25,
+              "CONFIRM_TO_ACT": 0.25333333333333335,
+              "HUMAN_REVIEW": 0.24333333333333335,
+              "MONITOR_ONLY": 0.25333333333333335
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 0.13333333333333333,
+              "std": 0.24888640871780132,
+              "min": -0.18333333333333332,
+              "max": 0.4666666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.2633333333333333,
+              "CONFIRM_TO_ACT": 0.23666666666666666,
+              "HUMAN_REVIEW": 0.2633333333333333,
+              "MONITOR_ONLY": 0.23666666666666666
+            }
+          }
+        }
+      }
+    },
+    "sens-v2-automation-gain-3": {
+      "reward_table": {
+        "attack": {
+          "AUTO_REMEDIATE": 3,
+          "CONFIRM_TO_ACT": 3,
+          "HUMAN_REVIEW": 2,
+          "MONITOR_ONLY": -6
+        },
+        "benign": {
+          "AUTO_REMEDIATE": -12,
+          "CONFIRM_TO_ACT": -3,
+          "HUMAN_REVIEW": -2,
+          "MONITOR_ONLY": 1
+        }
+      },
+      "policies": {
+        "Contextual bandit (greedy held-out)": {
+          "mean_reward_per_alert": {
+            "mean": 0.5036111111111111,
+            "std": 0.12250834564667999,
+            "min": 0.375,
+            "max": 0.6680555555555555,
+            "n": 5
+          },
+          "per_seed": [
+            0.5597222222222222,
+            0.6680555555555555,
+            0.525,
+            0.3902777777777778,
+            0.375
+          ],
+          "mean_within_seed_fold_std": 0.2630582930564581,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.004,
+            "attack_remediation_rate": 0.06619047619047619,
+            "attack_human_review_rate": 0.5614285714285714,
+            "attack_monitor_only_rate": 0.010952380952380953,
+            "benign_human_review_rate": 0.7873333333333333,
+            "share_AUTO_REMEDIATE": 0.04027777777777777,
+            "share_CONFIRM_TO_ACT": 0.27888888888888885,
+            "share_HUMAN_REVIEW": 0.6555555555555556,
+            "share_MONITOR_ONLY": 0.025277777777777777
+          }
+        },
+        "Fixed rules": {
+          "mean_reward_per_alert": {
+            "mean": -3.25,
+            "std": 0.0,
+            "min": -3.25,
+            "max": -3.25,
+            "n": 5
+          },
+          "per_seed": [
+            -3.25,
+            -3.25,
+            -3.25,
+            -3.25,
+            -3.25
+          ],
+          "mean_within_seed_fold_std": 0.7189691061369489,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 1.0,
+            "attack_remediation_rate": 1.0,
+            "attack_human_review_rate": 0.0,
+            "attack_monitor_only_rate": 0.0,
+            "benign_human_review_rate": 0.0,
+            "share_AUTO_REMEDIATE": 1.0,
+            "share_CONFIRM_TO_ACT": 0.0,
+            "share_HUMAN_REVIEW": 0.0,
+            "share_MONITOR_ONLY": 0.0
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "mean_reward_per_alert": {
+            "mean": 0.3333333333333333,
+            "std": 0.0,
+            "min": 0.3333333333333333,
+            "max": 0.3333333333333333,
+            "n": 5
+          },
+          "per_seed": [
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333
+          ],
+          "mean_within_seed_fold_std": 0.19172509496985304,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.0,
+            "attack_remediation_rate": 0.0,
+            "attack_human_review_rate": 1.0,
+            "attack_monitor_only_rate": 0.0,
+            "benign_human_review_rate": 1.0,
+            "share_AUTO_REMEDIATE": 0.0,
+            "share_CONFIRM_TO_ACT": 0.0,
+            "share_HUMAN_REVIEW": 1.0,
+            "share_MONITOR_ONLY": 0.0
+          }
+        },
+        "Random (seeded)": {
+          "mean_reward_per_alert": {
+            "mean": -1.3272222222222223,
+            "std": 0.13892568956900028,
+            "min": -1.488888888888889,
+            "max": -1.1347222222222222,
+            "n": 5
+          },
+          "per_seed": [
+            -1.2777777777777777,
+            -1.3027777777777778,
+            -1.488888888888889,
+            -1.1347222222222222,
+            -1.4319444444444445
+          ],
+          "mean_within_seed_fold_std": 0.3206737959004149,
+          "rates_mean_over_seeds": {
+            "benign_remediation_rate": 0.24866666666666667,
+            "attack_remediation_rate": 0.2523809523809524,
+            "attack_human_review_rate": 0.2566666666666667,
+            "attack_monitor_only_rate": 0.2419047619047619,
+            "benign_human_review_rate": 0.24933333333333332,
+            "share_AUTO_REMEDIATE": 0.25083333333333335,
+            "share_CONFIRM_TO_ACT": 0.24916666666666668,
+            "share_HUMAN_REVIEW": 0.2536111111111111,
+            "share_MONITOR_ONLY": 0.24638888888888885
+          }
+        }
+      },
+      "hindsight_references": {
+        "Oracle (hindsight, labels)": 2.1666666666666665,
+        "Always AUTO_REMEDIATE (hindsight reference)": -3.25,
+        "Always CONFIRM_TO_ACT (hindsight reference)": 0.5,
+        "Always HUMAN_REVIEW (hindsight reference)": 0.3333333333333333,
+        "Always MONITOR_ONLY (hindsight reference)": -3.0833333333333335
+      },
+      "bandit_minus_fixed": {
+        "per_seed": [
+          3.8097222222222222,
+          3.9180555555555556,
+          3.775,
+          3.640277777777778,
+          3.625
+        ],
+        "mean": 3.7536111111111112,
+        "std": 0.12250834564667999,
+        "min": 3.625,
+        "max": 3.9180555555555556,
+        "n": 5,
+        "seeds_bandit_higher": 5,
+        "seeds_tied": 0,
+        "seeds_bandit_lower": 0
+      },
+      "per_family": {
+        "Contextual bandit (greedy held-out)": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -2.067333333333333,
+              "std": 0.17665723245250323,
+              "min": -2.3033333333333332,
+              "max": -1.83,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.004,
+              "CONFIRM_TO_ACT": 0.16333333333333333,
+              "HUMAN_REVIEW": 0.7873333333333333,
+              "MONITOR_ONLY": 0.04533333333333334
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 2.1533333333333333,
+              "std": 0.2514955267991858,
+              "min": 1.9333333333333333,
+              "max": 2.533333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.043333333333333335,
+              "CONFIRM_TO_ACT": 0.27,
+              "HUMAN_REVIEW": 0.6666666666666666,
+              "MONITOR_ONLY": 0.02
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 2.55,
+              "std": 0.3293512140894917,
+              "min": 2.216666666666667,
+              "max": 3.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.1,
+              "CONFIRM_TO_ACT": 0.45,
+              "HUMAN_REVIEW": 0.45,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 2.6366666666666667,
+              "std": 0.3245509718570156,
+              "min": 2.1666666666666665,
+              "max": 3.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.19666666666666666,
+              "CONFIRM_TO_ACT": 0.44,
+              "HUMAN_REVIEW": 0.36333333333333334,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 2.503333333333333,
+              "std": 0.3373507900621482,
+              "min": 2.1666666666666665,
+              "max": 3.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.06666666666666667,
+              "CONFIRM_TO_ACT": 0.43666666666666665,
+              "HUMAN_REVIEW": 0.49666666666666665,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 2.2066666666666666,
+              "std": 0.3976668063704699,
+              "min": 1.6666666666666667,
+              "max": 2.683333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.02666666666666667,
+              "CONFIRM_TO_ACT": 0.31333333333333335,
+              "HUMAN_REVIEW": 0.6433333333333333,
+              "MONITOR_ONLY": 0.016666666666666666
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 2.046666666666667,
+              "std": 0.34988093212786936,
+              "min": 1.6166666666666667,
+              "max": 2.566666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0033333333333333335,
+              "CONFIRM_TO_ACT": 0.25666666666666665,
+              "HUMAN_REVIEW": 0.7133333333333334,
+              "MONITOR_ONLY": 0.02666666666666667
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 2.283333333333333,
+              "std": 0.3151278400198173,
+              "min": 1.95,
+              "max": 2.75,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.02666666666666667,
+              "CONFIRM_TO_ACT": 0.36333333333333334,
+              "HUMAN_REVIEW": 0.5966666666666667,
+              "MONITOR_ONLY": 0.013333333333333334
+            }
+          }
+        },
+        "Fixed rules": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -12.0,
+              "std": 0.0,
+              "min": -12.0,
+              "max": -12.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 3.0,
+              "std": 0.0,
+              "min": 3.0,
+              "max": 3.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 3.0,
+              "std": 0.0,
+              "min": 3.0,
+              "max": 3.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 3.0,
+              "std": 0.0,
+              "min": 3.0,
+              "max": 3.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 3.0,
+              "std": 0.0,
+              "min": 3.0,
+              "max": 3.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 3.0,
+              "std": 0.0,
+              "min": 3.0,
+              "max": 3.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 3.0,
+              "std": 0.0,
+              "min": 3.0,
+              "max": 3.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 3.0,
+              "std": 0.0,
+              "min": 3.0,
+              "max": 3.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 1.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 0.0,
+              "MONITOR_ONLY": 0.0
+            }
+          }
+        },
+        "Always HUMAN_REVIEW": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -2.0,
+              "std": 0.0,
+              "min": -2.0,
+              "max": -2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 2.0,
+              "std": 0.0,
+              "min": 2.0,
+              "max": 2.0,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.0,
+              "CONFIRM_TO_ACT": 0.0,
+              "HUMAN_REVIEW": 1.0,
+              "MONITOR_ONLY": 0.0
+            }
+          }
+        },
+        "Random (seeded)": {
+          "Benign": {
+            "mean_reward": {
+              "mean": -3.978,
+              "std": 0.1908984605024938,
+              "min": -4.1466666666666665,
+              "max": -3.68,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.24866666666666667,
+              "CONFIRM_TO_ACT": 0.24933333333333332,
+              "HUMAN_REVIEW": 0.24933333333333332,
+              "MONITOR_ONLY": 0.25266666666666665
+            }
+          },
+          "Brute Force": {
+            "mean_reward": {
+              "mean": 0.54,
+              "std": 0.6167342305329834,
+              "min": -0.18333333333333332,
+              "max": 1.2333333333333334,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23333333333333334,
+              "CONFIRM_TO_ACT": 0.28,
+              "HUMAN_REVIEW": 0.24,
+              "MONITOR_ONLY": 0.24666666666666667
+            }
+          },
+          "DDoS": {
+            "mean_reward": {
+              "mean": 0.4333333333333333,
+              "std": 0.4779876799899996,
+              "min": -0.16666666666666666,
+              "max": 1.1166666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.23333333333333334,
+              "CONFIRM_TO_ACT": 0.25333333333333335,
+              "HUMAN_REVIEW": 0.25666666666666665,
+              "MONITOR_ONLY": 0.25666666666666665
+            }
+          },
+          "DoS": {
+            "mean_reward": {
+              "mean": 0.7633333333333334,
+              "std": 0.49080432851482564,
+              "min": -0.016666666666666666,
+              "max": 1.1833333333333333,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.29333333333333333,
+              "CONFIRM_TO_ACT": 0.20333333333333334,
+              "HUMAN_REVIEW": 0.2866666666666667,
+              "MONITOR_ONLY": 0.21666666666666667
+            }
+          },
+          "Mirai": {
+            "mean_reward": {
+              "mean": 0.5533333333333333,
+              "std": 0.6748868217873439,
+              "min": -0.36666666666666664,
+              "max": 1.4,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.2833333333333333,
+              "CONFIRM_TO_ACT": 0.21666666666666667,
+              "HUMAN_REVIEW": 0.25666666666666665,
+              "MONITOR_ONLY": 0.24333333333333335
+            }
+          },
+          "Recon": {
+            "mean_reward": {
+              "mean": 0.5900000000000001,
+              "std": 0.27018512172212594,
+              "min": 0.3,
+              "max": 0.9666666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.21,
+              "CONFIRM_TO_ACT": 0.3,
+              "HUMAN_REVIEW": 0.25,
+              "MONITOR_ONLY": 0.24
+            }
+          },
+          "Spoofing": {
+            "mean_reward": {
+              "mean": 0.4766666666666667,
+              "std": 0.35051549339667015,
+              "min": 0.05,
+              "max": 0.9166666666666666,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.25,
+              "CONFIRM_TO_ACT": 0.25333333333333335,
+              "HUMAN_REVIEW": 0.24333333333333335,
+              "MONITOR_ONLY": 0.25333333333333335
+            }
+          },
+          "Web-Based": {
+            "mean_reward": {
+              "mean": 0.6066666666666667,
+              "std": 0.13519533193782166,
+              "min": 0.45,
+              "max": 0.7666666666666667,
+              "n": 5
+            },
+            "action_share": {
+              "AUTO_REMEDIATE": 0.2633333333333333,
+              "CONFIRM_TO_ACT": 0.23666666666666666,
+              "HUMAN_REVIEW": 0.2633333333333333,
+              "MONITOR_ONLY": 0.23666666666666666
+            }
+          }
+        }
+      }
+    }
+  }
+}

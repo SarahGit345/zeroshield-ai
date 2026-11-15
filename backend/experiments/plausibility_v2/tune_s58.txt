@@ -1,0 +1,61 @@
+      no rules: relevant kept 177/177 (100.0%) | irrelevant removed 0/1502 (0.0%) | balanced 0.500
+            v1: relevant kept 75/177 (42.4%) | irrelevant removed 844/1502 (56.2%) | balanced 0.493
+v2a one-way floods: relevant kept 121/177 (68.4%) | irrelevant removed 827/1502 (55.1%) | balanced 0.617
+v2b + session login: relevant kept 164/177 (92.7%) | irrelevant removed 630/1502 (41.9%) | balanced 0.673
+v2c + session login without long flows: relevant kept 163/177 (92.1%) | irrelevant removed 667/1502 (44.4%) | balanced 0.682
+
+Benign
+      no rules: relevant kept n/a | irrelevant removed 0/812 (0.0%) | balanced nan
+            v1: relevant kept n/a | irrelevant removed 428/812 (52.7%) | balanced nan
+  v2a one-way floods: relevant kept n/a | irrelevant removed 419/812 (51.6%) | balanced nan
+  v2b + session login: relevant kept n/a | irrelevant removed 296/812 (36.5%) | balanced nan
+  v2c + session login without long flows: relevant kept n/a | irrelevant removed 310/812 (38.2%) | balanced nan
+
+Brute Force
+      no rules: relevant kept 56/56 (100.0%) | irrelevant removed 0/68 (0.0%) | balanced 0.500
+            v1: relevant kept 0/56 (0.0%) | irrelevant removed 3/68 (4.4%) | balanced 0.022
+  v2a one-way floods: relevant kept 0/56 (0.0%) | irrelevant removed 3/68 (4.4%) | balanced 0.022
+  v2b + session login: relevant kept 43/56 (76.8%) | irrelevant removed 3/68 (4.4%) | balanced 0.406
+  v2c + session login without long flows: relevant kept 42/56 (75.0%) | irrelevant removed 3/68 (4.4%) | balanced 0.397
+
+DDoS
+      no rules: relevant kept 56/56 (100.0%) | irrelevant removed 0/82 (0.0%) | balanced 0.500
+            v1: relevant kept 42/56 (75.0%) | irrelevant removed 56/82 (68.3%) | balanced 0.716
+  v2a one-way floods: relevant kept 56/56 (100.0%) | irrelevant removed 56/82 (68.3%) | balanced 0.841
+  v2b + session login: relevant kept 56/56 (100.0%) | irrelevant removed 53/82 (64.6%) | balanced 0.823
+  v2c + session login without long flows: relevant kept 56/56 (100.0%) | irrelevant removed 53/82 (64.6%) | balanced 0.823
+
+DoS
+      no rules: relevant kept 20/20 (100.0%) | irrelevant removed 0/5 (0.0%) | balanced 0.500
+            v1: relevant kept 20/20 (100.0%) | irrelevant removed 5/5 (100.0%) | balanced 1.000
+  v2a one-way floods: relevant kept 20/20 (100.0%) | irrelevant removed 5/5 (100.0%) | balanced 1.000
+  v2b + session login: relevant kept 20/20 (100.0%) | irrelevant removed 5/5 (100.0%) | balanced 1.000
+  v2c + session login without long flows: relevant kept 20/20 (100.0%) | irrelevant removed 5/5 (100.0%) | balanced 1.000
+
+Mirai
+      no rules: relevant kept 45/45 (100.0%) | irrelevant removed 0/159 (0.0%) | balanced 0.500
+            v1: relevant kept 13/45 (28.9%) | irrelevant removed 159/159 (100.0%) | balanced 0.644
+  v2a one-way floods: relevant kept 45/45 (100.0%) | irrelevant removed 159/159 (100.0%) | balanced 1.000
+  v2b + session login: relevant kept 45/45 (100.0%) | irrelevant removed 159/159 (100.0%) | balanced 1.000
+  v2c + session login without long flows: relevant kept 45/45 (100.0%) | irrelevant removed 159/159 (100.0%) | balanced 1.000
+
+Recon
+      no rules: relevant kept n/a | irrelevant removed 0/144 (0.0%) | balanced nan
+            v1: relevant kept n/a | irrelevant removed 80/144 (55.6%) | balanced nan
+  v2a one-way floods: relevant kept n/a | irrelevant removed 76/144 (52.8%) | balanced nan
+  v2b + session login: relevant kept n/a | irrelevant removed 52/144 (36.1%) | balanced nan
+  v2c + session login without long flows: relevant kept n/a | irrelevant removed 59/144 (41.0%) | balanced nan
+
+Spoofing
+      no rules: relevant kept n/a | irrelevant removed 0/142 (0.0%) | balanced nan
+            v1: relevant kept n/a | irrelevant removed 75/142 (52.8%) | balanced nan
+  v2a one-way floods: relevant kept n/a | irrelevant removed 73/142 (51.4%) | balanced nan
+  v2b + session login: relevant kept n/a | irrelevant removed 35/142 (24.6%) | balanced nan
+  v2c + session login without long flows: relevant kept n/a | irrelevant removed 42/142 (29.6%) | balanced nan
+
+Web-Based
+      no rules: relevant kept n/a | irrelevant removed 0/90 (0.0%) | balanced nan
+            v1: relevant kept n/a | irrelevant removed 38/90 (42.2%) | balanced nan
+  v2a one-way floods: relevant kept n/a | irrelevant removed 36/90 (40.0%) | balanced nan
+  v2b + session login: relevant kept n/a | irrelevant removed 27/90 (30.0%) | balanced nan
+  v2c + session login without long flows: relevant kept n/a | irrelevant removed 36/90 (40.0%) | balanced nan

@@ -31,7 +31,7 @@ class Detector:
         self.latent_dim = 0
         self.threshold = 0.06141921002417763
         try:
-            checkpoint = torch.load(self.model_path, map_location=self.device, weights_only=False)
+            checkpoint = torch.load(self.model_path, map_location=self.device, weights_only=True)
             self.features = list(checkpoint["features"])
             self.hidden = list(checkpoint["hidden"])
             self.latent_dim = int(checkpoint["latent_dim"])
@@ -51,6 +51,12 @@ class Detector:
         with torch.no_grad():
             x = torch.from_numpy(vector.reshape(1, -1).astype(np.float32)).to(self.device)
             return float(((self.model(x) - self.center) ** 2).sum(dim=1).item())
+
+    def score_batch(self, matrix: np.ndarray) -> np.ndarray:
+        """Score many prepared rows at once (same distance as score(), used for bulk screening)."""
+        with torch.no_grad():
+            x = torch.from_numpy(np.ascontiguousarray(matrix, dtype=np.float32)).to(self.device)
+            return ((self.model(x) - self.center) ** 2).sum(dim=1).cpu().numpy().astype(np.float64)
 
     def analyze(self, values: dict[str, float]):
         vector = np.asarray([values[name] for name in self.features], dtype=np.float32)

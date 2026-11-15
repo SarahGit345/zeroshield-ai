@@ -1,0 +1,1094 @@
+{
+  "note": "POST HOC: name-or-ID matching chosen after seeing that reports name techniques; not pre-registered.",
+  "total": {
+    "no_candidates": 35,
+    "faithful_but_wrong": 47,
+    "relevant": 17,
+    "irrelevant": 27,
+    "benign_cites_technique": 21
+  },
+  "by_family": {
+    "Benign": {
+      "no_candidates": 9,
+      "faithful_but_wrong": 21,
+      "benign_cites_technique": 21
+    },
+    "Brute Force": {
+      "relevant": 5,
+      "faithful_but_wrong": 3,
+      "no_candidates": 1,
+      "irrelevant": 4
+    },
+    "DDoS": {
+      "no_candidates": 4,
+      "faithful_but_wrong": 1,
+      "relevant": 5,
+      "irrelevant": 1
+    },
+    "DoS": {
+      "no_candidates": 7,
+      "faithful_but_wrong": 1,
+      "relevant": 2,
+      "irrelevant": 1
+    },
+    "Mirai": {
+      "no_candidates": 4,
+      "faithful_but_wrong": 1,
+      "relevant": 5,
+      "irrelevant": 1
+    },
+    "Recon": {
+      "irrelevant": 8,
+      "faithful_but_wrong": 8,
+      "no_candidates": 2
+    },
+    "Spoofing": {
+      "irrelevant": 7,
+      "faithful_but_wrong": 7,
+      "no_candidates": 3
+    },
+    "Web-Based": {
+      "no_candidates": 5,
+      "faithful_but_wrong": 5,
+      "irrelevant": 5
+    }
+  },
+  "per_alert": [
+    {
+      "alert_id": "0058d28a-3be3-5520-b9ac-9d51d13b3a15",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "033c0453-e431-5719-8219-6f435787d315",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "084d6bbe-169b-5432-a0ea-133074fcd642",
+      "family": "DDoS",
+      "label": "DDoS-SynonymousIP_Flood",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "09ee7639-c935-5967-bc44-de5cb367a923",
+      "family": "Mirai",
+      "label": "Mirai-udpplain",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "0b7cb685-ccf7-55c8-a4fb-c5cdb9bac815",
+      "family": "Brute Force",
+      "label": "DictionaryBruteForce",
+      "class": "relevant",
+      "cited": [
+        "T1110.004",
+        "T1110.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "0bb99644-c6ba-57fb-8cf2-0853bcbea090",
+      "family": "Web-Based",
+      "label": "CommandInjection",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "15e00d5f-e1c7-5b90-b2e4-0c40f4e35722",
+      "family": "Web-Based",
+      "label": "SqlInjection",
+      "class": "irrelevant",
+      "cited": [
+        "T1499.001",
+        "T1498.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "15e55804-57ae-5a55-8a97-ed8c0615753a",
+      "family": "DoS",
+      "label": "DoS-UDP_Flood",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "19c976d8-dc8c-5c4f-b70f-2d8ab326d8e7",
+      "family": "DDoS",
+      "label": "DDoS-SYN_Flood",
+      "class": "relevant",
+      "cited": [
+        "T1499.001",
+        "T1110.004",
+        "T1110.001",
+        "T1110.003"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "1d4a3e95-fd57-523d-bccc-d83dac6c5695",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1132.002",
+        "T1571"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "1e953ca9-0141-589d-aa5a-ef5a65bb1184",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1132.002",
+        "T1571"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "1e9c7f1a-14d5-55a2-9491-562960a82216",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1499.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "2259d535-62b6-5ac8-b52d-f659e2ff167d",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1498.001",
+        "T1499"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "22d5e146-9f23-581b-bf09-524728681782",
+      "family": "Recon",
+      "label": "Recon-PortScan",
+      "class": "irrelevant",
+      "cited": [
+        "T1498.001",
+        "T1499"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "22f34ca7-56b2-59d2-bea9-bc0c5d5041eb",
+      "family": "DoS",
+      "label": "DoS-UDP_Flood",
+      "class": "relevant",
+      "cited": [
+        "T1498.001",
+        "T1499"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "26275325-48c8-54b9-b0a3-54d0f42dfa71",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "27776ee3-cc81-544b-b35b-7787cc0790e7",
+      "family": "Mirai",
+      "label": "Mirai-udpplain",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "27f5b7b2-753b-5a52-abe7-ee264453ec73",
+      "family": "Recon",
+      "label": "Recon-PortScan",
+      "class": "irrelevant",
+      "cited": [
+        "T1498.001",
+        "T1499.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "2b2a0b5b-4171-5184-8051-f736e5989466",
+      "family": "Brute Force",
+      "label": "DictionaryBruteForce",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "2bc7c9af-8a6d-5024-b797-bc70bddb3780",
+      "family": "Recon",
+      "label": "Recon-OSScan",
+      "class": "irrelevant",
+      "cited": [
+        "T1499.001",
+        "T1110.004"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "332e965b-7f1b-5d36-aff2-92584e820897",
+      "family": "DDoS",
+      "label": "DDoS-TCP_Flood",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "3538d50a-7e8d-50e0-9605-b11a1a316974",
+      "family": "Brute Force",
+      "label": "DictionaryBruteForce",
+      "class": "irrelevant",
+      "cited": [
+        "T1499.001",
+        "T1132.002"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "39f4837c-706a-52e7-8f8c-df55eb503925",
+      "family": "Spoofing",
+      "label": "DNS_Spoofing",
+      "class": "irrelevant",
+      "cited": [
+        "T1498.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "3b7cd68f-b603-50e0-af4d-d59e1d37c22b",
+      "family": "Brute Force",
+      "label": "DictionaryBruteForce",
+      "class": "irrelevant",
+      "cited": [
+        "T1499.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "428627e6-3419-5e91-a83f-f8b0ab56ac09",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1498.001",
+        "T1499"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "442f8b55-e3c9-5a0a-8432-0de4db5a4eef",
+      "family": "Spoofing",
+      "label": "MITM-ArpSpoofing",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "4529558e-abfd-5b4e-9a32-730ad905ee29",
+      "family": "DoS",
+      "label": "DoS-UDP_Flood",
+      "class": "relevant",
+      "cited": [
+        "T1498.001",
+        "T1499"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "495dd3cc-ba06-5bff-9e2e-abce60e1b535",
+      "family": "DDoS",
+      "label": "DDoS-ICMP_Flood",
+      "class": "relevant",
+      "cited": [
+        "T1499.001",
+        "T1498.001"
+      ],
+      "verdict": "UNCERTAIN"
+    },
+    {
+      "alert_id": "4aa09179-ba05-5667-ba21-32fc8c4d290a",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1110.004",
+        "T1110.001",
+        "T1110.003"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "55281064-e4a8-5c27-8ac5-9ecccfff0f97",
+      "family": "Brute Force",
+      "label": "DictionaryBruteForce",
+      "class": "relevant",
+      "cited": [
+        "T1110.004",
+        "T1110.001",
+        "T1110.003",
+        "T1040"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "56e53003-0f0e-5dec-af5a-b199c05bd874",
+      "family": "Brute Force",
+      "label": "DictionaryBruteForce",
+      "class": "relevant",
+      "cited": [
+        "T1110.004",
+        "T1499.001",
+        "T1110.001",
+        "T1110.003",
+        "T1498.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "5996601e-f8fa-58e6-a03d-b2a05b2fc7f7",
+      "family": "DoS",
+      "label": "DoS-TCP_Flood",
+      "class": "irrelevant",
+      "cited": [
+        "T1110.004",
+        "T1110.001",
+        "T1110.003",
+        "T1040"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "629b2dc2-aa13-58d7-991f-4c001bf0bbe1",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1498.001",
+        "T1499.001",
+        "T1499"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "65b140de-83c9-5a57-8dcd-ccfde777496b",
+      "family": "Mirai",
+      "label": "Mirai-greeth_flood",
+      "class": "relevant",
+      "cited": [
+        "T1110.004",
+        "T1499.001",
+        "T1110.001",
+        "T1110.003",
+        "T1020.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "65c4189f-ae9d-5795-84b0-57a9cba974e5",
+      "family": "Mirai",
+      "label": "Mirai-udpplain",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "6737701e-44c9-588e-88f1-949259631036",
+      "family": "DoS",
+      "label": "DoS-TCP_Flood",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "69c58b33-9925-5269-b2fe-bbcdfc143a1b",
+      "family": "Recon",
+      "label": "Recon-HostDiscovery",
+      "class": "irrelevant",
+      "cited": [
+        "T1499.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "6a3bbd25-bfda-5470-a858-773f625bdb21",
+      "family": "DDoS",
+      "label": "DDoS-TCP_Flood",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "6cb7b5d9-534f-591c-b54d-b4116327d472",
+      "family": "Spoofing",
+      "label": "DNS_Spoofing",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "7142949e-e660-54cb-adb2-f0c9dc7187d3",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1498.001",
+        "T1499",
+        "T1498"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "76dc85d8-f4df-515c-af68-e52913ff137b",
+      "family": "Recon",
+      "label": "Recon-PingSweep",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "78e3f5bb-2e3b-535d-b7cf-c6f6efb472b0",
+      "family": "Web-Based",
+      "label": "Backdoor_Malware",
+      "class": "irrelevant",
+      "cited": [
+        "T1498.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "7ad4bdb1-580d-5f1f-8126-53b6f8a46d21",
+      "family": "Recon",
+      "label": "Recon-HostDiscovery",
+      "class": "irrelevant",
+      "cited": [
+        "T1499.001",
+        "T1110.004",
+        "T1205",
+        "T1110.001",
+        "T1110.003"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "7eac7445-2c3e-5253-aa23-a394ebcaf04b",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1499.001",
+        "T1110.004",
+        "T1110.001",
+        "T1110.003"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "8a874c35-a0aa-556b-aac9-61c0811be2a8",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1499.001",
+        "T1110.004",
+        "T1110.001",
+        "T1110.003"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "8a93f102-be34-5f66-b654-fd3844718d67",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1499.001",
+        "T1110.004"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "8bb3a4a2-9a0c-5814-a430-f388423dbb2e",
+      "family": "Brute Force",
+      "label": "DictionaryBruteForce",
+      "class": "irrelevant",
+      "cited": [
+        "T1498.001",
+        "T1499.001"
+      ],
+      "verdict": "UNCERTAIN"
+    },
+    {
+      "alert_id": "8f44299b-f502-55e2-9244-07c9095ffa29",
+      "family": "Web-Based",
+      "label": "SqlInjection",
+      "class": "irrelevant",
+      "cited": [
+        "T1499.001",
+        "T1498.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "8f8322d5-99c2-5459-9d11-2357b5a11fc3",
+      "family": "Spoofing",
+      "label": "MITM-ArpSpoofing",
+      "class": "irrelevant",
+      "cited": [
+        "T1499.001",
+        "T1110.004",
+        "T1110.001",
+        "T1110.003"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "91c2ee08-4831-5cd1-9179-4635e578250b",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1498.001",
+        "T1499",
+        "T1498"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "91c98036-b4f2-52fc-869a-fa7540fd79ef",
+      "family": "DDoS",
+      "label": "DDoS-RSTFINFlood",
+      "class": "relevant",
+      "cited": [
+        "T1499.001",
+        "T1110.004",
+        "T1110.001",
+        "T1110.003",
+        "T1205"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "9308e165-5f85-50c6-bc60-c3c52c21a9c5",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1499.001",
+        "T1110.004",
+        "T1110.001",
+        "T1110.003",
+        "T1205"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "93e81e7f-24e6-5497-9c2a-e178b7d1fde9",
+      "family": "DoS",
+      "label": "DoS-TCP_Flood",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "94d0deb5-2065-5846-bed7-b68821ae3c5a",
+      "family": "Spoofing",
+      "label": "DNS_Spoofing",
+      "class": "irrelevant",
+      "cited": [
+        "T1499.001",
+        "T1132.002"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "95e4bb50-4f56-55d6-83bf-774852ef3f51",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1499.001",
+        "T1110.004",
+        "T1110.001",
+        "T1110.003"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "97716a8f-87c0-5ef2-98ee-6f8204123665",
+      "family": "Mirai",
+      "label": "Mirai-greip_flood",
+      "class": "relevant",
+      "cited": [
+        "T1498.001",
+        "T1499.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "97c90c8d-8f59-57fa-b784-8867b0f749fa",
+      "family": "Web-Based",
+      "label": "CommandInjection",
+      "class": "irrelevant",
+      "cited": [
+        "T1071.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "9878c7a5-dbd4-5cc6-8bec-6427b5dd37ca",
+      "family": "DDoS",
+      "label": "DDoS-SlowLoris",
+      "class": "irrelevant",
+      "cited": [
+        "T1020.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "9c676ee8-b2ce-5ea9-ba2a-30753454ccc5",
+      "family": "Brute Force",
+      "label": "DictionaryBruteForce",
+      "class": "relevant",
+      "cited": [
+        "T1499.001",
+        "T1110.004",
+        "T1110.001",
+        "T1110.003"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "9e5dd608-3ce9-5a30-a37a-a7a5a0603cde",
+      "family": "Web-Based",
+      "label": "SqlInjection",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "9f4d0801-39dc-516b-b018-92a37925ffeb",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1499.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "a0318344-5130-557c-8db1-caa1db28c266",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1498.001",
+        "T1499"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "a2e1a02f-8907-5496-9d79-e27c7e92637f",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1110.004",
+        "T1110.001",
+        "T1110.003"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "a303a3bc-ff70-5706-b658-27c8ffa232f2",
+      "family": "Spoofing",
+      "label": "MITM-ArpSpoofing",
+      "class": "irrelevant",
+      "cited": [
+        "T1110.004",
+        "T1110.001",
+        "T1110.003",
+        "T1040"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "a7784a3f-bf5a-5ac2-8499-aa37e1ca9d6e",
+      "family": "Recon",
+      "label": "Recon-HostDiscovery",
+      "class": "irrelevant",
+      "cited": [
+        "T1499.001",
+        "T1110.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "a79e49ac-991a-5549-8b49-28f625271c86",
+      "family": "Web-Based",
+      "label": "CommandInjection",
+      "class": "irrelevant",
+      "cited": [
+        "T1499.001",
+        "T1110.004",
+        "T1110.001",
+        "T1110.003"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "aa4dffbf-4ce8-56dc-a4d9-ade527d6f6ed",
+      "family": "Web-Based",
+      "label": "Backdoor_Malware",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "ab9ad199-5e57-56e6-b644-339bf14b9bc0",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "ad94a274-9404-582f-8e7e-dbd944668540",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "b018c3fc-7430-5271-80a8-027eb14fc85e",
+      "family": "Brute Force",
+      "label": "DictionaryBruteForce",
+      "class": "irrelevant",
+      "cited": [
+        "T1499.001",
+        "T1498.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "b0620f9e-4c65-563c-83e3-2988c29f98e4",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "b41a603b-76ed-59d9-9c7e-85c7f95baea9",
+      "family": "DoS",
+      "label": "DoS-SYN_Flood",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "b6e847c7-1343-55c5-b15c-2bc9b48fa0be",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "b89690df-e8af-5d60-981d-a1ec9305ec27",
+      "family": "Spoofing",
+      "label": "MITM-ArpSpoofing",
+      "class": "irrelevant",
+      "cited": [
+        "T1132.002"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "b8b842fa-fbea-5f33-b7ca-f5022ae0dd7b",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1205"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "b8e5ea70-4b3a-5d5a-84d9-7c7dbd89c78c",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1498.001",
+        "T1499"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "b98d4e9c-32cd-51d9-8477-d6e8d1b2b48f",
+      "family": "Brute Force",
+      "label": "DictionaryBruteForce",
+      "class": "relevant",
+      "cited": [
+        "T1499.001",
+        "T1110.004",
+        "T1110.001",
+        "T1110.003"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "b9f6b646-c1fd-5a3c-a10c-5649e48cc53f",
+      "family": "DoS",
+      "label": "DoS-SYN_Flood",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "ba1ba39d-006a-587b-9aa5-092ce9149071",
+      "family": "Recon",
+      "label": "Recon-HostDiscovery",
+      "class": "irrelevant",
+      "cited": [
+        "T1205"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "c4108aa3-3ded-5e5e-8fa9-3757a0e232da",
+      "family": "Recon",
+      "label": "VulnerabilityScan",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "c4f6e72b-9f77-5450-ac6a-d3430fd9f57e",
+      "family": "DDoS",
+      "label": "DDoS-UDP_Flood",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "c9a0bb36-8d87-5fc7-8a01-11cf82cf865b",
+      "family": "Mirai",
+      "label": "Mirai-greeth_flood",
+      "class": "relevant",
+      "cited": [
+        "T1499.001",
+        "T1498.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "ca99bc2e-d307-5acd-a625-6c10e41db5c3",
+      "family": "DDoS",
+      "label": "DDoS-SYN_Flood",
+      "class": "relevant",
+      "cited": [
+        "T1498.001",
+        "T1499"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "ce67c342-b26f-57d9-94f9-90037bc26e76",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1499.001",
+        "T1110.004",
+        "T1110.001",
+        "T1110.003"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "d3772bd4-4ebc-55c6-b810-90f29d9d87b9",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "d9c2ad9a-63d6-5e4e-8a76-d1ad7fd8d0ac",
+      "family": "Recon",
+      "label": "Recon-HostDiscovery",
+      "class": "irrelevant",
+      "cited": [
+        "T1110.004",
+        "T1110.001",
+        "T1110.003"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "dc85dd7f-5416-5be6-88b4-cff855cef020",
+      "family": "Mirai",
+      "label": "Mirai-udpplain",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "dcf923eb-c0c0-5614-949a-811839e601db",
+      "family": "DoS",
+      "label": "DoS-TCP_Flood",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "df8e9c7e-1159-5910-9959-420801927a35",
+      "family": "Mirai",
+      "label": "Mirai-greeth_flood",
+      "class": "relevant",
+      "cited": [
+        "T1110.004",
+        "T1499.001",
+        "T1110.001",
+        "T1110.003",
+        "T1020.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "e2cebdd5-9c37-5009-9ee6-96dab2e5976c",
+      "family": "Web-Based",
+      "label": "XSS",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "e76feb67-7a41-5e29-a25c-71925842599d",
+      "family": "Mirai",
+      "label": "Mirai-greip_flood",
+      "class": "relevant",
+      "cited": [
+        "T1110.004",
+        "T1499.001",
+        "T1110.001",
+        "T1110.003"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "ef454b5b-7bb8-5676-aac6-afdf65714a43",
+      "family": "Web-Based",
+      "label": "CommandInjection",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "efc9b22c-9be1-514a-a201-9ecc4304c1e0",
+      "family": "Spoofing",
+      "label": "DNS_Spoofing",
+      "class": "irrelevant",
+      "cited": [
+        "T1499.001",
+        "T1498.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "f25f9ade-40ec-5614-88ef-1cca928d7a5e",
+      "family": "Mirai",
+      "label": "Mirai-greip_flood",
+      "class": "irrelevant",
+      "cited": [
+        "T1110.004",
+        "T1110.001",
+        "T1110.003"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "f4ec5a5c-f362-5f2e-af7a-73c82a1bbd63",
+      "family": "Spoofing",
+      "label": "MITM-ArpSpoofing",
+      "class": "irrelevant",
+      "cited": [
+        "T1499.001",
+        "T1205",
+        "T1110.004",
+        "T1110.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "f66f802f-0d9a-5789-b640-0d04afc846a7",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "f686ad6c-f49f-5abd-bfe2-8685fe5c70cc",
+      "family": "DDoS",
+      "label": "DDoS-SynonymousIP_Flood",
+      "class": "relevant",
+      "cited": [
+        "T1499.001",
+        "T1110.004"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "fb96523f-b189-530b-bf2a-07aecf1faa30",
+      "family": "Benign",
+      "label": "BenignTraffic",
+      "class": "benign_cites_technique",
+      "cited": [
+        "T1499.001"
+      ],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "fcd935c5-e4ea-51ca-b67e-bd9786629969",
+      "family": "Spoofing",
+      "label": "DNS_Spoofing",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    },
+    {
+      "alert_id": "fd499e84-68c1-52eb-bd63-ff0472e3a878",
+      "family": "DoS",
+      "label": "DoS-UDP_Flood",
+      "class": "no_candidates",
+      "cited": [],
+      "verdict": "VERIFIED"
+    }
+  ]
+}

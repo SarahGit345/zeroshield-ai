@@ -1,0 +1,6 @@
+{
+  "fixed": "VERIFIED + detected + confidence>=0.9 -> AUTO_REMEDIATE; else detected -> HUMAN_REVIEW; else MONITOR_ONLY",
+  "always_human": "HUMAN_REVIEW for every alert",
+  "random": "Python random.Random(seed), one draw per held-out alert",
+  "seed": 5
+}
