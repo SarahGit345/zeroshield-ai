@@ -166,7 +166,7 @@ def flagged(name):
 CACHE = ROOT.parent / "tmp" / "amendment9_rows.npz"   # scaled dataset rows: kept outside the repository
 
 
-def matrix(alerts, features, paths=None, cache=CACHE, chunk_rows=200000):
+def matrix(alerts, features, paths=None, cache=CACHE, chunk_rows=50000):
     """Full 43-feature scaled rows for the alerts, read from the source CSVs by (_source, _source_row).
     Streams store only the top 10 features, so the rows are fetched once and cached outside the repo.
     The caller checks that re-scoring them reproduces each alert's stored anomaly score."""
@@ -183,9 +183,12 @@ def matrix(alerts, features, paths=None, cache=CACHE, chunk_rows=200000):
             rows = {r for s, r in need if s == source}
             if not rows: continue
             offset = 0
-            for chunk in pd.read_csv(path, usecols=list(features), chunksize=chunk_rows):
-                hit = [r for r in range(offset, offset + len(chunk)) if r in rows]
-                for r in hit: have[(source, r)] = chunk[list(features)].iloc[r - offset].to_numpy(dtype=np.float64)
+            wanted = np.array(sorted(rows))
+            for chunk in pd.read_csv(path, usecols=list(features), chunksize=chunk_rows, dtype="float64"):
+                lo, hi = np.searchsorted(wanted, [offset, offset + len(chunk)])
+                if hi > lo:   # take only the matching rows (memory: never copy the whole chunk per row)
+                    sub = chunk.iloc[wanted[lo:hi] - offset][list(features)].to_numpy(dtype=np.float64)
+                    for r, v in zip(wanted[lo:hi], sub): have[(source, int(r))] = v
                 offset += len(chunk)
                 if all((source, r) in have for r in rows): break
         if cache:
