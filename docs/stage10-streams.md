@@ -50,3 +50,7 @@ Each builder read 33,818,026 rows and skipped one non-finite row. Flagged quotas
 Built after freeze commit `8659cbf`; seed 4, target attack share 0.1, minimum 300 attacks, and exclusions for S58/S10/S30. The stream contained 3,400 rows: 3,010 flagged (301 attacks, 2,709 benign) and 390 unflagged; 5,972 source rows had already appeared in the earlier streams. One non-finite source row was skipped. The stream SHA-256 is `bc579188c3d132264fddcf8eef13a95ab85498a6feb8aeaca216a10e406ca095`. The source/population counts are in `backend/experiments/replay_streams/replay_stream_share10_seed4.meta.json`; the `.jsonl` remains uncommitted.
 
 Metadata note (2026-11-15): the amendment 10 snapshot's metadata is stored as `backend/experiments/replay_streams/*_amend10.meta.json` (S58, S10, S30 and its S10b). The unsuffixed `.meta.json` files describe the original streams in the first table, which all earlier Stage 10 results used.
+
+## S10b, original snapshot (amendment 12)
+
+Built after freeze commit `caaa512` with the amendment 7 S10b command (seed 4, share 0.1, min 300 attacks, excluding S58, S10 and S30). Read 45,808,251 rows, 0 non-finite skipped, 6,001 excluded rows skipped, 0 screen/pipeline mismatches. 3,400 rows: 3,010 flagged (301 attacks + 2,709 benign) and 390 unflagged (0 unflagged DoS: the 98 in the population were used by earlier streams; unflagged rows are never routed). SHA-256 `93fe6dab564504cdf4e49adb8345bbe660432d83b6081f57c3a1043d1ef0aa18`. Metadata: `replay_stream_share10_seed4.meta.json`. Used once, by amendment 12.

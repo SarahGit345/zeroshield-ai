@@ -89,3 +89,26 @@ S10b (seed 4) contained 3,010 flagged alerts: 301 attacks, 2,709 benign, and 43 
 Recon coverage was **17/43 (39.5%; 95% Wilson [26.4%, 54.4%])**. Spoofing coverage was **1/43 (2.3%; [0.4%, 12.1%])**. Web-Based was out of scope because flow features do not reveal HTTP content (43 alerts, no coverage claim).
 
 The mapping raised in-scope attack candidate precision from 39.4% to 42.5% and mean candidates from 1.51 to 3.03, but benign clean rate fell from 27.3% to 15.3%; this trade-off lowered the primary score. Results are based on one held-out stream with 43 alerts per attack family. The source snapshot differs from the original stream metadata, one non-finite input row was skipped, and the unflagged DoS quota was exhausted across the disjoint streams; neither unflagged rows nor their quota affect routed-alert metrics. No independent human judgment of candidate relevance was collected. The mapping remains opt-in and was not enabled in `main.py`.
+
+## Post hoc, amendment 12: guarded behaviour mapping (original snapshot, S10b evaluated once)
+
+Plan: `docs/stage10-evaluation-plan.md`, amendment 12 (committed `555aa89` before any code). Code `0778c6b`; variant frozen in `caaa512` (pushed) before S10b was built. Data: the original snapshot (43,149,298 + 2,658,953 rows); S58 and S10 hashes matched the committed table before tuning. Design informed by the amendment 7 S10b breakdown (disclosed in the plan), so that stream is not reused.
+
+**Why amendment 7 did not improve.** Its map also added flood (T1498, T1499) and login (T1110) techniques, which landed on flood-looking benign alerts. The guarded map adds only scan (T1046, T1595) and spoofing (T1557) techniques; flood and login techniques come from TF-IDF alone.
+
+**Tuning (S58, S10 only).** Mean primary score: g1-scan-only 0.3029, g2-scan-only-strong 0.3023, g3-scan-only-two 0.2689 (adds nothing: two scan behaviours rarely co-occur in the top features). Selected g1. Output: `backend/experiments/mapping_a12/tune.txt`.
+
+**One-time test on S10b** (seed 4, 3,010 flagged: 301 attacks, 2,709 benign; SHA-256 `93fe6dab564504cdf4e49adb8345bbe660432d83b6081f57c3a1043d1ef0aa18`). Coverage with 95% Wilson intervals; full table in `backend/experiments/mapping_a12/test_s10b.md`.
+
+| Method | Recon | Spoofing | Brute Force | Benign clean | Primary score | Precision | Mean candidates |
+|---|---|---|---|---|---|---|---|
+| TF-IDF only | 0/43 | 0/43 | 13/43 | 15.1% | 0.2245 | 22.4% | 2.53 |
+| TF-IDF + v2 filter | 0/43 | 0/43 | 8/43 | 27.1% | 0.2752 | 38.9% | 1.51 |
+| Amendment 7 map + v2 | 15/43 | 0/43 | 16/43 | 16.1% | 0.2725 | 43.1% | 3.02 |
+| **Guarded map (g1) + v2** | **17/43 (39.5% [26.4%, 54.4%])** | 0/43 | 8/43 | 26.8% | **0.3065** | 40.5% | 1.91 |
+
+DDoS (29/43), DoS (7/43) and Mirai (28/43) are unchanged by the guarded map.
+
+**Verdict: success under the pre-stated rule.** Guarded minus TF-IDF + v2 = **+0.0313, 95% paired bootstrap [+0.0191, +0.0433]**. The amendment 7 map replicated on this snapshot gives -0.0027 [-0.0198, +0.0167], matching the teammate's no-improvement result on the other snapshot.
+
+**What this does and does not show.** The guard recovers Recon (0% to 39.5%) without adding noise to benign alerts (clean rate 27.1% to 26.8%). Spoofing is still never covered (0/43), Brute Force stays at the v2 level (18.6%), and Web-Based (43 alerts) is out of scope. Relevance is family-level and generous, as before. One stream, one snapshot, run once; the mapping stays off by default and `backend/main.py` is unchanged. Environment: scikit-learn 1.6.1 for tuning and test (index pickled with 1.7.2; warning only).

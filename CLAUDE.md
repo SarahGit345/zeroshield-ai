@@ -5,7 +5,7 @@ Pipeline: Deep SVDD detector -> occlusion XAI -> MITRE ATT&CK retrieval -> LLM r
 Everything is a simulated prototype. No real network or host action is ever executed. Be honest in every claim; this is graded work.
 
 ## Start here
-- Branch `stage10-evaluation` (identical to `main` as of 2026-11-15). `pip install -r backend/requirements.txt`, then `cd backend; python -m unittest discover -s tests` (182 tests, all OK).
+- Branch `stage10-evaluation` (identical to `main` as of 2026-11-15). `pip install -r backend/requirements.txt`, then `cd backend; python -m unittest discover -s tests` (199 tests, all OK).
 - Read `README_STAGE10.md`, `docs/stage10-evaluation-plan.md` (amendments 1 to 9), `docs/stage10-results.md`, `docs/stage10-llm-verification.md`, `docs/mitre-retrieval-evaluation.md`, `docs/ablation-amendment9.md`.
 - Task guides: `docs/teammate-guide-amendment-7.md` (ATT&CK mapping), `docs/teammate-guide-ablation.md` (LLM and ATT&CK ablations), `docs/review-guide-2026-11-14.md` (reviewing the 2026-11-14 work).
 
@@ -19,6 +19,7 @@ Everything is a simulated prototype. No real network or host action is ever exec
 ## Verified facts (quote these, do not inflate)
 - Detector, validation (31,159,073 rows): recall 0.9877, precision 0.9997, F1 0.9937, FPR 0.0501. Zero-day 0.9938 overall, but always per family (Mirai about 100%; web families 12-48%).
 - ATT&CK retrieval, held-out flagged: relevant technique for 19 of 53 (19 of 30 Mirai, 0 of 23 web). Rules v2 on unseen S10 keep 90.6% of relevant candidates, remove 38.4% of irrelevant ones; off by default.
+- Guarded behaviour mapping (amendment 12, g1-scan-only, off by default), S10b once: Recon 0/43 -> 17/43; primary score +0.0313 [+0.0191, +0.0433] over TF-IDF + v2. Spoofing still 0/43. Amendment 7's unguarded map: no gain on either snapshot.
 - LLM (qwen3:8b, 100 alerts): 98 VERIFIED, 2 UNCERTAIN; damage test 1,333 of 1,372 caught; 0 of 30 false positives removed by verification; 47 faithful-but-wrong.
 - Policy (reward v2): bandit beats always-review, random and best constant action on S10, S30, S58; loses to a supervised policy and a tuned score-tier rule at 30% and 58% attacks.
 - `verification_confidence` is 1.0 for every alert in every replay stream, so the policy experiments never used verification as a signal (amendment 9).
@@ -27,7 +28,7 @@ Everything is a simulated prototype. No real network or host action is ever exec
 
 ## Rules
 - Write or amend `docs/stage10-evaluation-plan.md` and commit it before running anything new. Run each confirmatory experiment once; say how many times you looked.
-- Do not tune on held-out data. S10b is reserved as the one-time test set of amendment 7.
+- Do not tune on held-out data. S10b (both snapshots) is used up; any new test needs a fresh stream.
 - Never put labels, outcomes or rewards in the policy context or an LLM prompt (tests enforce the policy side). Labels are read only after an action is chosen.
 - New features stay off by default; `backend/main.py` behaviour changes only by a separate decision.
 - Never fabricate asset criticality, analyst history or costs. If simulated, say so everywhere it appears.
