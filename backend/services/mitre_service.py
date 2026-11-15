@@ -161,14 +161,21 @@ class MitreService:
         return result
 
     def _retrieve_with_mapping(self, analysis, result, mapping_variant=None):
-        from services.technique_plausibility import (DIRECT_MAP_V1, DIRECT_MAP_VARIANTS, RULES_VERSION_V2,
-                                                     SIGNATURES_V2, observed_behaviours, plausible)
+        from services.technique_plausibility import (A12_VARIANTS, DIRECT_MAP_V1, DIRECT_MAP_VARIANTS,
+                                                     RULES_VERSION_V2, SIGNATURES_V2, mapped_techniques,
+                                                     plausible)
 
         variant = mapping_variant or "frozen"
+        guard = {}
         if mapping_variant is not None:
-            if mapping_variant not in DIRECT_MAP_VARIANTS:
+            if mapping_variant in DIRECT_MAP_VARIANTS:
+                direct_map = DIRECT_MAP_VARIANTS[mapping_variant]
+            elif mapping_variant in A12_VARIANTS:   # amendment 12 guarded variants
+                config = A12_VARIANTS[mapping_variant]
+                direct_map = config["map"]
+                guard = {key: config[key] for key in ("high_z", "low_z", "min_behaviours")}
+            else:
                 raise ValueError(f"Unknown direct-map variant: {mapping_variant}")
-            direct_map = DIRECT_MAP_VARIANTS[mapping_variant]
         else:
             direct_map = DIRECT_MAP_V1
         if not self.index:
@@ -176,9 +183,8 @@ class MitreService:
                     "plausibility_rules": RULES_VERSION_V2}
 
         top = analysis.get("top_features", [])
-        seen = observed_behaviours(top)
         documents = {str(doc["id"]): doc for doc in self.index["documents"]}
-        mapped_ids = {tid for tid, behaviours in direct_map.items() if behaviours & seen}
+        mapped_ids = mapped_techniques(direct_map, top, **guard)
         by_id = {str(item["technique_id"]): dict(item) for item in result.get("techniques", [])}
         tfidf_ids = set(by_id)
         ordered_ids = list(by_id)

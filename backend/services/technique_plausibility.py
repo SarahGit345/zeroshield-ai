@@ -51,16 +51,17 @@ HIGH_Z, LOW_Z = 1.0, -1.0   # same as mitre_service: "clearly outside the benign
 PROTOCOLS = frozenset({"HTTP", "HTTPS", "DNS", "Telnet", "SMTP", "SSH", "IRC", "DHCP", "ARP", "ICMP", "IPv", "TCP", "UDP"})
 
 
-def observed_behaviours(top_features, top_n: int = 8) -> set:
-    """(feature, direction) pairs that pushed the score up and sit clearly outside the benign range."""
+def observed_behaviours(top_features, top_n: int = 8, high_z: float = HIGH_Z, low_z: float = LOW_Z) -> set:
+    """(feature, direction) pairs that pushed the score up and sit clearly outside the benign range.
+    high_z/low_z default to the published cut-offs; only amendment 12's g2 variant passes stricter ones."""
     seen = set()
     for item in list(top_features)[:top_n]:
         if float(item.get("contribution", 0)) <= 0:
             continue
         value = float(item["value"])
-        if value >= HIGH_Z:
+        if value >= high_z:
             seen.add((item["feature"], "high"))
-        elif value <= LOW_Z and item["feature"] not in PROTOCOLS:
+        elif value <= low_z and item["feature"] not in PROTOCOLS:
             seen.add((item["feature"], "low"))
     return seen
 
@@ -126,3 +127,23 @@ DIRECT_MAP_VARIANTS = {
 # Frozen after comparing all three variants on S58 and S10. Keep this mapping opt-in.
 DIRECT_MAP_FROZEN_VARIANT = "v1-core-scan"
 DIRECT_MAP_V1 = DIRECT_MAP_VARIANTS[DIRECT_MAP_FROZEN_VARIANT]
+
+
+# Amendment 12: guarded mapping. Only scan (T1046, T1595) and spoofing (T1557) techniques are added by the map;
+# flood and login techniques come from TF-IDF alone. Variants fixed in the plan before any code or tuning.
+_A12_MAP = {"T1046": _SCAN_CORE, "T1595": _SCAN_CORE, "T1557": _DIRECT_COMMON["T1557"]}
+A12_VARIANTS = {
+    "g1-scan-only": {"map": _A12_MAP, "high_z": HIGH_Z, "low_z": LOW_Z, "min_behaviours": 1},
+    "g2-scan-only-strong": {"map": _A12_MAP, "high_z": 2.0, "low_z": -2.0, "min_behaviours": 1},
+    "g3-scan-only-two": {"map": _A12_MAP, "high_z": HIGH_Z, "low_z": LOW_Z, "min_behaviours": 2},
+}
+# Set to the selected variant name in the freeze commit, after tuning on S58 and S10 only.
+A12_FROZEN_VARIANT = None
+
+
+def mapped_techniques(direct_map: dict, top_features, high_z: float = HIGH_Z, low_z: float = LOW_Z,
+                      min_behaviours: int = 1) -> set:
+    """Technique IDs whose mapped behaviours are observed at least min_behaviours times.
+    With the defaults this equals amendment 7's rule (any one behaviour observed)."""
+    seen = observed_behaviours(top_features, high_z=high_z, low_z=low_z)
+    return {tid for tid, behaviours in direct_map.items() if len(behaviours & seen) >= min_behaviours}
