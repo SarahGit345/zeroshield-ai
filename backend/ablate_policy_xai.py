@@ -163,8 +163,36 @@ def flagged(name):
     return [a for a in replay.load_stream(stream_path(name)) if a["detected"]]
 
 
-def matrix(alerts, features):
-    return np.array([[float(a["feature_summary"][f]) for f in features] for a in alerts], dtype=np.float64)
+CACHE = ROOT.parent / "tmp" / "amendment9_rows.npz"   # scaled dataset rows: kept outside the repository
+
+
+def matrix(alerts, features, paths=None, cache=CACHE, chunk_rows=200000):
+    """Full 43-feature scaled rows for the alerts, read from the source CSVs by (_source, _source_row).
+    Streams store only the top 10 features, so the rows are fetched once and cached outside the repo.
+    The caller checks that re-scoring them reproduces each alert's stored anomaly score."""
+    import pandas as pd
+    import build_replay_stream as builder
+    have = {}
+    if cache and Path(cache).exists():
+        z = np.load(cache, allow_pickle=False)
+        have = {(str(s), int(r)): v for s, r, v in zip(z["src"], z["row"], z["X"])}
+    need = {(a["_source"], int(a["_source_row"])) for a in alerts} - set(have)
+    if need:
+        validation, zero_day = paths or builder.default_data_paths()
+        for source, path in (("validation", validation), ("zero_day", zero_day)):
+            rows = {r for s, r in need if s == source}
+            if not rows: continue
+            offset = 0
+            for chunk in pd.read_csv(path, usecols=list(features), chunksize=chunk_rows):
+                hit = [r for r in range(offset, offset + len(chunk)) if r in rows]
+                for r in hit: have[(source, r)] = chunk[list(features)].iloc[r - offset].to_numpy(dtype=np.float64)
+                offset += len(chunk)
+                if all((source, r) in have for r in rows): break
+        if cache:
+            Path(cache).parent.mkdir(parents=True, exist_ok=True)
+            keys = list(have)
+            np.savez(cache, src=np.array([k[0] for k in keys]), row=np.array([k[1] for k in keys]), X=np.array([have[k] for k in keys]))
+    return np.array([have[(a["_source"], int(a["_source_row"]))] for a in alerts], dtype=np.float64)
 
 
 def removal(detector, X, s0, idx_sets):
@@ -178,6 +206,7 @@ def run_xai():
     from services.model_service import Detector
     det = Detector(ROOT); feats = det.features; col = {f: i for i, f in enumerate(feats)}
     rng = random.Random(RNG_SEED); nrng = np.random.default_rng(RNG_SEED)
+    matrix([a for n in STREAMS for a in replay.load_stream(stream_path(n))], feats)   # one pass over the CSVs, fills the cache
     res = {"note": "Amendment 9 part C. Top-k = features named by the stored occlusion explanation, reset together.", "streams": {}}
     for name in STREAMS:
         alerts = flagged(name); X = matrix(alerts, feats); s0 = det.score_batch(X)

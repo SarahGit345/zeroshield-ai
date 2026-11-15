@@ -51,6 +51,19 @@ class Harness(unittest.TestCase):
         self.assertEqual(sorted(r[0] for r in out), sorted(f"x{i}" for i in range(30)))
 
 
+class RowLoader(unittest.TestCase):
+    def test_rows_are_fetched_by_source_and_position_in_feature_order(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            v, z = Path(tmp) / "v.csv", Path(tmp) / "z.csv"
+            v.write_text("b,a,label\n1,10,x\n2,20,x\n3,30,x\n", encoding="utf-8")
+            z.write_text("b,a,label\n7,70,y\n", encoding="utf-8")
+            alerts = [{"_source": "validation", "_source_row": 2}, {"_source": "zero_day", "_source_row": 0}]
+            X = ab.matrix(alerts, ["a", "b"], paths=(v, z), cache=Path(tmp) / "c.npz", chunk_rows=2)
+            self.assertEqual(X.tolist(), [[30.0, 3.0], [70.0, 7.0]])
+            v.unlink(); z.unlink()                       # second call must come from the cache
+            self.assertEqual(ab.matrix(alerts, ["a", "b"], paths=(v, z), cache=Path(tmp) / "c.npz").tolist(), X.tolist())
+
+
 class Deletion(unittest.TestCase):
     def test_removal_is_share_of_score_and_empty_set_removes_nothing(self):
         class Fake:
