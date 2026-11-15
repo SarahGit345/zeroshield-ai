@@ -1,0 +1,59 @@
+{
+  "note": "Amendment 9 part D. shap.GradientExplainer on the detector score; background 200 unflagged benign alerts from S58. SHAP top-5 by value (pushes the score up) and by absolute value.",
+  "overall": {
+    "alerts": 296,
+    "top1_agreement": 0.10135135135135136,
+    "top5_overlap": 0.26418918918918916,
+    "top5_overlap_abs": 0.21621621621621623
+  },
+  "per_family": {
+    "Benign": {
+      "alerts": 37,
+      "top1_agreement": 0.13513513513513514,
+      "top5_overlap": 0.28108108108108104,
+      "top5_overlap_abs": 0.2378378378378378
+    },
+    "Brute Force": {
+      "alerts": 37,
+      "top1_agreement": 0.16216216216216217,
+      "top5_overlap": 0.3189189189189189,
+      "top5_overlap_abs": 0.2972972972972973
+    },
+    "DDoS": {
+      "alerts": 37,
+      "top1_agreement": 0.08108108108108109,
+      "top5_overlap": 0.3405405405405405,
+      "top5_overlap_abs": 0.2594594594594595
+    },
+    "DoS": {
+      "alerts": 37,
+      "top1_agreement": 0.02702702702702703,
+      "top5_overlap": 0.24324324324324326,
+      "top5_overlap_abs": 0.09189189189189188
+    },
+    "Mirai": {
+      "alerts": 37,
+      "top1_agreement": 0.0,
+      "top5_overlap": 0.06486486486486487,
+      "top5_overlap_abs": 0.02702702702702703
+    },
+    "Recon": {
+      "alerts": 37,
+      "top1_agreement": 0.2972972972972973,
+      "top5_overlap": 0.34594594594594597,
+      "top5_overlap_abs": 0.3405405405405405
+    },
+    "Spoofing": {
+      "alerts": 37,
+      "top1_agreement": 0.05405405405405406,
+      "top5_overlap": 0.254054054054054,
+      "top5_overlap_abs": 0.23243243243243242
+    },
+    "Web-Based": {
+      "alerts": 37,
+      "top1_agreement": 0.05405405405405406,
+      "top5_overlap": 0.2648648648648648,
+      "top5_overlap_abs": 0.24324324324324326
+    }
+  }
+}

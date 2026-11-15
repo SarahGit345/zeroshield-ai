@@ -119,6 +119,10 @@ At S30 the supervised policy stays ahead unless a missed attack is penalised abo
 
 **Limit.** Break-even values hold each policy's v2 decisions fixed; a policy retrained under a different table would choose differently. The reruns under six other tables (Sensitivity, above) remain the evidence for that case.
 
+## Policy-input ablation (amendment 9, 2026-11-15)
+
+`verification_confidence` is 1.0 for every alert in every replay stream (template reasoning), so the policy results above never used verification as a signal; removing it changes nothing. Removing the XAI or ATT&CK inputs lowers the bandit's reward at S10 (by 0.191 and 0.158) but removing the XAI inputs raises it at S30 (+0.139). Exploration alpha 1.0 would raise S30 by 0.216 (not adopted: descriptive only). Details: `docs/ablation-amendment9.md`.
+
 ## How many times results were looked at
 
 - S58: the bandit / fixed rule / always-review / random results were seen before the plan (exploratory study and `e2e_check.py`); the all-policy study was read once, after it finished.
