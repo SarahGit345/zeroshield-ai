@@ -70,13 +70,13 @@ class ScoreGate(unittest.TestCase):
         self.assertEqual([r["candidates"][em.METHOD_GATED] for r in out], [[], ["T1498"], []])
         self.assertEqual(em.lost_context(out), {"DDoS": 0.0, "Recon": 1.0})
 
-    def test_gate_off_by_default_and_not_frozen(self):
-        self.assertIsNone(tp.A15_FROZEN_GATE)
+    def test_gate_frozen_to_tuning_winner(self):
+        self.assertEqual(tp.A15_FROZEN_GATE, "gate-3x")
         self.assertTrue(tp.passes_score_gate(0.1228, 0.0614, 2.0))
         self.assertFalse(tp.passes_score_gate(0.1, 0.0614, 2.0))
 
     def test_one_time_test_refuses_before_freeze_and_twice(self):
-        with self.assertRaises(RuntimeError):
+        with mock.patch.object(tp, "A15_FROZEN_GATE", None), self.assertRaises(RuntimeError):
             em.test15_once(None, 0.0614)
         with tempfile.TemporaryDirectory() as tmp, mock.patch.object(tp, "A15_FROZEN_GATE", "gate-2x"):
             (Path(tmp) / "test_s10c.json").write_text("{}", encoding="utf-8")

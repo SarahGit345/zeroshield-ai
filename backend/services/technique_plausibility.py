@@ -153,7 +153,7 @@ def mapped_techniques(direct_map: dict, top_features, high_z: float = HIGH_Z, lo
 # below gate x deployed threshold. Variants fixed in the plan before any code or tuning.
 A15_GATES = {"gate-1.5x": 1.5, "gate-2x": 2.0, "gate-3x": 3.0}
 # Set to the selected variant name in the freeze commit, after tuning on S58 and S10 only.
-A15_FROZEN_GATE = None
+A15_FROZEN_GATE = "gate-3x"   # frozen after tuning on S58 and S10 (mapping_a15/tune.txt)
 
 
 def passes_score_gate(score: float, threshold: float, gate: float) -> bool:
