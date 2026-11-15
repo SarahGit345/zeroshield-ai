@@ -3,9 +3,9 @@
 [PASS] Python version - 3.11.9
 [PASS] Active detector checkpoint present - Deep_SVDD_Tuned.pt
 [PASS] MITRE index loads and passes its hash check
-[PASS] Dataset file validation_set.csv - C:\Users\sasha_8bqmxgj\OneDrive\Documents\Study Material\7th Sem\Final Year Project\validation_set.csv
-[PASS] Dataset file zero_day_test_scaled_v2.csv - C:\Users\sasha_8bqmxgj\OneDrive\Documents\Study Material\7th Sem\Final Year Project\zero_day_test_scaled_v2.csv
-[PASS] Dataset file train_benign_only.csv - C:\Users\sasha_8bqmxgj\OneDrive\Documents\Study Material\7th Sem\Final Year Project\train_benign_only.csv
+[PASS] Dataset file validation_set.csv - <local data dir>/validation_set.csv
+[PASS] Dataset file zero_day_test_scaled_v2.csv - <local data dir>/zero_day_test_scaled_v2.csv
+[PASS] Dataset file train_benign_only.csv - <local data dir>/train_benign_only.csv
 
 === C. MITRE retrieval (held-out labelled evidence) ===
 [PASS] Retrieval reproduces the documented held-out result - 19 of 53 flagged samples relevant

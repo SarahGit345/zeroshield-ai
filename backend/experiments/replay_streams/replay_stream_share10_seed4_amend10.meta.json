@@ -34,12 +34,12 @@
   "sources": [
     {
       "name": "validation",
-      "path": "C:\\Users\\sasha_8bqmxgj\\OneDrive\\Documents\\Study Material\\7th Sem\\Final Year Project\\validation_set.csv",
+      "path": "<local data dir>/validation_set.csv",
       "bytes": 22992531456
     },
     {
       "name": "zero_day",
-      "path": "C:\\Users\\sasha_8bqmxgj\\OneDrive\\Documents\\Study Material\\7th Sem\\Final Year Project\\zero_day_test_scaled_v2.csv",
+      "path": "<local data dir>/zero_day_test_scaled_v2.csv",
       "bytes": 2051913808
     }
   ],
