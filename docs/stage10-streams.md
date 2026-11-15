@@ -32,3 +32,15 @@ Each attack family is 1/7 (14.3%) of a stream's flagged attacks, so no family ex
 ## What the strata mean
 
 The streams are **not** at natural prevalence. Benign rows are about 0.5% of the validation file; flagged attacks outnumber flagged benign flows by about 4,000 to 1 in the full data. The streams fix the share of attacks among flagged alerts (10%, 30%, and 58% for S58) so that the response policies face a controlled false-positive load. Results describe those mixes, not deployment traffic. The population columns above are the detector's real flag rates over the full files (benign 5.00% matches the documented FPR 0.0501; zero-day overall (2,633,942 + 8,420) / 2,658,953 = 0.9938 matches the documented 0.9938, while Web-Based alone is 0.339).
+
+## Amendment 10 local snapshot (revised-data-basis replication)
+
+Built 2026-11-15 from the hash-pinned local inputs recorded in amendments 10-11 of `docs/stage10-evaluation-plan.md`: validation SHA-256 `E661CC9C6861A7692BD77918D79315D7B1CD814F46E55BAAD54288167C890AC8`; zero-day SHA-256 `1FE72BC723CD46106A57DE29012C3EE23FC7A504D931230269BCE2E2791A87BA`. This current validation file has 31,159,073 rows, versus 43,149,298 in the original stream metadata. These replacement streams are not the original snapshot's confirmatory streams; amendment 7's method and success rule are being replicated on this revised basis.
+
+| stream | sampled flagged (attack + benign) | attack share | excluded source rows | stream SHA-256 |
+|---|---:|---:|---:|---|
+| S58 | 720 (420 + 300) | 0.5833 | 0 | `3bdd7ff4dd076868335c999c472112d37dc649ae8b6a30e46466dcb90efe8cfa` |
+| S10 | 3,010 (301 + 2,709) | 0.1000 | 1,150 | `a1310e7b2be2284d650108063f88aff016d4a3b0f47bba8ad0d3099d4ea7d40d` |
+| S30 | 1,003 (301 + 702) | 0.3001 | 4,579 | `640ff280a9a7cf0e422f40b027d20295e4976a402d44139b115a64418b20fb70` |
+
+Each builder read 33,818,026 rows and skipped one non-finite row. Flagged quotas matched the plan. The source contained 69 unflagged DoS rows: S58 used 40, S10 used the remaining 29, and S30 had none after exclusions. The unflagged DoS shortfall is recorded in amendment 11; unflagged rows are not routed. Per-family counts and source paths are in the accompanying committed `.meta.json` files. The `.jsonl` streams remain local and uncommitted.
