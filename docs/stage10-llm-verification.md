@@ -159,3 +159,18 @@ Added after the results above were seen; run once on the same 100 saved reports,
 This is the first verifier change that removes any false positives, but it costs attacks: for every benign alert removed, about three attacks lose their VERIFIED status, ten of them reports whose technique was relevant. The cause is the rules, not the reports: in this data floods appear in the XAI evidence as missing normal TCP behaviour (no ACK packets, few SYN packets, no HTTPS), not as a high packet rate, so the flood rule judges T1498/T1499 implausible for many flood flows; the brute-force rule similarly misses brute-force flows. A revised rule set would have to be written and then evaluated on reports not used here; it is not tuned on these. Verdict: a trade-off, not an improvement; the check stays off by default.
 
 **Update (amendment 6).** Rules v2, tested once on the unseen S10 stream, keep 90.6% of relevant candidate techniques (v1: 40.3%) while removing 38.4% of irrelevant ones; see `docs/mitre-retrieval-evaluation.md`. Of the 23 attacks the v1 check downgraded, the 10 that cited a relevant technique (Brute Force 5, Mirai 3, DDoS 2) are in the families v2 now handles; the other 13 cited a wrong technique and were downgraded correctly. The 12-check verifier with v2 has not yet been measured on real reports.
+
+## Human check: result (plan item 4, 2026-11-15)
+
+The 32-report blind packet was judged by one reviewer, a friend of a team member who had not seen the LLM results or the verifier verdicts and received only `human_check_packet.html`; the answers were matched to the key (kept outside the repository) by `backend/score_human_check.py`. Answers: `main_qwen3_8b/human_check_answers.csv`; result: `human_check_result.md/.json`. Scored once.
+
+| Supported by evidence (human) | Yes | Partly | No |
+|---|---|---|---|
+| All 32 reports | 10 | 20 | 2 |
+| Verifier VERIFIED (30) | 10 | 19 | 1 |
+| Verifier UNCERTAIN (2) | 0 | 1 | 1 |
+
+- **"Partly" almost always means the same thing:** the reviewer confirmed the score, threshold and feature contributions, but judged the ATT&CK techniques the report suggests as not established by the flow features (technique plausible: Yes 3, No 20, none cited 9). This is the faithful-but-wrong pattern measured above (47 of 100), now confirmed by a person.
+- **Verifier against the reviewer:** of the 2 reports the reviewer judged unsupported, the verifier had flagged one (R09, UNCERTAIN: the report misstated the sign of two contributions). It passed the other (R27, Web-Based): the report called RST count and SYNRatio "high" although their standardized values are negative. The verifier's `feature_directions_consistent` check covers the direction of contributions (positive or negative, raises or lowers the score), which is how it caught R09, but not claims about a feature's value being high or low, which is what R27 got wrong. Extending the check to value claims would need its own plan.
+- **Relevance lists are more generous than the reviewer:** the reviewer and the family-level relevance lists agree on 25 of 32 reports; in 5 the lists count a cited technique as relevant and the reviewer does not, in 1 the reverse.
+- One reviewer, 32 reports: no inter-rater agreement is available.

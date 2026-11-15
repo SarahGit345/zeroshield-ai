@@ -236,3 +236,33 @@ Post hoc. Written and committed before any new code, any stream build from the o
 **Success rule.** The guarded mapping succeeds if its primary score minus TF-IDF + v2 filter is above 0 with the 95% stratified paired-bootstrap interval (2,000 resamples, seed 20261115, as amendment 7) entirely above 0. Reported whatever the outcome.
 
 **Unchanged.** The mapping stays off by default; `backend/main.py` is not changed; labels are used only after retrieval to score relevance; the committed metadata of the original streams is not overwritten (new metadata files take new names).
+
+## Amendment 13 (2026-11-15): detector operating points per family (descriptive)
+
+Post hoc, descriptive; written and committed before any code or run. Motivation: the S10b build population (amendment 12) showed per-family flag rates at the deployed threshold far below the headline recall (Recon 56.6%, Spoofing 25.7%, Brute Force 20.8%, Web-Based 33.9%), because DDoS dominates the row count.
+
+**Method.** One pass scores every row of `train_benign_only.csv`; thresholds are its benign-score percentiles 90, 93, 95, 97 and 99, plus the deployed threshold 0.0614 (`threshold_percentile` 95 in the checkpoint). A second pass scores every row of the original snapshot (`validation_set.csv`, 43,149,298 rows; `zero_day_test_scaled_v2.csv`, 2,658,953 rows) and counts, per source and family, rows at or above each threshold. Same detector, no retraining.
+
+**Reported.** Per threshold: false-positive rate on validation benign rows, recall per family (validation families and zero-day families separately) with 95% Wilson intervals, row-weighted overall recall, and flagged benign rows per 1,000 benign rows.
+
+**What is not done.** No threshold is selected and the deployed threshold is not changed: every stream, policy result and amendment uses 0.0614, and changing it would need its own plan and new streams. Families with low recall at every listed threshold are reported as a limit of flow-level features.
+
+## Amendment 14 (2026-11-15): benign-reference occlusion (descriptive)
+
+Post hoc, descriptive; written and committed before any code or run. Motivation: amendment 9 parts C and D showed the occlusion explanation is reliable mainly for its top feature, because the reference value 0 (the scaled mean) is not a realistic benign flow, and SHAP (benign background) agrees with it on the top feature only 10.1% of the time.
+
+**Method.** Reference vector = per-feature median of `train_benign_only.csv` (training data; never an evaluation stream). For every flagged alert of S10, S30 and S58 (full rows from the amendment 9 cache), each of the 43 features is replaced in turn by its benign median and the alert re-scored; contribution = original score minus new score. Deletion test as amendment 9 part C, with the median as the reset value: top-k (k = 1, 3, 5) by the new ranking, versus k random features (20 seeded draws per alert, seed as amendment 9) and the k lowest-ranked. SHAP comparison as amendment 9 part D: same 296 S30 alerts, same 200-alert benign background, top-1 agreement and top-5 overlap of the new ranking with SHAP.
+
+**Pre-stated reading.** The benign-reference explanation is called faithful beyond its top feature if, on all three streams, joint removal of the top 3 and top 5 lowers the score on average (positive share removed) and top-k minus random has a 95% bootstrap interval above 0 at k = 1, 3 and 5. SHAP agreement is reported against the amendment 9 values (10.1% top-1, 26.4% top-5). Descriptive: the live explanation (`model_service.py`, reference 0) is not changed by this amendment.
+
+## Amendment 15 (2026-11-15): score-gated ATT&CK context
+
+Post hoc; written and committed before any code, tuning or test-stream build. Motivation: with the frozen guarded mapping (amendment 12, g1-scan-only), 73% of flagged benign alerts on S10b still receive a technique, mostly from TF-IDF on flood-looking false alarms, which sit closer to the threshold than most attacks.
+
+**Method.** On top of TF-IDF + guarded mapping (g1) + v2 filter, show no technique when the alert's anomaly score is below a gate of k times the deployed threshold (0.0614). Variants fixed now, none other tried: `gate-1.5x`, `gate-2x`, `gate-3x`. Labels are used only after retrieval, to score.
+
+**Tuning.** On S58 and S10 only; metric and rule as amendments 7 and 12 (highest mean primary balanced score; ties follow the order above). The selected gate is frozen in a commit before the test stream is built.
+
+**One-time test.** S10c: share 0.10, seed 5, minimum 300 attacks, built from the original snapshot after the freeze, excluding S58, S10, S30 and the original-snapshot S10b; evaluated once. Methods reported: TF-IDF only; TF-IDF + v2; guarded mapping (g1); gated guarded mapping. Metrics as amendment 12, plus the share of each attack family's alerts that lose all context because of the gate.
+
+**Success rule.** Gated minus guarded mapping (g1) on the primary score above 0 with the 95% stratified paired-bootstrap interval (2,000 resamples, seed 20261115) entirely above 0. Reported whatever the outcome. The gate stays off by default; `backend/main.py` is unchanged.

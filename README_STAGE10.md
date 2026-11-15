@@ -37,7 +37,7 @@ Headline result (v2 rewards): the bandit beats always-review, random and the bes
 
 ```powershell
 Set-Location backend
-python -m unittest discover -s tests          # 199 tests, all OK expected (about 3-4 min)
+python -m unittest discover -s tests          # 215 tests, all OK expected (about 3-4 min)
 ```
 
 ## 2. End-to-end check
@@ -138,3 +138,15 @@ Signature rules on plaintext HTTP from the original captures; complementary to t
 1. Human check of the 32 reports in `backend/experiments/llm_verification/main_qwen3_8b/human_check_packet.html` (blind; get the key from the person who built it); add the result to `docs/stage10-llm-verification.md`.
 2. CLAUDE.md step 5: dashboard alert-detail view, action allowlist, simulated asset criticality (labelled as simulated).
 3. HTTP content check (step 7): code and tests done, rules frozen; needs the web-attack PCAPs and one run. Then write the results into `docs/` next to the flow detector's per-family recall.
+
+
+## Live monitor demo (dashboard)
+
+```powershell
+cd backend
+python build_live_demo.py                       # once: writes data/live_demo_flows.csv from real dataset rows (gitignored)
+python -m uvicorn main:app --port 8000
+cd ..rontend; npm install; npm run dev        # open http://localhost:5173 -> Live Monitor
+```
+
+Replays real recorded CIC-IoT-2023 flows one at a time through the unchanged pipeline (template reports by default; separate demo ledger). Within each family the flagged share matches the full-data flag rate; the label is shown only after the decision; all actions are simulated. ATT&CK mode can switch to the frozen guarded mapping (amendment 12) or score gate (amendment 15). The Evaluation page shows the measured results of every stage with their source files.

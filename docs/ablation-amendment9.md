@@ -63,3 +63,12 @@ The two methods largely disagree. The main reason is the reference point: occlus
 - No default changes: occlusion stays the explanation method, alpha stays 0.25, the policy context is unchanged.
 - Claims to correct in slides and reports: "verification informs the response policy" is not supported (constant input); "the explanation shows why a flow is anomalous" holds firmly for the top feature, less so for the full top 10.
 - Run once each. The policy part was looked at once; parts C and D were looked at once.
+
+## Follow-up, amendment 14: benign-median reference (descriptive, run once)
+
+Plan: amendment 14 (`218986b`, before code). Reference = per-feature median of 878,328 `train_benign_only.csv` rows; otherwise identical to parts C and D. Result: `backend/experiments/xai_benign_reference/summary.md`.
+
+- **Pre-stated reading: NO.** Top-k minus random stays far above 0 at k = 1, 3, 5 on all streams, but joint removal of the top 3 or top 5 still raises the score on S10 and S30 (top-3: -12.2% and -6.2%; top-5: -103.6% and -84.7%); only S58 top-3 is positive (+13.7%). The top feature alone still removes about 72-73%.
+- **Interpretation.** A realistic reference reduces but does not remove the problem: the detector is strongly non-additive, so single-feature contributions do not add up whatever the reference. The explanation remains reliable for its top feature.
+- **SHAP agreement improves** with the benign reference: top-1 8.4% to 15.5%, top-5 26.0% to 35.9% (DDoS 61.1%, DoS 70.8% top-5), though not for Benign, Spoofing or Web-Based. Note: the zero-reference values recomputed here (8.4% / 26.0%) differ from part D's 10.1% / 26.4% because `shap.GradientExplainer` samples randomly; part D is not edited.
+- The live explanation (reference 0) is unchanged.

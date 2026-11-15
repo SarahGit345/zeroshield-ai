@@ -72,6 +72,7 @@ def prepare_alerts(path: Path, service: MitreService):
         relevant = (measure.relevant_set({"attack_label": alert["_attack_label"], "family": family})
                     if family != "Benign" else set())
         prepared.append({"analysis": analysis, "base_result": base_result, "family": family,
+                         "score": float(alert["anomaly_score"]),
                          "relevant": sorted(relevant),
                          "candidates": {METHOD_TFIDF: [item["technique_id"]
                                                         for item in base_result.get("techniques", [])],
@@ -273,6 +274,95 @@ def markdown12(result):
     return "\n".join(lines) + "\n"
 
 
+# ------------------------------------------------------------------ amendment 15: score gate
+A15_OUT = HERE / "experiments" / "mapping_a15"
+S10C_STREAM = STREAMS / "replay_stream_share10_seed5.jsonl"
+METHOD_GATED = "TF-IDF + guarded mapping + v2 filter + score gate"
+A15_METHODS = (METHOD_TFIDF, METHOD_V2, METHOD_GUARDED, METHOD_GATED)
+
+
+def add_gate(rows, gate, threshold):
+    """Gated candidates = guarded candidates if the alert's score passes the gate, else none."""
+    return [{**r, "candidates": {**r["candidates"],
+                                 METHOD_GATED: (r["candidates"][METHOD_GUARDED]
+                                                if _tp.passes_score_gate(r["score"], threshold, gate) else [])}}
+            for r in rows]
+
+
+def lost_context(rows):
+    """Per attack family: share of alerts with guarded candidates that the gate leaves with none."""
+    out = {}
+    for fam in sorted({r["family"] for r in rows if r["family"] != "Benign"}):
+        g = [r for r in rows if r["family"] == fam and r["candidates"][METHOD_GUARDED]]
+        out[fam] = (sum(not r["candidates"][METHOD_GATED] for r in g) / len(g)) if g else None
+    return out
+
+
+def gated_rows(prepared, service, gate, threshold):
+    rows = add_mapping(prepared, service, _tp.A12_FROZEN_VARIANT, METHOD_GUARDED)
+    return add_gate(rows, gate, threshold)
+
+
+def tune15(service, threshold):
+    result = {"data_basis": A12_BASIS, "guarded_variant": _tp.A12_FROZEN_VARIANT, "threshold": threshold,
+              "variants": {}, "selection": None}
+    prepared_streams = {name: prepare_alerts(path, service) for name, path in TUNE_STREAMS.items()}
+    for name_gate, gate in _tp.A15_GATES.items():
+        by_stream = {}
+        for name, prepared in prepared_streams.items():
+            rows = gated_rows(prepared, service, gate, threshold)
+            by_stream[name] = {"stream_sha256": stream_sha256(TUNE_STREAMS[name]),
+                               "methods": {m: metric_for(rows, m) for m in A15_METHODS},
+                               "lost_context": lost_context(rows),
+                               "gated_minus_guarded_95": paired_bootstrap(rows, METHOD_GUARDED, METHOD_GATED)}
+        score = sum(s["methods"][METHOD_GATED]["primary_balanced_score"] for s in by_stream.values()) / len(by_stream)
+        result["variants"][name_gate] = {"mean_tuning_primary_score": score, "streams": by_stream}
+    winner = max(result["variants"], key=lambda n: result["variants"][n]["mean_tuning_primary_score"])
+    result["selection"] = {"variant": winner, "held_out_stream_seen": False,
+                           "rule": "highest mean primary balanced score across S58 and S10; ties follow variant order"}
+    return result
+
+
+def test15_once(service, threshold, out_dir: Path = A15_OUT):
+    frozen = _tp.A15_FROZEN_GATE
+    if frozen not in _tp.A15_GATES:
+        raise RuntimeError("Freeze first: set A15_FROZEN_GATE in technique_plausibility.py and commit it.")
+    if (out_dir / "test_s10c.json").exists():
+        raise RuntimeError(f"The one-time test has already been run: {out_dir / 'test_s10c.json'}")
+    if not S10C_STREAM.exists():
+        raise FileNotFoundError(f"S10c has not been built: {S10C_STREAM}")
+    rows = gated_rows(prepare_alerts(S10C_STREAM, service), service, _tp.A15_GATES[frozen], threshold)
+    return {"data_basis": A12_BASIS, "frozen_gate": frozen, "guarded_variant": _tp.A12_FROZEN_VARIANT,
+            "stream": S10C_STREAM.name, "stream_sha256": stream_sha256(S10C_STREAM),
+            "methods": {m: metric_for(rows, m) for m in A15_METHODS}, "lost_context": lost_context(rows),
+            "gated_minus_guarded_95": paired_bootstrap(rows, METHOD_GUARDED, METHOD_GATED)}
+
+
+def markdown15(result):
+    fams = ATTACK_FAMILIES
+    L = ["# Amendment 15 one-time test on S10c (original snapshot)", "",
+         f"Frozen gate: `{result['frozen_gate']}` on guarded mapping `{result['guarded_variant']}`. "
+         f"Stream SHA-256: `{result['stream_sha256']}`.", "",
+         "| Method | " + " | ".join(fams) + " | Benign clean | Primary score | Precision | Mean candidates |",
+         "|" + "---|" * (len(fams) + 5)]
+    for method, m in result["methods"].items():
+        pf = m["per_family"]
+        cells = [fmt_rate(pf[f]["covered"], pf[f]["alerts"], pf[f]["wilson_95"]) if f in pf else "-" for f in fams]
+        b = pf["Benign"]
+        prec = m["attack_candidate_precision_excluding_web"]
+        L.append(f"| {method} | " + " | ".join(cells) + f" | {fmt_rate(b['clean'], b['alerts'], b['wilson_95'])} | "
+                 f"{m['primary_balanced_score']:.4f} | {'-' if prec is None else f'{100 * prec:.1f}%'} | "
+                 f"{m['mean_candidates_per_alert']:.2f} |")
+    g, base = (result["methods"][k]["primary_balanced_score"] for k in (METHOD_GATED, METHOD_GUARDED))
+    lo, hi = result["gated_minus_guarded_95"]
+    verdict = "SUCCESS" if lo > 0 else "no improvement under the pre-stated rule"
+    lost = "; ".join(f"{f} {100 * v:.0f}%" for f, v in result["lost_context"].items() if v is not None)
+    L += ["", f"**Gated minus guarded mapping: {g - base:+.4f}, 95% paired bootstrap [{lo:+.4f}, {hi:+.4f}]. "
+              f"Verdict: {verdict}.**", f"Attack alerts that lose all context because of the gate: {lost}.",
+          "Run once. Labels used only after retrieval, to score relevance."]
+    return "\n".join(L) + "\n"
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     group = parser.add_mutually_exclusive_group(required=True)
@@ -280,9 +370,39 @@ def main(argv=None):
     group.add_argument("--test", action="store_true")
     group.add_argument("--tune12", action="store_true", help="amendment 12: guarded variants on S58 and S10")
     group.add_argument("--test12", action="store_true", help="amendment 12: one-time S10b test after the freeze")
+    group.add_argument("--tune15", action="store_true", help="amendment 15: score gates on S58 and S10")
+    group.add_argument("--test15", action="store_true", help="amendment 15: one-time S10c test after the freeze")
     parser.add_argument("--out", type=Path, default=HERE / "experiments" / "mapping")
     args = parser.parse_args(argv)
     service = MitreService(ROOT)
+    if args.tune15 or args.test15:
+        from services.model_service import Detector
+        threshold = float(Detector(ROOT).threshold)
+        A15_OUT.mkdir(parents=True, exist_ok=True)
+        if args.tune15:
+            result = tune15(service, threshold)
+            (A15_OUT / "tune.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+            lines = ["Amendment 15 tune: S58 and S10 only; three fixed score gates on guarded mapping g1."]
+            for name_gate, data in result["variants"].items():
+                lines.append(f"\n{name_gate}: mean primary score={data['mean_tuning_primary_score']:.4f}")
+                for name, s in data["streams"].items():
+                    lo, hi = s["gated_minus_guarded_95"]
+                    lost = ", ".join(f"{f} {0 if v is None else 100 * v:.0f}%" for f, v in s["lost_context"].items())
+                    lines.append(f"  {name}: gated-guarded 95% [{lo:+.4f}, {hi:+.4f}]; lost context {lost}")
+                    for method, m in s["methods"].items():
+                        lines.append(f"    {method}: primary={m['primary_balanced_score']:.4f}; "
+                                     f"coverage={m['attack_coverage_macro_excluding_web']:.4f}; "
+                                     f"benign_clean={m['benign_clean_rate']:.4f}")
+            lines.append(f"\nSelected: {result['selection']['variant']}")
+            (A15_OUT / "tune.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+            print("\n".join(lines))
+        else:
+            result = test15_once(service, threshold)
+            (A15_OUT / "test_s10c.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+            text = markdown15(result)
+            (A15_OUT / "test_s10c.md").write_text(text, encoding="utf-8")
+            print(text)
+        return
     if args.tune12 or args.test12:
         A12_OUT.mkdir(parents=True, exist_ok=True)
         if args.tune12:

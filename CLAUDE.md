@@ -5,7 +5,7 @@ Pipeline: Deep SVDD detector -> occlusion XAI -> MITRE ATT&CK retrieval -> LLM r
 Everything is a simulated prototype. No real network or host action is ever executed. Be honest in every claim; this is graded work.
 
 ## Start here
-- Branch `stage10-evaluation` (identical to `main` as of 2026-11-15). `pip install -r backend/requirements.txt`, then `cd backend; python -m unittest discover -s tests` (199 tests, all OK).
+- Branch `stage10-evaluation` (identical to `main` as of 2026-11-15). `pip install -r backend/requirements.txt`, then `cd backend; python -m unittest discover -s tests` (215 tests, all OK).
 - Read `README_STAGE10.md`, `docs/stage10-evaluation-plan.md` (amendments 1 to 9), `docs/stage10-results.md`, `docs/stage10-llm-verification.md`, `docs/mitre-retrieval-evaluation.md`, `docs/ablation-amendment9.md`.
 - Task guides: `docs/teammate-guide-amendment-7.md` (ATT&CK mapping), `docs/teammate-guide-ablation.md` (LLM and ATT&CK ablations), `docs/review-guide-2026-11-14.md` (reviewing the 2026-11-14 work).
 
@@ -25,10 +25,15 @@ Everything is a simulated prototype. No real network or host action is ever exec
 - `verification_confidence` is 1.0 for every alert in every replay stream, so the policy experiments never used verification as a signal (amendment 9).
 - Occlusion explanation: the top feature removes about 70% of the score; resetting several features together usually raises it (reference 0 is not a realistic normal flow). SHAP agrees poorly (top-1 10%).
 - Reward tables are designed, not measured costs.
+- Detector per family on all 45.8M rows (amendment 13): DDoS/DoS/Mirai 100%, Recon 56.6%, Web-Based 33.9%, Spoofing 25.7%, Brute Force 20.8%, benign false alarms 5.0%.
+- Score gate (amendment 15, gate-3x on guarded mapping, off by default), S10c once: +0.2355 [+0.2208, +0.2489]; benign clean 28% -> 79%; Brute Force relevant context 9/43 -> 0.
+- Benign-median occlusion (amendment 14): pre-stated rule NO; SHAP top-1 agreement 8.4% -> 15.5%.
+- Blind human check (32 reports, one independent reviewer): 10 supported, 20 partly (ATT&CK not established), 2 not; verifier caught 1 of the 2 (misses value-direction claims).
+- Live monitor (`/api/live/*`, dashboard "Live Monitor"): replays real recorded flows from `backend/data/live_demo_flows.csv` (gitignored; `python build_live_demo.py`), separate demo ledger; per-family flagged share matches full-data rates.
 
 ## Rules
 - Write or amend `docs/stage10-evaluation-plan.md` and commit it before running anything new. Run each confirmatory experiment once; say how many times you looked.
-- Do not tune on held-out data. S10b (both snapshots) is used up; any new test needs a fresh stream.
+- Do not tune on held-out data. S10b (both snapshots) and S10c are used up; any new test needs a fresh stream (seed 6 or later, excluding all earlier streams).
 - Never put labels, outcomes or rewards in the policy context or an LLM prompt (tests enforce the policy side). Labels are read only after an action is chosen.
 - New features stay off by default; `backend/main.py` behaviour changes only by a separate decision.
 - Never fabricate asset criticality, analyst history or costs. If simulated, say so everywhere it appears.

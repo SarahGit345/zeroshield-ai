@@ -1,0 +1,39 @@
+Amendment 15 tune: S58 and S10 only; three fixed score gates on guarded mapping g1.
+
+gate-1.5x: mean primary score=0.4308
+  S58: gated-guarded 95% [+0.1128, +0.1631]; lost context Brute Force 12%, DDoS 0%, DoS 0%, Mirai 0%, Recon 15%, Spoofing 22%, Web-Based 8%
+    TF-IDF only: primary=0.2086; coverage=0.2972; benign_clean=0.1200
+    TF-IDF + v2 filter: primary=0.2603; coverage=0.2806; benign_clean=0.2400
+    TF-IDF + guarded mapping + v2 filter: primary=0.2889; coverage=0.3444; benign_clean=0.2333
+    TF-IDF + guarded mapping + v2 filter + score gate: primary=0.4269; coverage=0.3306; benign_clean=0.5233
+  S10: gated-guarded 95% [+0.1072, +0.1278]; lost context Brute Force 19%, DDoS 0%, DoS 0%, Mirai 0%, Recon 6%, Spoofing 9%, Web-Based 12%
+    TF-IDF only: primary=0.2317; coverage=0.3140; benign_clean=0.1495
+    TF-IDF + v2 filter: primary=0.2776; coverage=0.2946; benign_clean=0.2606
+    TF-IDF + guarded mapping + v2 filter: primary=0.3170; coverage=0.3760; benign_clean=0.2580
+    TF-IDF + guarded mapping + v2 filter + score gate: primary=0.4347; coverage=0.3643; benign_clean=0.5050
+
+gate-2x: mean primary score=0.5044
+  S58: gated-guarded 95% [+0.1806, +0.2381]; lost context Brute Force 33%, DDoS 0%, DoS 0%, Mirai 0%, Recon 18%, Spoofing 36%, Web-Based 11%
+    TF-IDF only: primary=0.2086; coverage=0.2972; benign_clean=0.1200
+    TF-IDF + v2 filter: primary=0.2603; coverage=0.2806; benign_clean=0.2400
+    TF-IDF + guarded mapping + v2 filter: primary=0.2889; coverage=0.3444; benign_clean=0.2333
+    TF-IDF + guarded mapping + v2 filter + score gate: primary=0.4983; coverage=0.3167; benign_clean=0.6800
+  S10: gated-guarded 95% [+0.1800, +0.2054]; lost context Brute Force 29%, DDoS 0%, DoS 0%, Mirai 0%, Recon 12%, Spoofing 32%, Web-Based 24%
+    TF-IDF only: primary=0.2317; coverage=0.3140; benign_clean=0.1495
+    TF-IDF + v2 filter: primary=0.2776; coverage=0.2946; benign_clean=0.2606
+    TF-IDF + guarded mapping + v2 filter: primary=0.3170; coverage=0.3760; benign_clean=0.2580
+    TF-IDF + guarded mapping + v2 filter + score gate: primary=0.5104; coverage=0.3527; benign_clean=0.6681
+
+gate-3x: mean primary score=0.5693
+  S58: gated-guarded 95% [+0.2622, +0.3186]; lost context Brute Force 43%, DDoS 0%, DoS 0%, Mirai 0%, Recon 25%, Spoofing 50%, Web-Based 29%
+    TF-IDF only: primary=0.2086; coverage=0.2972; benign_clean=0.1200
+    TF-IDF + v2 filter: primary=0.2603; coverage=0.2806; benign_clean=0.2400
+    TF-IDF + guarded mapping + v2 filter: primary=0.2889; coverage=0.3444; benign_clean=0.2333
+    TF-IDF + guarded mapping + v2 filter + score gate: primary=0.5792; coverage=0.3083; benign_clean=0.8500
+  S10: gated-guarded 95% [+0.2279, +0.2573]; lost context Brute Force 52%, DDoS 0%, DoS 0%, Mirai 0%, Recon 19%, Spoofing 59%, Web-Based 28%
+    TF-IDF only: primary=0.2317; coverage=0.3140; benign_clean=0.1495
+    TF-IDF + v2 filter: primary=0.2776; coverage=0.2946; benign_clean=0.2606
+    TF-IDF + guarded mapping + v2 filter: primary=0.3170; coverage=0.3760; benign_clean=0.2580
+    TF-IDF + guarded mapping + v2 filter + score gate: primary=0.5595; coverage=0.3295; benign_clean=0.7896
+
+Selected: gate-3x
