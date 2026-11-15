@@ -101,3 +101,28 @@ V2_CANDIDATES = {
 # chosen after 3 variants. Committed before S10 is evaluated.
 RULES_VERSION_V2 = "plausibility-rules-v2"
 SIGNATURES_V2 = V2_CANDIDATES["v2c + session login without long flows"]
+
+# Amendment 7 mapping candidates. Each behaviour is observed by the same contribution/value
+# rule used by the retrieval ontology. Variants differ only in which scan patterns support
+# T1046/T1595; flood, login and spoofing mappings are fixed across variants.
+_SCAN_CORE = {
+    ("rst_flag_number", "high"), ("rst_count", "high"), ("RSTRatio", "high"),
+    ("syn_flag_number", "high"), ("syn_count", "high"), ("SYNRatio", "high"),
+    ("SYN_ACK_Ratio", "high"),
+}
+_SCAN_ICMP_SHORT = _SCAN_CORE | {("ICMP", "high"), ("flow_duration", "low")}
+_SCAN_BROAD = _SCAN_ICMP_SHORT | {("fin_count", "high"), ("FINRatio", "high"), ("ARP", "high")}
+_DIRECT_COMMON = {
+    "T1557": {("ARP", "high"), ("DNS", "high"), ("DHCP", "high")},
+    "T1498": SIGNATURES_V2["T1498"],
+    "T1499": SIGNATURES_V2["T1499"],
+    "T1110": SIGNATURES_V2["T1110"],
+}
+DIRECT_MAP_VARIANTS = {
+    "v1-core-scan": {**_DIRECT_COMMON, "T1046": _SCAN_CORE, "T1595": _SCAN_CORE},
+    "v2-icmp-short-scan": {**_DIRECT_COMMON, "T1046": _SCAN_ICMP_SHORT, "T1595": _SCAN_ICMP_SHORT},
+    "v3-broad-scan": {**_DIRECT_COMMON, "T1046": _SCAN_BROAD, "T1595": _SCAN_BROAD},
+}
+# Frozen after comparing all three variants on S58 and S10. Keep this mapping opt-in.
+DIRECT_MAP_FROZEN_VARIANT = "v1-core-scan"
+DIRECT_MAP_V1 = DIRECT_MAP_VARIANTS[DIRECT_MAP_FROZEN_VARIANT]
