@@ -1,0 +1,171 @@
+
+=== A. Environment ===
+[PASS] Python version - 3.11.9
+[PASS] Active detector checkpoint present - Deep_SVDD_Tuned.pt
+[PASS] MITRE index loads and passes its hash check
+[PASS] Dataset file validation_set.csv - C:\Users\sasha_8bqmxgj\OneDrive\Documents\Study Material\7th Sem\Final Year Project\validation_set.csv
+[PASS] Dataset file zero_day_test_scaled_v2.csv - C:\Users\sasha_8bqmxgj\OneDrive\Documents\Study Material\7th Sem\Final Year Project\zero_day_test_scaled_v2.csv
+[PASS] Dataset file train_benign_only.csv - C:\Users\sasha_8bqmxgj\OneDrive\Documents\Study Material\7th Sem\Final Year Project\train_benign_only.csv
+
+=== C. MITRE retrieval (held-out labelled evidence) ===
+[PASS] Retrieval reproduces the documented held-out result - 19 of 53 flagged samples relevant
+[PASS] Flood alerts get a relevant technique - 62% of 60 flagged Mirai samples
+
+=== D. Live API at http://127.0.0.1:8000 ===
+[PASS] Health is ok - threshold 0.06141921002417763
+[PASS] Threshold is the tuned checkpoint's - 0.06141921002417763
+[PASS] Model info: 43 features, model loaded
+[PASS] MITRE behaviour index available
+[INFO] Reasoning mode in the app - Demo Fallback Reasoning
+[PASS] Ten cached demo samples available
+[PASS] analyze BenignTraffic
+[PASS] analyze BenignTraffic - detected=False verdict=VERIFIED action=MONITOR_ONLY
+[PASS] analyze Backdoor_Malware
+[PASS] analyze Backdoor_Malware - detected=True verdict=VERIFIED action=AUTO_REMEDIATE
+[PASS] analyze BrowserHijacking
+[PASS] analyze BrowserHijacking - detected=False verdict=VERIFIED action=MONITOR_ONLY
+[PASS] analyze CommandInjection
+[PASS] analyze CommandInjection - detected=False verdict=VERIFIED action=MONITOR_ONLY
+[PASS] analyze Mirai-greeth_flood
+[PASS] analyze Mirai-greeth_flood - detected=True verdict=VERIFIED action=AUTO_REMEDIATE
+[PASS] analyze Mirai-greip_flood
+[PASS] analyze Mirai-greip_flood - detected=True verdict=VERIFIED action=AUTO_REMEDIATE
+[PASS] analyze Mirai-udpplain
+[PASS] analyze Mirai-udpplain - detected=True verdict=VERIFIED action=AUTO_REMEDIATE
+[PASS] analyze SqlInjection
+[PASS] analyze SqlInjection - detected=False verdict=VERIFIED action=MONITOR_ONLY
+[PASS] analyze Uploading_Attack
+[PASS] analyze Uploading_Attack - detected=False verdict=VERIFIED action=MONITOR_ONLY
+[PASS] analyze XSS
+[PASS] analyze XSS - detected=True verdict=VERIFIED action=AUTO_REMEDIATE
+[PASS] Flagged demo samples match the earlier check - flagged: ['Backdoor_Malware', 'Mirai-greeth_flood', 'Mirai-greip_flood', 'Mirai-udpplain', 'XSS']
+[PASS] Rejects a request with a missing feature
+[PASS] Rejects a request with an extra feature
+[PASS] Rejects a non-numeric value
+[INFO] Ledger flow skipped (--skip-ledger)
+[INFO] Dashboard replay experiment - not_run
+
+=== E. Replay stream experiments\replay_streams\replay_stream_seed1.jsonl ===
+[PASS] Stream is not empty - 1150 rows
+[PASS] Every row has the required fields
+[PASS] alert_id values are unique
+[PASS] Scores and thresholds are finite numbers
+[PASS] One threshold for the whole stream
+[PASS] Stream threshold is the tuned checkpoint's - 0.06141921002417763
+[PASS] detected always equals score >= threshold
+[PASS] _simulator_attack is a boolean on every row
+[PASS] Verification verdicts are valid
+[PASS] Dataset labels never appear in anything the policy or report sees
+      family                     rows  flagged   rate
+      Backdoor_Malware             15        9    60%
+      BenignTraffic               450      300    67%
+      BrowserHijacking             15        8    53%
+      CommandInjection             27       13    48%
+      DDoS-ACK_Fragmentation        5        1    20%
+      DDoS-ICMP_Flood              27       21    78%
+      DDoS-ICMP_Fragmentation       5        1    20%
+      DDoS-PSHACK_Flood            11        5    45%
+      DDoS-RSTFINFlood              8        8   100%
+      DDoS-SYN_Flood                3        3   100%
+      DDoS-SynonymousIP_Flood       5        5   100%
+      DDoS-TCP_Flood               16       10    62%
+      DDoS-UDP_Flood               14        6    43%
+      DDoS-UDP_Fragmentation        6        0     0%
+      DNS_Spoofing                 36       17    47%
+      DictionaryBruteForce        100       60    60%
+      DoS-SYN_Flood                14       13    93%
+      DoS-TCP_Flood                32       26    81%
+      DoS-UDP_Flood                54       21    39%
+      MITM-ArpSpoofing             64       43    67%
+      Mirai-greeth_flood           28       26    93%
+      Mirai-greip_flood            25       23    92%
+      Mirai-udpplain               47       11    23%
+      Recon-HostDiscovery          39       30    77%
+      Recon-OSScan                 27        8    30%
+      Recon-PortScan               24       12    50%
+      SqlInjection                 21       17    81%
+      Uploading_Attack              4        4   100%
+      VulnerabilityScan            10       10   100%
+      XSS                          18        9    50%
+[PASS] Enough benign flows flagged to test false-positive handling - 300 flagged benign flows
+[PASS] Enough flagged attacks - 420
+[WARN] Benign flag rate is near the detector's ~5% FPR - 66.7% is far from the expected ~5% (wrong threshold, scaling or sampling?)
+[PASS] Mirai-greeth_flood is mostly flagged - 93%
+[PASS] Mirai-greip_flood is mostly flagged - 92%
+[WARN] Mirai-udpplain is mostly flagged - only 23% flagged
+
+=== F. Replay invariants and policy comparison (seeds [1, 2, 3], 5 folds) ===
+[PASS] Only flagged flows are routed - 720 routed of 1150
+[PASS] Contextual bandit (greedy held-out): every routed alert evaluated exactly once
+[PASS] Always HUMAN_REVIEW: every routed alert evaluated exactly once
+[PASS] Random (seeded): every routed alert evaluated exactly once
+[PASS] Best constant action (training folds): every routed alert evaluated exactly once
+[PASS] Supervised expected-reward (logistic, training folds): every routed alert evaluated exactly once
+[PASS] Tuned score-tier rule (training folds): every routed alert evaluated exactly once
+[PASS] Verification-gate rule (strawman on this stream): every routed alert evaluated exactly once
+[PASS] The bandit never auto-remediates an ineligible alert
+[PASS] Same seed gives identical results (reproducible)
+[PASS] Reward version recorded - designed-simulation-v2
+
+      mean reward per alert over seeds [1, 2, 3]
+      policy                                    mean    std   per seed
+      Contextual bandit (greedy held-out)       0.62   0.22   [0.39, 0.82, 0.64]
+      Always HUMAN_REVIEW                       0.33   0.00   [0.33, 0.33, 0.33]
+      Random (seeded)                          -1.11   0.10   [-1.14, -1.0, -1.19]
+      Best constant action (training folds)     0.50   0.00   [0.5, 0.5, 0.5]
+      Supervised expected-reward (logistic, training folds)    1.09   0.01   [1.08, 1.1, 1.09]
+      Tuned score-tier rule (training folds)    1.03   0.03   [1.02, 1.01, 1.07]
+      Verification-gate rule (strawman on this stream)   -2.08   0.00   [-2.08, -2.08, -2.08]
+[INFO] Bandit vs Always HUMAN_REVIEW - higher in 3, tied in 0, lower in 0 of 3 seeds (per-seed count only; run_replay_study.py gives the bootstrap interval)
+[INFO] Bandit vs Random (seeded) - higher in 3, tied in 0, lower in 0 of 3 seeds (per-seed count only; run_replay_study.py gives the bootstrap interval)
+[INFO] Bandit vs Best constant action (training folds) - higher in 2, tied in 0, lower in 1 of 3 seeds (per-seed count only; run_replay_study.py gives the bootstrap interval)
+[INFO] Bandit vs Supervised expected-reward (logistic, training folds) - higher in 0, tied in 0, lower in 3 of 3 seeds (per-seed count only; run_replay_study.py gives the bootstrap interval)
+[INFO] Bandit vs Tuned score-tier rule (training folds) - higher in 0, tied in 0, lower in 3 of 3 seeds (per-seed count only; run_replay_study.py gives the bootstrap interval)
+[INFO] Bandit vs Verification-gate rule (strawman on this stream) - higher in 3, tied in 0, lower in 0 of 3 seeds (per-seed count only; run_replay_study.py gives the bootstrap interval)
+[PASS] Bandit does at least as well as random
+
+      mean reward by family (seed 1, routed alerts only)
+      family                    Contextual ban  Always HUMAN_R  Random (seeded  Best constant   Supervised exp  Tuned score-ti  Verification-g
+      Backdoor_Malware                    1.22            2.00            0.56            3.00            2.00            1.22            5.00   n=9
+      BenignTraffic                      -1.33           -2.00           -4.11           -3.00           -1.50           -2.90          -12.00   n=300
+      BrowserHijacking                    2.25            2.00            0.38            3.00            1.88            2.75            5.00   n=8
+      CommandInjection                    2.15            2.00            1.62            3.00            2.15            2.54            5.00   n=13
+      DDoS-ACK_Fragmentation              2.00            2.00            5.00            3.00            3.00            5.00            5.00   n=1
+      DDoS-ICMP_Flood                     2.00            2.00            1.86            3.00            5.00            5.00            5.00   n=21
+      DDoS-ICMP_Fragmentation             2.00            2.00            5.00            3.00            3.00            5.00            5.00   n=1
+      DDoS-PSHACK_Flood                   2.00            2.00            1.00            3.00            3.40            5.00            5.00   n=5
+      DDoS-RSTFINFlood                    2.00            2.00            2.75            3.00            5.00            5.00            5.00   n=8
+      DDoS-SYN_Flood                      2.33            2.00           -0.67            3.00            4.33            5.00            5.00   n=3
+      DDoS-SynonymousIP_Flood             2.20            2.00           -1.20            3.00            4.20            5.00            5.00   n=5
+      DDoS-TCP_Flood                      2.10            2.00            1.50            3.00            5.00            5.00            5.00   n=10
+      DDoS-UDP_Flood                      2.00            2.00           -1.67            3.00            5.00            5.00            5.00   n=6
+      DNS_Spoofing                        1.65            2.00            0.59            3.00            2.53            2.59            5.00   n=17
+      DictionaryBruteForce                1.23            2.00            0.73            3.00            1.28            2.83            5.00   n=60
+      DoS-SYN_Flood                       2.08            2.00           -0.77            3.00            4.85            5.00            5.00   n=13
+      DoS-TCP_Flood                       2.27            2.00            0.23            3.00            5.00            4.88            5.00   n=26
+      DoS-UDP_Flood                       2.14            2.00            1.95            3.00            4.62            5.00            5.00   n=21
+      MITM-ArpSpoofing                    0.88            2.00            2.00            3.00            0.49            2.58            5.00   n=43
+      Mirai-greeth_flood                  2.00            2.00            1.12            3.00            3.77            5.00            5.00   n=26
+      Mirai-greip_flood                   2.00            2.00            1.91            3.00            4.04            5.00            5.00   n=23
+      Mirai-udpplain                      2.18            2.00            2.36            3.00            4.82            5.00            5.00   n=11
+      Recon-HostDiscovery                 0.97            2.00           -0.30            3.00            1.57            3.33            5.00   n=30
+      Recon-OSScan                        0.00            2.00            1.25            3.00            1.75            3.88            5.00   n=8
+      Recon-PortScan                      0.67            2.00            2.08            3.00            1.83            4.00            5.00   n=12
+      SqlInjection                        1.65            2.00            1.06            3.00            2.59            2.94            5.00   n=17
+      Uploading_Attack                    2.00            2.00            0.25            3.00            2.75            2.75            5.00   n=4
+      VulnerabilityScan                   2.00            2.00           -0.40            3.00            4.80            5.00            5.00   n=10
+      XSS                                 2.00            2.00           -0.67            3.00            2.56            3.00            5.00   n=9
+
+=== G. Policy comparison across the share of real attacks among flagged alerts ===
+      With the reward table in use, the best constant action by attack share p is:
+      MONITOR_ONLY for p 0.00-0.27; HUMAN_REVIEW for p 0.27-0.50; CONFIRM_TO_ACT for p 0.50-0.82; AUTO_REMEDIATE for p 0.82-1.00
+
+      attack share  alerts   Contextual bandi  Always HUMAN_REV   Random (seeded)  Best constant ac  Supervised expec  Tuned score-tier  Verification-gat
+               10%     333               0.51             -1.60             -3.70              0.31              0.55              0.50            -10.32
+               30%     429               0.16             -0.80             -2.64             -0.80              0.41              0.40             -6.89
+               50%     600               0.36              0.00             -1.61             -0.03              0.80              0.54             -3.50
+               80%     520               2.43              1.20             -0.03              1.72              2.60              2.67              1.60
+
+      Read this as a map of when each policy is the right one, not as a single score: the winner changes with the share of attacks.
+
+=== Summary: 63 PASS, 2 WARN, 0 FAIL ===

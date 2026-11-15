@@ -44,3 +44,7 @@ Built 2026-11-15 from the hash-pinned local inputs recorded in amendments 10-11 
 | S30 | 1,003 (301 + 702) | 0.3001 | 4,579 | `640ff280a9a7cf0e422f40b027d20295e4976a402d44139b115a64418b20fb70` |
 
 Each builder read 33,818,026 rows and skipped one non-finite row. Flagged quotas matched the plan. The source contained 69 unflagged DoS rows: S58 used 40, S10 used the remaining 29, and S30 had none after exclusions. The unflagged DoS shortfall is recorded in amendment 11; unflagged rows are not routed. Per-family counts and source paths are in the accompanying committed `.meta.json` files. The `.jsonl` streams remain local and uncommitted.
+
+## S10b under the amendment 10 local snapshot
+
+Built after freeze commit `8659cbf`; seed 4, target attack share 0.1, minimum 300 attacks, and exclusions for S58/S10/S30. The stream contained 3,400 rows: 3,010 flagged (301 attacks, 2,709 benign) and 390 unflagged; 5,972 source rows had already appeared in the earlier streams. One non-finite source row was skipped. The stream SHA-256 is `bc579188c3d132264fddcf8eef13a95ab85498a6feb8aeaca216a10e406ca095`. The source/population counts are in `backend/experiments/replay_streams/replay_stream_share10_seed4.meta.json`; the `.jsonl` remains uncommitted.
