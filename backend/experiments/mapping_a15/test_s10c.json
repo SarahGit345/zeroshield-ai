@@ -1,0 +1,326 @@
+{
+  "data_basis": "Original snapshot (validation 43,149,298 rows; zero-day 2,658,953 rows), see amendment 12",
+  "frozen_gate": "gate-3x",
+  "guarded_variant": "g1-scan-only",
+  "stream": "replay_stream_share10_seed5.jsonl",
+  "stream_sha256": "97d0411bcd10f4f724ec8d8c91943d927ad8f212196eac2276b9cc5cb86531c5",
+  "methods": {
+    "TF-IDF only": {
+      "per_family": {
+        "Brute Force": {
+          "covered": 15,
+          "alerts": 43,
+          "coverage": 0.3488372093023256,
+          "wilson_95": [
+            0.22418398748963103,
+            0.49828492902901905
+          ]
+        },
+        "DDoS": {
+          "covered": 21,
+          "alerts": 43,
+          "coverage": 0.4883720930232558,
+          "wilson_95": [
+            0.34617209277756006,
+            0.6324793623392592
+          ]
+        },
+        "DoS": {
+          "covered": 9,
+          "alerts": 43,
+          "coverage": 0.20930232558139536,
+          "wilson_95": [
+            0.11422705997811458,
+            0.35205931794236645
+          ]
+        },
+        "Mirai": {
+          "covered": 29,
+          "alerts": 43,
+          "coverage": 0.6744186046511628,
+          "wilson_95": [
+            0.5251593250655096,
+            0.7950688481822018
+          ]
+        },
+        "Recon": {
+          "covered": 0,
+          "alerts": 43,
+          "coverage": 0.0,
+          "wilson_95": [
+            0.0,
+            0.08201257002322722
+          ]
+        },
+        "Spoofing": {
+          "covered": 0,
+          "alerts": 43,
+          "coverage": 0.0,
+          "wilson_95": [
+            0.0,
+            0.08201257002322722
+          ]
+        },
+        "Benign": {
+          "clean": 423,
+          "alerts": 2709,
+          "clean_rate": 0.15614617940199335,
+          "wilson_95": [
+            0.14296466559008458,
+            0.1703015420646491
+          ]
+        }
+      },
+      "attack_coverage_macro_excluding_web": 0.2868217054263566,
+      "benign_clean_rate": 0.15614617940199335,
+      "primary_balanced_score": 0.22148394241417496,
+      "attack_candidate_precision_excluding_web": 0.21869158878504674,
+      "relevant_attack_candidates": 117,
+      "total_attack_candidates": 535,
+      "mean_candidates_per_alert": 2.533887043189369,
+      "alerts": 3010,
+      "web_based_alerts_out_of_scope": 43
+    },
+    "TF-IDF + v2 filter": {
+      "per_family": {
+        "Brute Force": {
+          "covered": 9,
+          "alerts": 43,
+          "coverage": 0.20930232558139536,
+          "wilson_95": [
+            0.11422705997811458,
+            0.35205931794236645
+          ]
+        },
+        "DDoS": {
+          "covered": 21,
+          "alerts": 43,
+          "coverage": 0.4883720930232558,
+          "wilson_95": [
+            0.34617209277756006,
+            0.6324793623392592
+          ]
+        },
+        "DoS": {
+          "covered": 9,
+          "alerts": 43,
+          "coverage": 0.20930232558139536,
+          "wilson_95": [
+            0.11422705997811458,
+            0.35205931794236645
+          ]
+        },
+        "Mirai": {
+          "covered": 29,
+          "alerts": 43,
+          "coverage": 0.6744186046511628,
+          "wilson_95": [
+            0.5251593250655096,
+            0.7950688481822018
+          ]
+        },
+        "Recon": {
+          "covered": 0,
+          "alerts": 43,
+          "coverage": 0.0,
+          "wilson_95": [
+            0.0,
+            0.08201257002322722
+          ]
+        },
+        "Spoofing": {
+          "covered": 0,
+          "alerts": 43,
+          "coverage": 0.0,
+          "wilson_95": [
+            0.0,
+            0.08201257002322722
+          ]
+        },
+        "Benign": {
+          "clean": 765,
+          "alerts": 2709,
+          "clean_rate": 0.2823920265780731,
+          "wilson_95": [
+            0.2657573630098879,
+            0.2996429906266827
+          ]
+        }
+      },
+      "attack_coverage_macro_excluding_web": 0.2635658914728682,
+      "benign_clean_rate": 0.2823920265780731,
+      "primary_balanced_score": 0.27297895902547065,
+      "attack_candidate_precision_excluding_web": 0.4089068825910931,
+      "relevant_attack_candidates": 101,
+      "total_attack_candidates": 247,
+      "mean_candidates_per_alert": 1.5205980066445182,
+      "alerts": 3010,
+      "web_based_alerts_out_of_scope": 43
+    },
+    "TF-IDF + guarded mapping + v2 filter": {
+      "per_family": {
+        "Brute Force": {
+          "covered": 9,
+          "alerts": 43,
+          "coverage": 0.20930232558139536,
+          "wilson_95": [
+            0.11422705997811458,
+            0.35205931794236645
+          ]
+        },
+        "DDoS": {
+          "covered": 21,
+          "alerts": 43,
+          "coverage": 0.4883720930232558,
+          "wilson_95": [
+            0.34617209277756006,
+            0.6324793623392592
+          ]
+        },
+        "DoS": {
+          "covered": 9,
+          "alerts": 43,
+          "coverage": 0.20930232558139536,
+          "wilson_95": [
+            0.11422705997811458,
+            0.35205931794236645
+          ]
+        },
+        "Mirai": {
+          "covered": 29,
+          "alerts": 43,
+          "coverage": 0.6744186046511628,
+          "wilson_95": [
+            0.5251593250655096,
+            0.7950688481822018
+          ]
+        },
+        "Recon": {
+          "covered": 17,
+          "alerts": 43,
+          "coverage": 0.3953488372093023,
+          "wilson_95": [
+            0.263651061984564,
+            0.5442120340668091
+          ]
+        },
+        "Spoofing": {
+          "covered": 0,
+          "alerts": 43,
+          "coverage": 0.0,
+          "wilson_95": [
+            0.0,
+            0.08201257002322722
+          ]
+        },
+        "Benign": {
+          "clean": 760,
+          "alerts": 2709,
+          "clean_rate": 0.28054632705795496,
+          "wilson_95": [
+            0.2639479742477487,
+            0.29776620766394124
+          ]
+        }
+      },
+      "attack_coverage_macro_excluding_web": 0.32945736434108525,
+      "benign_clean_rate": 0.28054632705795496,
+      "primary_balanced_score": 0.3050018456995201,
+      "attack_candidate_precision_excluding_web": 0.4299363057324841,
+      "relevant_attack_candidates": 135,
+      "total_attack_candidates": 314,
+      "mean_candidates_per_alert": 1.8906976744186046,
+      "alerts": 3010,
+      "web_based_alerts_out_of_scope": 43
+    },
+    "TF-IDF + guarded mapping + v2 filter + score gate": {
+      "per_family": {
+        "Brute Force": {
+          "covered": 0,
+          "alerts": 43,
+          "coverage": 0.0,
+          "wilson_95": [
+            0.0,
+            0.08201257002322722
+          ]
+        },
+        "DDoS": {
+          "covered": 21,
+          "alerts": 43,
+          "coverage": 0.4883720930232558,
+          "wilson_95": [
+            0.34617209277756006,
+            0.6324793623392592
+          ]
+        },
+        "DoS": {
+          "covered": 9,
+          "alerts": 43,
+          "coverage": 0.20930232558139536,
+          "wilson_95": [
+            0.11422705997811458,
+            0.35205931794236645
+          ]
+        },
+        "Mirai": {
+          "covered": 29,
+          "alerts": 43,
+          "coverage": 0.6744186046511628,
+          "wilson_95": [
+            0.5251593250655096,
+            0.7950688481822018
+          ]
+        },
+        "Recon": {
+          "covered": 16,
+          "alerts": 43,
+          "coverage": 0.37209302325581395,
+          "wilson_95": [
+            0.2437613889377433,
+            0.5214046173472683
+          ]
+        },
+        "Spoofing": {
+          "covered": 0,
+          "alerts": 43,
+          "coverage": 0.0,
+          "wilson_95": [
+            0.0,
+            0.08201257002322722
+          ]
+        },
+        "Benign": {
+          "clean": 2141,
+          "alerts": 2709,
+          "clean_rate": 0.7903285345145811,
+          "wilson_95": [
+            0.7745933509923562,
+            0.8052414613313712
+          ]
+        }
+      },
+      "attack_coverage_macro_excluding_web": 0.29069767441860467,
+      "benign_clean_rate": 0.7903285345145811,
+      "primary_balanced_score": 0.5405131044665928,
+      "attack_candidate_precision_excluding_web": 0.4977168949771689,
+      "relevant_attack_candidates": 109,
+      "total_attack_candidates": 219,
+      "mean_candidates_per_alert": 0.5956810631229236,
+      "alerts": 3010,
+      "web_based_alerts_out_of_scope": 43
+    }
+  },
+  "lost_context": {
+    "Brute Force": 0.5714285714285714,
+    "DDoS": 0.0,
+    "DoS": 0.0,
+    "Mirai": 0.0,
+    "Recon": 0.12,
+    "Spoofing": 0.6666666666666666,
+    "Web-Based": 0.42857142857142855
+  },
+  "gated_minus_guarded_95": [
+    0.2208379475821336,
+    0.24889258028792907
+  ]
+}
