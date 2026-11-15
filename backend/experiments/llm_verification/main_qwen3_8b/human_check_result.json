@@ -1,0 +1,331 @@
+{
+  "n": 32,
+  "human_supported": {
+    "Yes": 10,
+    "Partly": 20,
+    "No": 2
+  },
+  "human_technique": {
+    "None cited": 9,
+    "No": 20,
+    "Yes": 3
+  },
+  "supported_by_verifier_verdict": {
+    "VERIFIED": {
+      "Yes": 10,
+      "Partly": 19,
+      "No": 1
+    },
+    "UNCERTAIN": {
+      "No": 1,
+      "Partly": 1
+    }
+  },
+  "verified_but_human_no": [
+    {
+      "row_id": "R27",
+      "family": "Web-Based",
+      "notes": "The report calls RST count and SYNRatio high, although their displayed standardized values are negative."
+    }
+  ],
+  "technique_agreement_with_relevance_lists": {
+    "agree": 25,
+    "n": 32,
+    "table": {
+      "human No / lists No": 14,
+      "human No / lists None cited": 1,
+      "human No / lists Yes": 5,
+      "human None cited / lists None cited": 9,
+      "human Yes / lists No": 1,
+      "human Yes / lists Yes": 2
+    }
+  },
+  "supported_by_family": {
+    "Benign": {
+      "Partly": 6,
+      "Yes": 4
+    },
+    "Brute Force": {
+      "Partly": 1
+    },
+    "DDoS": {
+      "Partly": 2,
+      "No": 1,
+      "Yes": 1
+    },
+    "Mirai": {
+      "Partly": 3,
+      "Yes": 2
+    },
+    "Recon": {
+      "Partly": 4
+    },
+    "Spoofing": {
+      "Yes": 2,
+      "Partly": 1
+    },
+    "Web-Based": {
+      "Partly": 3,
+      "Yes": 1,
+      "No": 1
+    }
+  },
+  "rows": [
+    {
+      "row_id": "R01",
+      "verdict": "VERIFIED",
+      "family": "Spoofing",
+      "human_supported": "Yes",
+      "human_technique": "None cited",
+      "our_technique": "None cited"
+    },
+    {
+      "row_id": "R02",
+      "verdict": "VERIFIED",
+      "family": "Spoofing",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "No"
+    },
+    {
+      "row_id": "R03",
+      "verdict": "VERIFIED",
+      "family": "Benign",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "No"
+    },
+    {
+      "row_id": "R04",
+      "verdict": "VERIFIED",
+      "family": "DDoS",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "Yes"
+    },
+    {
+      "row_id": "R05",
+      "verdict": "VERIFIED",
+      "family": "Benign",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "No"
+    },
+    {
+      "row_id": "R06",
+      "verdict": "VERIFIED",
+      "family": "DDoS",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "No"
+    },
+    {
+      "row_id": "R07",
+      "verdict": "VERIFIED",
+      "family": "Recon",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "No"
+    },
+    {
+      "row_id": "R08",
+      "verdict": "VERIFIED",
+      "family": "Web-Based",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "None cited"
+    },
+    {
+      "row_id": "R09",
+      "verdict": "UNCERTAIN",
+      "family": "DDoS",
+      "human_supported": "No",
+      "human_technique": "Yes",
+      "our_technique": "Yes"
+    },
+    {
+      "row_id": "R10",
+      "verdict": "VERIFIED",
+      "family": "Spoofing",
+      "human_supported": "Yes",
+      "human_technique": "None cited",
+      "our_technique": "None cited"
+    },
+    {
+      "row_id": "R11",
+      "verdict": "VERIFIED",
+      "family": "Benign",
+      "human_supported": "Yes",
+      "human_technique": "None cited",
+      "our_technique": "None cited"
+    },
+    {
+      "row_id": "R12",
+      "verdict": "VERIFIED",
+      "family": "Web-Based",
+      "human_supported": "Partly",
+      "human_technique": "None cited",
+      "our_technique": "None cited"
+    },
+    {
+      "row_id": "R13",
+      "verdict": "VERIFIED",
+      "family": "Mirai",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "Yes"
+    },
+    {
+      "row_id": "R14",
+      "verdict": "VERIFIED",
+      "family": "Benign",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "No"
+    },
+    {
+      "row_id": "R15",
+      "verdict": "VERIFIED",
+      "family": "Recon",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "No"
+    },
+    {
+      "row_id": "R16",
+      "verdict": "VERIFIED",
+      "family": "Web-Based",
+      "human_supported": "Yes",
+      "human_technique": "None cited",
+      "our_technique": "None cited"
+    },
+    {
+      "row_id": "R17",
+      "verdict": "UNCERTAIN",
+      "family": "Brute Force",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "No"
+    },
+    {
+      "row_id": "R18",
+      "verdict": "VERIFIED",
+      "family": "Recon",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "No"
+    },
+    {
+      "row_id": "R19",
+      "verdict": "VERIFIED",
+      "family": "Recon",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "No"
+    },
+    {
+      "row_id": "R20",
+      "verdict": "VERIFIED",
+      "family": "Benign",
+      "human_supported": "Yes",
+      "human_technique": "None cited",
+      "our_technique": "None cited"
+    },
+    {
+      "row_id": "R21",
+      "verdict": "VERIFIED",
+      "family": "Benign",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "No"
+    },
+    {
+      "row_id": "R22",
+      "verdict": "VERIFIED",
+      "family": "Benign",
+      "human_supported": "Partly",
+      "human_technique": "Yes",
+      "our_technique": "No"
+    },
+    {
+      "row_id": "R23",
+      "verdict": "VERIFIED",
+      "family": "Benign",
+      "human_supported": "Yes",
+      "human_technique": "None cited",
+      "our_technique": "None cited"
+    },
+    {
+      "row_id": "R24",
+      "verdict": "VERIFIED",
+      "family": "Mirai",
+      "human_supported": "Yes",
+      "human_technique": "None cited",
+      "our_technique": "None cited"
+    },
+    {
+      "row_id": "R25",
+      "verdict": "VERIFIED",
+      "family": "Benign",
+      "human_supported": "Yes",
+      "human_technique": "None cited",
+      "our_technique": "None cited"
+    },
+    {
+      "row_id": "R26",
+      "verdict": "VERIFIED",
+      "family": "Mirai",
+      "human_supported": "Yes",
+      "human_technique": "Yes",
+      "our_technique": "Yes"
+    },
+    {
+      "row_id": "R27",
+      "verdict": "VERIFIED",
+      "family": "Web-Based",
+      "human_supported": "No",
+      "human_technique": "No",
+      "our_technique": "No"
+    },
+    {
+      "row_id": "R28",
+      "verdict": "VERIFIED",
+      "family": "Web-Based",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "No"
+    },
+    {
+      "row_id": "R29",
+      "verdict": "VERIFIED",
+      "family": "Mirai",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "Yes"
+    },
+    {
+      "row_id": "R30",
+      "verdict": "VERIFIED",
+      "family": "Mirai",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "Yes"
+    },
+    {
+      "row_id": "R31",
+      "verdict": "VERIFIED",
+      "family": "DDoS",
+      "human_supported": "Yes",
+      "human_technique": "No",
+      "our_technique": "Yes"
+    },
+    {
+      "row_id": "R32",
+      "verdict": "VERIFIED",
+      "family": "Benign",
+      "human_supported": "Partly",
+      "human_technique": "No",
+      "our_technique": "No"
+    }
+  ]
+}
