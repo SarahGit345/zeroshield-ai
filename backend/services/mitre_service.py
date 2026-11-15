@@ -130,10 +130,24 @@ class MitreService:
     def insufficient(self):
         return {"status": "insufficient_evidence", "message": "Insufficient evidence for a confident ATT&CK mapping.", "techniques": []}
 
-    def retrieve_behavior(self, analysis, abstain_implausible: bool = False):
+    def retrieve_behavior(self, analysis, abstain_implausible: bool = False, behaviour_mapping: bool = False,
+                          mapping_variant: str | None = None, plausibility_v2: bool = False,
+                          _base_result: dict | None = None):
         """abstain_implausible (plan amendment 5, default off): drop candidates that plausibility-rules-v1 judges
-        unsupported by the observed behaviours; techniques without a rule are kept."""
-        result = self._retrieve(analysis)
+        unsupported by the observed behaviours; techniques without a rule are kept.
+
+        behaviour_mapping (amendment 7, default off) adds direct behaviour candidates and applies plausibility-v2.
+        mapping_variant is only for the preregistered S58/S10 tuning comparison; ordinary callers use the frozen map."""
+        result = _base_result if _base_result is not None else self._retrieve(analysis)
+        if behaviour_mapping:
+            return self._retrieve_with_mapping(analysis, result, mapping_variant)
+        if plausibility_v2:
+            from services.technique_plausibility import RULES_VERSION_V2, SIGNATURES_V2, plausible
+            top = analysis.get("top_features", [])
+            kept = [item for item in result.get("techniques", [])
+                    if plausible(item["technique_id"], top, rules=SIGNATURES_V2) is not False]
+            return {**result, "techniques": kept, "plausibility_rules": RULES_VERSION_V2,
+                    "status": "retrieved" if kept else "empty_retrieval"}
         if not abstain_implausible or not result.get("techniques"):
             return result
         from services.technique_plausibility import RULES_VERSION, plausible
@@ -145,6 +159,61 @@ class MitreService:
             result.update(status="abstained_implausible",
                           message="Retrieved techniques were not supported by the observed flow behaviours, so no ATT&CK mapping is given.")
         return result
+
+    def _retrieve_with_mapping(self, analysis, result, mapping_variant=None):
+        from services.technique_plausibility import (A12_VARIANTS, DIRECT_MAP_V1, DIRECT_MAP_VARIANTS,
+                                                     RULES_VERSION_V2, SIGNATURES_V2, mapped_techniques,
+                                                     plausible)
+
+        variant = mapping_variant or "frozen"
+        guard = {}
+        if mapping_variant is not None:
+            if mapping_variant in DIRECT_MAP_VARIANTS:
+                direct_map = DIRECT_MAP_VARIANTS[mapping_variant]
+            elif mapping_variant in A12_VARIANTS:   # amendment 12 guarded variants
+                config = A12_VARIANTS[mapping_variant]
+                direct_map = config["map"]
+                guard = {key: config[key] for key in ("high_z", "low_z", "min_behaviours")}
+            else:
+                raise ValueError(f"Unknown direct-map variant: {mapping_variant}")
+        else:
+            direct_map = DIRECT_MAP_V1
+        if not self.index:
+            return {**result, "behaviour_mapping": True, "mapping_variant": variant,
+                    "plausibility_rules": RULES_VERSION_V2}
+
+        top = analysis.get("top_features", [])
+        documents = {str(doc["id"]): doc for doc in self.index["documents"]}
+        mapped_ids = mapped_techniques(direct_map, top, **guard)
+        by_id = {str(item["technique_id"]): dict(item) for item in result.get("techniques", [])}
+        tfidf_ids = set(by_id)
+        ordered_ids = list(by_id)
+        for technique_id in direct_map:
+            if technique_id in mapped_ids and technique_id not in by_id and technique_id in documents:
+                doc = documents[technique_id]
+                by_id[technique_id] = {
+                    "technique_id": doc["id"], "technique_name": doc["name"],
+                    "description": doc["text"].split("Description: ", 1)[-1][:1200],
+                    "source": doc.get("url"), "similarity": 0.0,
+                    "tactics": doc.get("tactics", []), "platforms": doc.get("platforms", []),
+                }
+                ordered_ids.append(technique_id)
+
+        supported = []
+        unsupported = []
+        for technique_id in ordered_ids:
+            candidate = by_id[technique_id]
+            judgement = plausible(technique_id, top, rules=SIGNATURES_V2)
+            if judgement is False:
+                continue
+            source = "both" if technique_id in mapped_ids and technique_id in tfidf_ids else (
+                "mapped" if technique_id in mapped_ids else "tfidf")
+            candidate["candidate_source"] = source
+            (supported if judgement is True else unsupported).append(candidate)
+        kept = (supported + unsupported)[:5]
+        return {**result, "status": "retrieved" if kept else "empty_retrieval", "techniques": kept,
+                "behaviour_mapping": True, "mapping_variant": variant,
+                "plausibility_rules": RULES_VERSION_V2}
 
     def _retrieve(self, analysis):
         if not self.index:

@@ -1,0 +1,34 @@
+Amendment 7 tune: S58 and S10 only; three fixed mapping variants.
+Data basis: revised local CSV snapshot, see amendments 10-11.
+
+v1-core-scan: mean primary score=0.2640
+  S58 sha256=3bdd7ff4dd076868335c999c472112d37dc649ae8b6a30e46466dcb90efe8cfa
+    TF-IDF only: primary=0.2267; coverage=0.3333; benign_clean=0.1200; precision=0.24939172749391728
+    TF-IDF + v2 filter: primary=0.2808; coverage=0.3083; benign_clean=0.2533; precision=0.3913978494623656
+    TF-IDF + mapping + v2 filter: primary=0.2778; coverage=0.4056; benign_clean=0.1500; precision=0.4249201277955272
+  S10 sha256=a1310e7b2be2284d650108063f88aff016d4a3b0f47bba8ad0d3099d4ea7d40d
+    TF-IDF only: primary=0.2146; coverage=0.2829; benign_clean=0.1462; precision=0.24478178368121442
+    TF-IDF + v2 filter: primary=0.2556; coverage=0.2481; benign_clean=0.2632; precision=0.3624161073825503
+    TF-IDF + mapping + v2 filter: primary=0.2503; coverage=0.3411; benign_clean=0.1595; precision=0.3898305084745763
+
+v2-icmp-short-scan: mean primary score=0.2640
+  S58 sha256=3bdd7ff4dd076868335c999c472112d37dc649ae8b6a30e46466dcb90efe8cfa
+    TF-IDF only: primary=0.2267; coverage=0.3333; benign_clean=0.1200; precision=0.24939172749391728
+    TF-IDF + v2 filter: primary=0.2808; coverage=0.3083; benign_clean=0.2533; precision=0.3913978494623656
+    TF-IDF + mapping + v2 filter: primary=0.2778; coverage=0.4056; benign_clean=0.1500; precision=0.4208860759493671
+  S10 sha256=a1310e7b2be2284d650108063f88aff016d4a3b0f47bba8ad0d3099d4ea7d40d
+    TF-IDF only: primary=0.2146; coverage=0.2829; benign_clean=0.1462; precision=0.24478178368121442
+    TF-IDF + v2 filter: primary=0.2556; coverage=0.2481; benign_clean=0.2632; precision=0.3624161073825503
+    TF-IDF + mapping + v2 filter: primary=0.2503; coverage=0.3411; benign_clean=0.1595; precision=0.3872053872053872
+
+v3-broad-scan: mean primary score=0.2537
+  S58 sha256=3bdd7ff4dd076868335c999c472112d37dc649ae8b6a30e46466dcb90efe8cfa
+    TF-IDF only: primary=0.2267; coverage=0.3333; benign_clean=0.1200; precision=0.24939172749391728
+    TF-IDF + v2 filter: primary=0.2808; coverage=0.3083; benign_clean=0.2533; precision=0.3913978494623656
+    TF-IDF + mapping + v2 filter: primary=0.2658; coverage=0.4083; benign_clean=0.1233; precision=0.42210526315789476
+  S10 sha256=a1310e7b2be2284d650108063f88aff016d4a3b0f47bba8ad0d3099d4ea7d40d
+    TF-IDF only: primary=0.2146; coverage=0.2829; benign_clean=0.1462; precision=0.24478178368121442
+    TF-IDF + v2 filter: primary=0.2556; coverage=0.2481; benign_clean=0.2632; precision=0.3624161073825503
+    TF-IDF + mapping + v2 filter: primary=0.2415; coverage=0.3450; benign_clean=0.1381; precision=0.3860232945091514
+
+Selected: v1-core-scan

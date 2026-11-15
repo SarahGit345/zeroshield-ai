@@ -203,3 +203,36 @@ Written before any code for it exists. All four parts are descriptive ablations:
 **C. XAI deletion test (faithfulness).** For every flagged alert in the three streams, the top-k features named by the stored occlusion explanation (k = 1, 3, 5) are reset to 0 together and the detector re-scores the flow; compared with resetting k features drawn at random (20 seeded draws per alert, seed 20261115) and the k lowest-ranked of the 43. Metrics: mean share of the anomaly score removed, and share of alerts that fall below the threshold, per family. The explanation is called faithful at k if its score removal exceeds the random baseline with a non-overlapping 95% bootstrap interval.
 
 **D. Occlusion vs SHAP.** On a seeded stratified sample of up to 300 flagged alerts from S30, SHAP values from `shap.GradientExplainer` on the detector's score (background: 200 unflagged benign alerts from S58, seed 20261115) are compared with the occlusion explanation: top-1 agreement and overlap of the top-5 features. Descriptive; occlusion stays the method.
+
+## Amendment 10 (2026-11-15): local validation snapshot for amendment 7 rerun
+
+This note is committed before any new mapping code or amendment 7 tuning. The teammate confirms the repository-root `validation_set.csv` is the correct current validation input, and the user directs that it be used. This file is the 31,159,073-row validation set named in `CLAUDE.md`; its SHA-256 is `E661CC9C6861A7692BD77918D79315D7B1CD814F46E55BAAD54288167C890AC8` (22,992,531,456 bytes). The companion `zero_day_test_scaled_v2.csv` is 2,658,953 rows, SHA-256 `1FE72BC723CD46106A57DE29012C3EE23FC7A504D931230269BCE2E2791A87BA` (2,051,913,808 bytes).
+
+The committed stage-10 stream metadata records a different, larger validation snapshot (43,149,298 rows; 31,840,234,859 bytes). The earlier local rebuild from the current files read 33,818,026 total rows and skipped one non-finite row, so its populations and stream hashes did not match that metadata. We therefore proceed using the two hash-pinned current files above and preserve amendment 7's mapping, quotas, tuning/test separation, metrics, bootstrap, and success rule. S58, S10 and S30 must be rebuilt from this snapshot before tuning; the old stream population counts and hashes are not claimed for this rerun. S10b remains untouched until the mapping is frozen in a commit. The amendment 7 result will be reported as a revised-data-basis replication, not as a result on the older snapshot recorded in `stage10-streams.md`; both source hashes, stream counts and hashes, and this deviation must be included in the report. No change is made to amendment 7's success threshold or default-off requirement.
+
+## Amendment 11 (2026-11-15): preserve non-overlap when an unflagged stratum is exhausted
+
+The revised-data S10 build exposed only 69 unflagged DoS rows in the source population. S58 already used 40; after excluding S58, only 29 remained for S10. The builder therefore sampled 29 rather than the planned 40 unflagged DoS rows. Preserve the disjoint-row rule and use the available count for S30 as well (which may be zero after excluding S58 and S10); do not sample with replacement. All flagged quotas were met. Unflagged rows are never routed or evaluated, so this shortfall does not change the amendment 7 mapping metrics. Record these actual counts in the stream metadata and report. This clarification is committed before the S30 build, any code changes, or tuning.
+
+## Amendment 12 (2026-11-15): mapping v2 with a benign guard, on the original data snapshot
+
+Post hoc. Written and committed before any new code, any stream build from the original snapshot, or any tuning.
+
+**Why.** Amendment 7 (S10b, revised data basis) showed the direct mapping recovers Recon (0/43 to 17/43) but lowers the benign clean rate (27.3% to 15.3%), so the primary score did not improve (-0.0094 [-0.0264, +0.0086]). The design below was informed by that S10b breakdown; S10b (revised basis) is therefore never used again, and the new version is tested on a stream no one has seen.
+
+**Data.** The original snapshot recorded in `docs/stage10-streams.md`: `validation_set.csv` with 43,149,298 rows (31,840,234,859 bytes) and `zero_day_test_scaled_v2.csv` with 2,658,953 rows (2,051,913,808 bytes). The original S58 (seed 1) and S10 (share 0.10, seed 2) stream files already exist on the build machine. Before tuning, their SHA-256 must match the first table in `docs/stage10-streams.md` (allowing for its documented line-ending caveat); if either does not match, rebuild it with the documented command (45,808,251 rows read, 0 skipped) or stop and report. Do not tune on a mismatching stream.
+
+**Variants (fixed now; no others will be tried).** All keep the TF-IDF retriever, the v2 plausibility filter and the cap of 5.
+- `g1-scan-only`: the direct map adds only T1046, T1595 (scan core behaviours, as `v1-core-scan`) and T1557 (as amendment 7). Flood (T1498, T1499) and login (T1110) techniques come only from TF-IDF, never from the map.
+- `g2-scan-only-strong`: as g1, but a scan or spoofing behaviour counts for the map only if its scaled value is at least 2 (instead of 1); positive contribution still required.
+- `g3-scan-only-two`: as g1, but a mapped technique is added only if at least two of its behaviours are observed.
+
+**Tuning.** On rebuilt S58 and S10 only. Metric and selection rule as amendment 7: highest mean primary balanced score across S58 and S10; ties follow the order above. Commit the frozen variant (code plus tuning output) before building the test stream.
+
+**One-time test.** After the freeze commit, build S10b (share 0.10, seed 4, excluding S58, S10 and S30) from the original snapshot, and evaluate it once. Report four methods: TF-IDF only; TF-IDF + v2 filter; mapping v1 as frozen in `8659cbf` (a replication of amendment 7 on the original snapshot, no change); and the frozen guarded mapping.
+
+**Metrics.** As amendment 7: coverage per in-scope family (DDoS, DoS, Recon, Brute Force, Spoofing, Mirai) with 95% Wilson intervals, benign clean rate, primary balanced score, precision, mean candidates per alert. Web-Based is reported separately, out of scope.
+
+**Success rule.** The guarded mapping succeeds if its primary score minus TF-IDF + v2 filter is above 0 with the 95% stratified paired-bootstrap interval (2,000 resamples, seed 20261115, as amendment 7) entirely above 0. Reported whatever the outcome.
+
+**Unchanged.** The mapping stays off by default; `backend/main.py` is not changed; labels are used only after retrieval to score relevance; the committed metadata of the original streams is not overwritten (new metadata files take new names).
