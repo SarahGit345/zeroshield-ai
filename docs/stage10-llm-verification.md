@@ -162,7 +162,7 @@ This is the first verifier change that removes any false positives, but it costs
 
 ## Human check: result (plan item 4, 2026-11-15)
 
-The 32-report blind packet was judged by a reviewer arranged by the team who received only `human_check_packet.html`; the answers were matched to the key (kept outside the repository) by `backend/score_human_check.py`. Answers: `main_qwen3_8b/human_check_answers.csv`; result: `human_check_result.md/.json`. Scored once.
+The 32-report blind packet was judged by one reviewer, a friend of a team member who had not seen the LLM results or the verifier verdicts and received only `human_check_packet.html`; the answers were matched to the key (kept outside the repository) by `backend/score_human_check.py`. Answers: `main_qwen3_8b/human_check_answers.csv`; result: `human_check_result.md/.json`. Scored once.
 
 | Supported by evidence (human) | Yes | Partly | No |
 |---|---|---|---|
