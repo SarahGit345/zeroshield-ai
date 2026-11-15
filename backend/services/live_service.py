@@ -49,7 +49,7 @@ class LiveReplay:
                 "cursor": self.cursor,
                 "composition": dict(Counter(r["truth"]["family"] for r in self.rows)),
                 "source": "Recorded CIC-IoT-2023 flows (scaled feature space), replayed in a fixed shuffled order; "
-                          "the mix is stratified for the demo, not real-network proportions."}
+                          "per-family flagged share matches the full-data flag rate; the family mix is stratified."}
 
     def next(self) -> tuple[int, dict, dict]:
         """(index, features, truth). Wraps around at the end of the file."""
