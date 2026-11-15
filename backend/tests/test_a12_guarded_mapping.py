@@ -46,8 +46,8 @@ class GuardRules(unittest.TestCase):
         two = [feat("rst_count", 1.5), feat("syn_count", 1.3)]
         self.assertEqual(tp.mapped_techniques(g3["map"], two, **args), {"T1046", "T1595"})
 
-    def test_not_frozen_before_tuning(self):
-        self.assertIsNone(tp.A12_FROZEN_VARIANT)
+    def test_frozen_variant_is_the_tuning_winner(self):
+        self.assertEqual(tp.A12_FROZEN_VARIANT, "g1-scan-only")
 
 
 class ServicePath(unittest.TestCase):

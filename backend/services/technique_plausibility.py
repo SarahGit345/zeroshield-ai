@@ -138,7 +138,7 @@ A12_VARIANTS = {
     "g3-scan-only-two": {"map": _A12_MAP, "high_z": HIGH_Z, "low_z": LOW_Z, "min_behaviours": 2},
 }
 # Set to the selected variant name in the freeze commit, after tuning on S58 and S10 only.
-A12_FROZEN_VARIANT = None
+A12_FROZEN_VARIANT = "g1-scan-only"   # frozen after tuning on S58 and S10 (tune.txt)
 
 
 def mapped_techniques(direct_map: dict, top_features, high_z: float = HIGH_Z, low_z: float = LOW_Z,
