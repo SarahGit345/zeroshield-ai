@@ -112,3 +112,22 @@ DDoS (29/43), DoS (7/43) and Mirai (28/43) are unchanged by the guarded map.
 **Verdict: success under the pre-stated rule.** Guarded minus TF-IDF + v2 = **+0.0313, 95% paired bootstrap [+0.0191, +0.0433]**. The amendment 7 map replicated on this snapshot gives -0.0027 [-0.0198, +0.0167], matching the teammate's no-improvement result on the other snapshot.
 
 **What this does and does not show.** The guard recovers Recon (0% to 39.5%) without adding noise to benign alerts (clean rate 27.1% to 26.8%). Spoofing is still never covered (0/43), Brute Force stays at the v2 level (18.6%), and Web-Based (43 alerts) is out of scope. Relevance is family-level and generous, as before. One stream, one snapshot, run once; the mapping stays off by default and `backend/main.py` is unchanged. Environment: scikit-learn 1.6.1 for tuning and test (index pickled with 1.7.2; warning only).
+
+## Post hoc, amendment 15: score-gated ATT&CK context (S10c evaluated once)
+
+Plan: amendment 15 (committed `218986b` before any code). Code `3ae8f77`; gate frozen in `d897ba2` (pushed) before S10c was built. Tuning on S58 and S10 only: mean primary score gate-1.5x 0.4308, gate-2x 0.5044, gate-3x 0.5693; gate-3x selected by the pre-stated rule (`backend/experiments/mapping_a15/tune.txt`).
+
+**One-time test on S10c** (seed 5, original snapshot, excluding S58, S10, S30 and S10b; 3,010 flagged: 301 attacks, 2,709 benign; 45,808,251 rows read, 9,401 excluded rows skipped, 0 mismatches; SHA-256 `97d0411bcd10f4f724ec8d8c91943d927ad8f212196eac2276b9cc5cb86531c5`). Full table: `backend/experiments/mapping_a15/test_s10c.md`.
+
+| Method | Recon | Brute Force | Spoofing | Benign clean | Primary score | Precision | Mean candidates |
+|---|---|---|---|---|---|---|---|
+| TF-IDF only | 0/43 | 15/43 | 0/43 | 15.6% | 0.2215 | 21.9% | 2.53 |
+| TF-IDF + v2 filter | 0/43 | 9/43 | 0/43 | 28.2% | 0.2730 | 40.9% | 1.52 |
+| Guarded mapping (g1) | 17/43 | 9/43 | 0/43 | 28.1% | 0.3050 | 43.0% | 1.89 |
+| **Guarded + gate-3x** | 16/43 | **0/43** | 0/43 | **79.0%** | **0.5405** | 49.8% | 0.60 |
+
+**Verdict: success under the pre-stated rule.** Gated minus guarded = **+0.2355, 95% paired bootstrap [+0.2208, +0.2489]**. DDoS (21/43), DoS (9/43) and Mirai (29/43) coverage are unchanged by the gate.
+
+**The cost, stated plainly.** The gain comes from withholding context on low-score alerts, which are mostly false alarms: 79% of benign alerts now carry no misleading technique (28% before). Low-score attacks lose context too: share of attack alerts with candidates that the gate empties: Brute Force 57%, Spoofing 67%, Web-Based 43%, Recon 12%, floods 0%. Brute Force loses all of its relevant context (9/43 to 0/43). The primary score weights benign alerts as half the score, so it rewards silence on false alarms; a user who values context on quiet attacks more would not choose this gate. Off by default; the live monitor can show it as an option.
+
+**Second look at amendment 12 (descriptive, not a planned test).** On S10c the guarded mapping again beats TF-IDF + v2 (0.3050 vs 0.2730) and Recon again reaches 17/43, consistent with the S10b result.

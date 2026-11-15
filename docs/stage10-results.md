@@ -148,3 +148,15 @@ At S30 the supervised policy stays ahead unless a missed attack is penalised abo
 - On these streams and reward tables, the learned bandit beats every non-learning baseline (always-review, random, best constant action chosen on training data) at attack shares of 10%, 30% and 58%, with 95% intervals well clear of zero.
 - It does **not** beat a supervised expected-reward policy or a tuned score-tier rule that use the same features: it loses to both at 30% (confirmatory) and 58% (exploratory), and at 10% its edge over the supervised policy is tiny and depends on the reward values.
 - The bandit's errors move with the attack share: about half of attacks are left at monitor-only at 10%, and about 5% of false positives are auto-remediated at 58%.
+
+## Post hoc, amendment 13: detector operating points per family (descriptive, run once)
+
+Every row of the original snapshot (45,808,251) scored once; thresholds = benign-score percentiles of `train_benign_only.csv` (878,328 rows; the deployed 0.0614 is its 95th percentile). Result: `backend/experiments/operating_points/summary.md`.
+
+| threshold | benign false-alarm rate | Recon | Brute Force | Spoofing | Web-Based | DDoS / DoS / Mirai |
+|---|---|---|---|---|---|---|
+| 90th pct (0.0330) | 10.0% | 66.0% | 35.5% | 37.3% | 47.9% | 100% |
+| deployed 95th (0.0614) | 5.0% | 56.6% | 20.8% | 25.7% | 33.9% | 100% |
+| 99th pct (0.2425) | 1.0% | 42.5% | 7.2% | 8.2% | 13.1% | 99.3-99.9% |
+
+The row-weighted recall (98.8% at the deployed threshold) is dominated by DDoS (34.0M of 45.8M rows). Low-volume families are caught far less often at every threshold: doubling the false-alarm rate (95th to 90th percentile) adds 9-15 points for them. This is a limit of flow-level features for single low-volume flows, not of the threshold choice. No threshold is changed.
