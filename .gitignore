@@ -293,3 +293,7 @@ backend/experiments/replay_streams/*.jsonl
 backend/experiments/replay_study_*/**/action_ledger.jsonl
 backend/experiments/replay_study_*/**/evaluation_decisions.csv
 backend/experiments/content_check/
+
+# Live monitor demo (real dataset rows; built by backend/build_live_demo.py)
+backend/data/live_demo_flows.csv
+backend/data/live_demo_ledger.sqlite3

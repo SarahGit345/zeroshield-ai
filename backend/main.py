@@ -22,6 +22,9 @@ from schemas.response import ApprovalRequest, FeedbackRequest
 from security import require_operator
 from services.bandit_service import BanditService
 from services.verification_service import verify_record
+from services.live_service import DEMO_FILE, LiveReplay
+from services.llm_service import template_report
+from schemas.live import LiveStepRequest
 
 ROOT = Path(__file__).resolve().parents[1]
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -34,7 +37,9 @@ replay_lock = threading.Lock()
 async def lifespan(app: FastAPI):
     detector = Detector(ROOT)
     services.update(detector=detector, samples=SampleService(ROOT, detector.features), mitre=MitreService(ROOT),
-                    bandit=BanditService(ROOT / "backend" / "data" / "zeroshield_ledger.sqlite3"))
+                    bandit=BanditService(ROOT / "backend" / "data" / "zeroshield_ledger.sqlite3"),
+                    live=LiveReplay(DEMO_FILE, detector.features),
+                    live_bandit=BanditService(ROOT / "backend" / "data" / "live_demo_ledger.sqlite3"))
     yield
 
 
@@ -61,8 +66,33 @@ def demo_samples():
     return services["samples"].available()
 
 
-def analyze(features: dict[str, float], label: str | None = None):
+ATTACK_MODES = ("default", "guarded", "gated")
+
+
+def retrieve_context(result: dict, attack_mode: str = "default") -> dict:
+    """ATT&CK context. 'default' is the published retrieval (unchanged). 'guarded' adds amendment 12's frozen
+    scan/spoofing mapping with the v2 filter; 'gated' additionally withholds context below amendment 15's frozen
+    score gate. Both options are off unless the live monitor asks for them."""
+    mitre = services["mitre"]
+    if attack_mode == "default":
+        return mitre.retrieve_behavior(result)
+    from services import technique_plausibility as tp
+    mapping = mitre.retrieve_behavior(result, behaviour_mapping=True, mapping_variant=tp.A12_FROZEN_VARIANT)
+    mapping["attack_mode"] = attack_mode
+    if attack_mode == "gated":
+        gate = tp.A15_GATES[tp.A15_FROZEN_GATE]
+        mapping["score_gate"] = {"gate": tp.A15_FROZEN_GATE, "minimum_score": gate * result["threshold"]}
+        if not tp.passes_score_gate(result["anomaly_score"], result["threshold"], gate):
+            mapping.update(techniques=[], status="withheld_low_score",
+                           message="Score below the context gate: no ATT&CK technique is shown for this alert.")
+    return mapping
+
+
+def analyze(features: dict[str, float], label: str | None = None, *, bandit=None, reasoner=None,
+            attack_mode: str = "default"):
     d = services["detector"]
+    bandit = bandit or services["bandit"]
+    reasoner = reasoner or reason
     if not d.loaded:
         raise HTTPException(503, "Deep SVDD model is unavailable. Check backend logs and model file.")
     if len(features) != len(d.features) or set(features) != set(d.features):
@@ -71,8 +101,8 @@ def analyze(features: dict[str, float], label: str | None = None):
         raise HTTPException(422, {"message": "Expected exactly the 43 project features.", "missing": missing, "extra": extra})
     try:
         result = d.analyze(features)
-        mapping = services["mitre"].retrieve_behavior(result)
-        reasoning = reason(result, None, mapping)
+        mapping = retrieve_context(result, attack_mode)
+        reasoning = reasoner(result, None, mapping)
         verification = verify_record({**result, "feature_names": [x["feature"] for x in result["top_features"]], "all_feature_names": [x["feature"] for x in result["all_contributions"]]}, mapping, reasoning)
         alert_id = str(uuid.uuid4())
         alert = {"alert_id": alert_id, "sample_id": label or "user_input", "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -90,7 +120,7 @@ def analyze(features: dict[str, float], label: str | None = None):
                              "approval_status": "NOT_REQUIRED", "simulated_execution_status": "NOT_EXECUTED_NO_ALERT",
                              "observed_outcome": None, "reward": None, "policy_update_status": "NOT_ELIGIBLE"}
         elif verification["verdict"] == "VERIFIED":
-            bandit_record = services["bandit"].record(alert)
+            bandit_record = bandit.record(alert)
         else:
             bandit_record = {"selected_action": "HUMAN_REVIEW", "policy_version": "safety-fallback-v1",
                              "action_scores": {}, "context_features": {}, "selection_mode": "verification safety fallback",
@@ -214,3 +244,58 @@ def response_replay_status():
     if process is None: return {"status": "idle"}
     code = process.poll()
     return {"status": "running" if code is None else "completed" if code == 0 else "failed", "exit_code": code}
+
+
+# ------------------------------------------------------------------ live monitor (recorded-flow replay)
+def _template_reasoner(result, _family, mitre):
+    return template_report(result, mitre)
+
+
+@app.get("/api/live/status")
+def live_status():
+    live = services.get("live")
+    if live is None:
+        return {"available": False, "error": "Live replay service not started."}
+    from services import technique_plausibility as tp
+    return {**live.status(), "llm_status": llm_status(), "attack_modes": list(ATTACK_MODES),
+            "guarded_variant": tp.A12_FROZEN_VARIANT, "score_gate": tp.A15_FROZEN_GATE,
+            "policy_updates": services["live_bandit"].updates}
+
+
+@app.post("/api/live/next", dependencies=[Depends(require_operator)])
+def live_next(payload: LiveStepRequest):
+    live = services.get("live")
+    if live is None or not live.available:
+        raise HTTPException(503, (live.error if live else None) or "No demo traffic loaded. Run: python build_live_demo.py")
+    count = max(1, min(int(payload.count), 50))
+    reasoner = None if payload.report == "configured" else _template_reasoner
+    out = []
+    for _ in range(count):
+        index, features, truth = live.next()
+        # The label is never passed to the pipeline; it is attached only after the decision below.
+        result = analyze(features, None, bandit=services["live_bandit"], reasoner=reasoner, attack_mode=payload.attack_mode)
+        is_attack = truth["family"] != "Benign"
+        feedback = None
+        record = result.get("bandit") or {}
+        if payload.learn and result["detected"] and record.get("policy_update_status") == "WAITING_FOR_FEEDBACK":
+            reviewer = ("APPROVED" if is_attack else "REJECTED") if record.get("selected_action") == "CONFIRM_TO_ACT" else None
+            updated = services["live_bandit"].feedback(result["alert_id"], is_attack, reviewer)
+            result["bandit"] = updated
+            feedback = {"source": "simulated analyst: dataset label applied after the action was chosen",
+                        "reviewer_choice": reviewer, "reward": updated.get("reward"),
+                        "observed_outcome": updated.get("observed_outcome")}
+        result.update(replay_index=index, ground_truth={**truth, "is_attack": is_attack}, simulated_feedback=feedback)
+        out.append(result)
+    return {"results": out, "cursor": live.cursor, "total": live.status()["total"],
+            "policy_updates": services["live_bandit"].updates}
+
+
+@app.post("/api/live/reset", dependencies=[Depends(require_operator)])
+def live_reset(reset_policy: bool = False):
+    live = services.get("live")
+    if live is None:
+        raise HTTPException(503, "Live replay service not started.")
+    live.reset()
+    if reset_policy:
+        services["live_bandit"].reset_policy()
+    return {"cursor": live.cursor, "policy_reset": reset_policy, "policy_updates": services["live_bandit"].updates}
